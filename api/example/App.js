@@ -1,0 +1,182 @@
+import React, { Component } from 'react'
+import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
+import { launchImageLibrary } from 'react-native-image-picker';
+import Regula from 'react-native-face-api'
+
+const FaceApi = Regula.FaceApi
+const FaceCaptureResponse = FaceApi.FaceCaptureResponse
+const LivenessResponse = FaceApi.LivenessResponse
+const MatchFacesResponse = FaceApi.MatchFacesResponse
+const MatchFacesRequest = FaceApi.MatchFacesRequest
+
+var base64First
+var base64Second
+
+export default class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      resultsActivity: false,
+      img1: require('./images/portrait.png'),
+      img2: require('./images/portrait.png'),
+      similarity: "unknown",
+      liveness: "unlnown"
+    }
+  }
+
+  pickImage(first) {
+    Alert.alert("Select option", "", [{
+      text: "Use gallery",
+      onPress: () => this.useGallery(first)
+    },
+    {
+      text: "Use camera",
+      onPress: () => FaceApi.presentFaceCaptureActivity(result => {
+        result = FaceCaptureResponse.fromJson(JSON.parse(result))
+        if (first) {
+          base64First = result.capturedImage.bitmap
+          this.setState({ img1: { uri: "data:image/png;base64," + base64First } })
+        }
+        else {
+          base64Second = result.capturedImage.bitmap
+          this.setState({ img2: { uri: "data:image/png;base64," + base64Second } })
+        }
+      }, e => { })
+    }])
+  }
+
+  useGallery(first) {
+    launchImageLibrary({ includeBase64: true }, response => {
+      if (first) {
+        this.setState({ img1: { uri: response.uri } })
+        base64First = response.base64
+      } else {
+        this.setState({ img2: { uri: response.uri } })
+        base64Second = response.base64
+      }
+    })
+
+  }
+
+  clearResults() {
+    this.setState({ img2: require('./images/portrait.png'), img1: require('./images/portrait.png') })
+    base64First = null
+    base64Second = null
+  }
+
+  matchFaces() {
+    request = new MatchFacesRequest()
+    image1 = new FaceApi.Image()
+    image2 = new FaceApi.Image()
+    image1.bitmap = base64First
+    image2.bitmap = base64Second
+    request.images = [image1, image2]
+    FaceApi.matchFaces(JSON.stringify(request), response => {
+      console.log(JSON.stringify(response))
+      response = MatchFacesResponse.fromJson(JSON.parse(response))
+      matchedFaces = response.matchedFaces
+      this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity*100).toFixed(2) + "%") : "error" })
+    }, e => { this.setState({ similarity: e }) })
+  }
+
+  liveness() {
+    FaceApi.startLivenessMatching(result => {
+      result = LivenessResponse.fromJson(JSON.parse(result))
+
+      base64First = result.bitmaps[result.faceIndex]
+      this.setState({ img1: { uri: "data:image/png;base64," + base64First } })
+      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
+    }, e => { })
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.container}>
+          <View style={{ flexDirection: "column", padding: 5 }}>
+            <View style={{ flexDirection: "column", alignItems: "center" }}>
+              <TouchableHighlight onPress={() => this.pickImage(true)}>
+                <Image
+                  style={{
+                    height: 150,
+                    width: 150,
+                  }}
+                  source={this.state.img1}
+                  resizeMode="contain" />
+              </TouchableHighlight>
+            </View>
+            <View style={{ flexDirection: "column", alignItems: "center", padding: 5 }}>
+              <TouchableHighlight onPress={() => this.pickImage(false)}>
+                <Image
+                  style={{
+                    height: 150,
+                    width: 200,
+                  }}
+                  source={this.state.img2}
+                  resizeMode="contain" />
+              </TouchableHighlight>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: 'column', width: "100%", alignItems: "center" }}>
+            <View style={{ padding: 3, width: "75%" }}>
+              <Button color="#4285F4"
+                onPress={() => {
+                  this.matchFaces()
+                }}
+                title="     Match     "
+              />
+            </View>
+            <View style={{ padding: 3, width: "75%" }}>
+              <Button color="#4285F4"
+                onPress={() => {
+                  this.liveness()
+                }}
+                title="     Liveness     "
+              />
+            </View>
+            <View style={{ padding: 3, width: "75%" }}>
+              <Button color="#4285F4"
+                onPress={() => {
+                  this.clearResults()
+                }}
+                title="Clear"
+              />
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={{ marginLeft: -20 }}>Similarity: {this.state.similarity}</Text>
+            <Text style={{ marginLeft: 20 }}>Liveness: {this.state.liveness}</Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    marginBottom: 12,
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  resultsScreenBackButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 20
+  }
+})
