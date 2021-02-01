@@ -3,14 +3,15 @@ import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from
 import { launchImageLibrary } from 'react-native-image-picker';
 import Regula from 'react-native-face-api'
 
-const FaceApi = Regula.FaceApi
-const FaceCaptureResponse = FaceApi.FaceCaptureResponse
-const LivenessResponse = FaceApi.LivenessResponse
-const MatchFacesResponse = FaceApi.MatchFacesResponse
-const MatchFacesRequest = FaceApi.MatchFacesRequest
+const Face = Regula.Face
+const Enum = Face.Enum
+const FaceCaptureResponse = Face.FaceCaptureResponse
+const LivenessResponse = Face.LivenessResponse
+const MatchFacesResponse = Face.MatchFacesResponse
+const MatchFacesRequest = Face.MatchFacesRequest
 
-var base64First
-var base64Second
+var image1 = new Face.Image()
+var image2 = new Face.Image()
 
 export default class App extends Component {
   constructor(props) {
@@ -31,15 +32,17 @@ export default class App extends Component {
     },
     {
       text: "Use camera",
-      onPress: () => FaceApi.presentFaceCaptureActivity(result => {
+      onPress: () => Face.presentFaceCaptureActivity(result => {
         result = FaceCaptureResponse.fromJson(JSON.parse(result))
         if (first) {
-          base64First = result.capturedImage.bitmap
-          this.setState({ img1: { uri: "data:image/png;base64," + base64First } })
+          image1.bitmap = result.capturedImage.bitmap
+          image1.imageType = Enum.eInputFaceType.ift_Live
+          this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
         }
         else {
-          base64Second = result.capturedImage.bitmap
-          this.setState({ img2: { uri: "data:image/png;base64," + base64Second } })
+          image2.bitmap = result.capturedImage.bitmap
+          image2.imageType = Enum.eInputFaceType.ift_Live
+          this.setState({ img2: { uri: "data:image/png;base64," + image2.bitmap } })
         }
       }, e => { })
     }])
@@ -49,10 +52,12 @@ export default class App extends Component {
     launchImageLibrary({ includeBase64: true }, response => {
       if (first) {
         this.setState({ img1: { uri: response.uri } })
-        base64First = response.base64
+        image1.bitmap = response.base64
+        image1.imageType = Enum.eInputFaceType.ift_DocumentPrinted
       } else {
         this.setState({ img2: { uri: response.uri } })
-        base64Second = response.base64
+        image2.bitmap = response.base64
+        image2.imageType = Enum.eInputFaceType.ift_DocumentPrinted
       }
     })
 
@@ -60,19 +65,14 @@ export default class App extends Component {
 
   clearResults() {
     this.setState({ img2: require('./images/portrait.png'), img1: require('./images/portrait.png') })
-    base64First = null
-    base64Second = null
+    image1 = null
+    image2 = null
   }
 
   matchFaces() {
     request = new MatchFacesRequest()
-    image1 = new FaceApi.Image()
-    image2 = new FaceApi.Image()
-    image1.bitmap = base64First
-    image2.bitmap = base64Second
     request.images = [image1, image2]
-    FaceApi.matchFaces(JSON.stringify(request), response => {
-      console.log(JSON.stringify(response))
+    Face.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
       matchedFaces = response.matchedFaces
       this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity*100).toFixed(2) + "%") : "error" })
@@ -80,11 +80,12 @@ export default class App extends Component {
   }
 
   liveness() {
-    FaceApi.startLivenessMatching(result => {
+    Face.startLivenessMatching(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
 
-      base64First = result.bitmaps[result.faceIndex]
-      this.setState({ img1: { uri: "data:image/png;base64," + base64First } })
+      image1.bitmap = result.bitmaps[result.faceIndex]
+      image1.imageType = Enum.eInputFaceType.ift_Live
+      this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
       this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
     }, e => { })
   }

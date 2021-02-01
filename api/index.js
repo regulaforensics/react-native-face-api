@@ -325,25 +325,25 @@ const Enum = {
    LivenessStatus,
 }
 
-const FaceApi = {}
+const Face = {}
 
-FaceApi.getServiceUrl = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getServiceUrl", [], successCallback, errorCallback)
-FaceApi.startLivenessMatching = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatching", [], successCallback, errorCallback)
-FaceApi.getFaceSdkVersion = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getFaceSdkVersion", [], successCallback, errorCallback)
-FaceApi.livenessParams = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "livenessParams", [], successCallback, errorCallback)
-FaceApi.presentFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivity", [], successCallback, errorCallback)
-FaceApi.stopFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopFaceCaptureActivity", [], successCallback, errorCallback)
-FaceApi.stopLivenessProcessing = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopLivenessProcessing", [], successCallback, errorCallback)
-FaceApi.presentFaceCaptureActivityByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityByCameraId", [cameraId], successCallback, errorCallback)
-FaceApi.startLivenessMatchingByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatchingByCameraId", [cameraId], successCallback, errorCallback)
-FaceApi.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
-FaceApi.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
+Face.getServiceUrl = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getServiceUrl", [], successCallback, errorCallback)
+Face.startLivenessMatching = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatching", [], successCallback, errorCallback)
+Face.getFaceSdkVersion = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getFaceSdkVersion", [], successCallback, errorCallback)
+Face.livenessParams = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "livenessParams", [], successCallback, errorCallback)
+Face.presentFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivity", [], successCallback, errorCallback)
+Face.stopFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopFaceCaptureActivity", [], successCallback, errorCallback)
+Face.stopLivenessProcessing = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopLivenessProcessing", [], successCallback, errorCallback)
+Face.presentFaceCaptureActivityByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityByCameraId", [cameraId], successCallback, errorCallback)
+Face.startLivenessMatchingByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatchingByCameraId", [cameraId], successCallback, errorCallback)
+Face.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
+Face.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 
-FaceApi.Enum = Enum
-FaceApi.FaceCaptureResponse = FaceCaptureResponse
-FaceApi.LivenessResponse = LivenessResponse
-FaceApi.MatchFacesResponse = MatchFacesResponse
-FaceApi.MatchFacesRequest = MatchFacesRequest
-FaceApi.Image = Image
+Face.Enum = Enum
+Face.FaceCaptureResponse = FaceCaptureResponse
+Face.LivenessResponse = LivenessResponse
+Face.MatchFacesResponse = MatchFacesResponse
+Face.MatchFacesRequest = MatchFacesRequest
+Face.Image = Image
 
-export default { FaceApi, RNFaceApi }
+export default { Face, RNFaceApi }

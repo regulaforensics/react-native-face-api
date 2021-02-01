@@ -15,7 +15,6 @@ import com.regula.facesdk.results.ComparedFace;
 import com.regula.facesdk.results.ComparedFacesPair;
 import com.regula.facesdk.results.Ethnicity;
 import com.regula.facesdk.results.FaceCaptureResponse;
-import com.regula.facesdk.results.FaceDetail;
 import com.regula.facesdk.results.Gender;
 import com.regula.facesdk.results.Landmark;
 import com.regula.facesdk.results.LivenessResponse;
@@ -49,6 +48,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateList(List<T> list) {
         JSONArray result = new JSONArray();
+        if(list == null) return result;
         for (T t : list)
             if (t != null)
                 result.put(t);
@@ -58,6 +58,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateList(List<T> list, JSONObjectGenerator<T> generator) throws JSONException {
         JSONArray result = new JSONArray();
+        if(list == null) return result;
         for (T t : list)
             if (t != null)
                 result.put(generator.generateJSONObject(t));
@@ -67,6 +68,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateList(List<T> list, StringGenerator<T> generator) {
         JSONArray result = new JSONArray();
+        if(list == null) return result;
         for (T t : list)
             if (t != null)
                 result.put(generator.generateString(t));
@@ -76,6 +78,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateList(List<T> list, JSONObjectGeneratorWithContext<T> generator, Context context) throws JSONException {
         JSONArray result = new JSONArray();
+        if(list == null) return result;
         for (T t : list)
             if (t != null)
                 result.put(generator.generateJSONObject(t, context));
@@ -85,6 +88,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateArray(T[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -93,6 +97,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateArray(T[] array, JSONObjectGenerator<T> generator) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, generator.generateJSONObject(array[i]));
 
@@ -101,6 +106,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateArray(T[] array, StringGenerator<T> generator) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, generator.generateString(array[i]));
 
@@ -109,6 +115,7 @@ class JSONConstructor {
 
     static <T> JSONArray generateArray(T[] array, JSONObjectGeneratorWithContext<T> generator, Context context) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, generator.generateJSONObject(array[i], context));
 
@@ -117,6 +124,7 @@ class JSONConstructor {
 
     static <T, V> JSONObject generateMap(Map<T, V> map) throws JSONException {
         JSONObject result = new JSONObject();
+        if(map == null) return result;
         for (Map.Entry<T, V> entry : map.entrySet())
             if (entry != null)
                 result.put(entry.getKey().toString(), entry.getValue());
@@ -125,6 +133,7 @@ class JSONConstructor {
 
     static <T, V> JSONObject generateMap(Map<T, V> map, JSONObjectGenerator<V> generator) throws JSONException {
         JSONObject result = new JSONObject();
+        if(map == null) return result;
         for (Map.Entry<T, V> entry : map.entrySet())
             if (entry != null)
                 result.put(entry.getKey().toString(), generator.generateJSONObject(entry.getValue()));
@@ -133,6 +142,7 @@ class JSONConstructor {
 
     static <T, V> JSONObject generateMap(Map<T, V> map, StringGenerator<V> generator) throws JSONException {
         JSONObject result = new JSONObject();
+        if(map == null) return result;
         for (Map.Entry<T, V> entry : map.entrySet())
             if (entry != null)
                 result.put(entry.getKey().toString(), generator.generateString(entry.getValue()));
@@ -141,6 +151,7 @@ class JSONConstructor {
 
     static <T, V> JSONObject generateMap(Map<T, V> map, JSONObjectGeneratorWithContext<V> generator, Context context) throws JSONException {
         JSONObject result = new JSONObject();
+        if(map == null) return result;
         for (Map.Entry<T, V> entry : map.entrySet())
             if (entry != null)
                 result.put(entry.getKey().toString(), generator.generateJSONObject(entry.getValue(), context));
@@ -149,6 +160,7 @@ class JSONConstructor {
 
     static JSONArray generateIntArray(int[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -157,6 +169,7 @@ class JSONConstructor {
 
     static JSONArray generateBooleanArray(boolean[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -165,6 +178,7 @@ class JSONConstructor {
 
     static JSONArray generateDoubleArray(double[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -173,6 +187,7 @@ class JSONConstructor {
 
     static JSONArray generateByteArray(byte[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -181,6 +196,7 @@ class JSONConstructor {
 
     static JSONArray generateLongArray(long[] array) throws JSONException {
         JSONArray result = new JSONArray();
+        if(array == null) return result;
         for (int i = 0; i < array.length; i++)
             result.put(i, array[i]);
 
@@ -195,6 +211,51 @@ class JSONConstructor {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
+    static Bitmap BitmapFromJSON(String base64) {
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap result = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length, options);
+        int sizeMultiplier = result.getByteCount() / 5000000;
+        if (result.getByteCount() > 5000000)
+            result = Bitmap.createScaledBitmap(result, result.getWidth() / (int) Math.sqrt(sizeMultiplier), result.getHeight() / (int) Math.sqrt(sizeMultiplier), false);
+        return result;
+    }
+
+    static FaceCaptureError FaceCaptureErrorFromJSON(JSONObject jsonObject) {
+        try {
+            return new FaceCaptureError(jsonObject.getInt("errorCode"));
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    static FaceProcessorError FaceProcessorErrorFromJSON(JSONObject jsonObject) {
+        try {
+            return new FaceProcessorError(jsonObject.getInt("errorCode"));
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    static LivenessError LivenessErrorFromJSON(JSONObject jsonObject) {
+        try {
+            return new LivenessError(jsonObject.getInt("errorCode"));
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    static MatchFacesError MatchFacesErrorFromJSON(JSONObject jsonObject) {
+        try {
+            return new MatchFacesError(jsonObject.getInt("errorCode"));
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    // To JSON
+
     static JSONObject generateFaceCaptureError(FaceCaptureError faceCaptureError) {
         JSONObject result = new JSONObject();
         if (faceCaptureError == null) return result;
@@ -203,7 +264,6 @@ class JSONConstructor {
             result.put("message", faceCaptureError.getMessage());
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -215,7 +275,6 @@ class JSONConstructor {
             result.put("message", faceProcessorError.getMessage());
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -227,7 +286,6 @@ class JSONConstructor {
             result.put("message", livenessError.getMessage());
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -239,7 +297,6 @@ class JSONConstructor {
             result.put("message", matchFacesError.getMessage());
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -250,7 +307,6 @@ class JSONConstructor {
             result.put("attemptsCount", livenessParams.attemptsCount);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -262,23 +318,8 @@ class JSONConstructor {
             result.put("low", ageRange.low);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
-
-//    static JSONObject generateBoundingBox(BoundingBox boundingBox) {
-//        JSONObject result = new JSONObject();
-//        if (boundingBox == null) return result;
-//        try {
-//            result.put("left", boundingBox.left);
-//            result.put("top", boundingBox.top);
-//            result.put("height", boundingBox.height);
-//            result.put("width", boundingBox.width);
-//        } catch (JSONException ignored) {
-//        }
-//
-//        return result;
-//    }
 
     static JSONObject generateComparedFace(ComparedFace comparedFace) {
         JSONObject result = new JSONObject();
@@ -289,7 +330,6 @@ class JSONConstructor {
             result.put("position", comparedFace.position);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -300,9 +340,9 @@ class JSONConstructor {
             result.put("first", generateComparedFace(comparedFacesPair.first));
             result.put("second", generateComparedFace(comparedFacesPair.second));
             result.put("similarity", comparedFacesPair.similarity);
+            result.put("error", generateMatchFacesError(comparedFacesPair.error));
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -314,7 +354,6 @@ class JSONConstructor {
             result.put("value", ethnicity.value);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -326,22 +365,6 @@ class JSONConstructor {
             result.put("capturedImage", generateImage(faceCaptureResponse.capturedImage));
         } catch (JSONException ignored) {
         }
-
-        return result;
-    }
-
-    static JSONObject generateFaceDetail(FaceDetail faceDetail) {
-        JSONObject result = new JSONObject();
-        if (faceDetail == null) return result;
-        try {
-            result.put("ageRange", generateAgeRange(faceDetail.ageRange));
-//            result.put("boundingBox", generateBoundingBox(faceDetail.boundingBox));
-            result.put("gender", generateGender(faceDetail.gender));
-            result.put("landmarks", generateList(faceDetail.landmarks, JSONConstructor::generateLandmark));
-            result.put("ethnicity", generateList(faceDetail.ethnicity, JSONConstructor::generateEthnicity));
-        } catch (JSONException ignored) {
-        }
-
         return result;
     }
 
@@ -353,7 +376,6 @@ class JSONConstructor {
             result.put("value", gender.value);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -366,7 +388,6 @@ class JSONConstructor {
             result.put("y", landmark.y);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -380,7 +401,6 @@ class JSONConstructor {
             result.put("error", generateLivenessError(livenessResponse.error));
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -393,7 +413,6 @@ class JSONConstructor {
             result.put("unmatchedFaces", generateList(matchFacesResponse.unmatchedFaces, JSONConstructor::generateComparedFacesPair));
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -406,7 +425,6 @@ class JSONConstructor {
             result.put("bitmap", generateBitmap(image.getBitmap()));
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -420,7 +438,6 @@ class JSONConstructor {
             result.put("guid", livenessRequest.guid);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
@@ -433,31 +450,159 @@ class JSONConstructor {
             result.put("customMetadata", matchFacesRequest.customMetadata);
         } catch (JSONException ignored) {
         }
-
         return result;
     }
 
     // From JSON
 
-    static MatchFacesRequest MatchFacesRequestFromJson(JSONObject jsonObject) {
-        MatchFacesRequest result = new MatchFacesRequest();
+    static LivenessParams LivenessParamsFromJSON(JSONObject jsonObject) {
+        LivenessParams result = new LivenessParams();
         try {
-            if (jsonObject.has("similarityThreshold"))
-                result.similarityThreshold = (float) jsonObject.getDouble("similarityThreshold");
-            if (jsonObject.has("customMetadata"))
-                result.customMetadata = new JSONObject(jsonObject.getString("customMetadata"));
-            if (jsonObject.has("images")) {
-                result.images = new ArrayList<>();
-                JSONArray jsonArray = jsonObject.getJSONArray("images");
+            if (jsonObject.has("attemptsCount"))
+                result.attemptsCount = jsonObject.getInt("attemptsCount");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static AgeRange AgeRangeFromJSON(JSONObject jsonObject) {
+        AgeRange result = new AgeRange();
+        try {
+            if (jsonObject.has("high"))
+                result.high = jsonObject.getInt("high");
+            if (jsonObject.has("low"))
+                result.low = jsonObject.getInt("low");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static ComparedFace ComparedFaceFromJSON(JSONObject jsonObject) {
+        ComparedFace result = new ComparedFace();
+        try {
+            if (jsonObject.has("tag"))
+                result.tag = jsonObject.getString("tag");
+            if (jsonObject.has("imageType"))
+                result.imageType = jsonObject.getInt("imageType");
+            if (jsonObject.has("position"))
+                result.position = jsonObject.getInt("position");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static ComparedFacesPair ComparedFacesPairFromJSON(JSONObject jsonObject) {
+        ComparedFacesPair result = new ComparedFacesPair();
+        try {
+            if (jsonObject.has("first"))
+                result.first = ComparedFaceFromJSON(jsonObject.getJSONObject("first"));
+            if (jsonObject.has("second"))
+                result.second = ComparedFaceFromJSON(jsonObject.getJSONObject("second"));
+            if (jsonObject.has("similarity"))
+                result.similarity = jsonObject.getDouble("similarity");
+            if (jsonObject.has("error"))
+                result.error = MatchFacesErrorFromJSON(jsonObject.getJSONObject("error"));
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static Ethnicity EthnicityFromJSON(JSONObject jsonObject) {
+        Ethnicity result = new Ethnicity();
+        try {
+            if (jsonObject.has("confidence"))
+                result.confidence = jsonObject.getInt("confidence");
+            if (jsonObject.has("value"))
+                result.value = jsonObject.getInt("value");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static FaceCaptureResponse FaceCaptureResponseFromJSON(JSONObject jsonObject) {
+        FaceCaptureResponse result = new FaceCaptureResponse();
+        try {
+            if (jsonObject.has("error"))
+                result.error = FaceCaptureErrorFromJSON(jsonObject.getJSONObject("error"));
+            if (jsonObject.has("capturedImage"))
+                result.capturedImage = ImageFromJSON(jsonObject.getJSONObject("capturedImage"));
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static Gender GenderFromJSON(JSONObject jsonObject) {
+        Gender result = new Gender();
+        try {
+            if (jsonObject.has("confidence"))
+                result.confidence = (float) jsonObject.getDouble("confidence");
+            if (jsonObject.has("value"))
+                result.value = jsonObject.getInt("value");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static Landmark LandmarkFromJSON(JSONObject jsonObject) {
+        Landmark result = new Landmark();
+        try {
+            if (jsonObject.has("type"))
+                result.type = jsonObject.getInt("type");
+            if (jsonObject.has("x"))
+                result.x = jsonObject.getInt("x");
+            if (jsonObject.has("y"))
+                result.y = jsonObject.getInt("y");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static LivenessResponse LivenessResponseFromJSON(JSONObject jsonObject) {
+        LivenessResponse result = new LivenessResponse();
+        try {
+            if (jsonObject.has("bitmaps")){
+                JSONArray jsonArray = jsonObject.getJSONArray("bitmaps");
+                Bitmap[] array = new Bitmap[jsonArray.length()];
                 for (int i = 0; i < jsonArray.length(); i++)
-                    result.images.add(ImageFromJson(jsonArray.getJSONObject(i)));
+                    array[i] = BitmapFromJSON(jsonArray.getString(i));
+                result.bitmaps = array;
+            }
+            if (jsonObject.has("faceIndex"))
+                result.faceIndex = jsonObject.getInt("faceIndex");
+            if (jsonObject.has("liveness"))
+                result.liveness = jsonObject.getInt("liveness");
+            if (jsonObject.has("error"))
+                result.error = LivenessErrorFromJSON(jsonObject.getJSONObject("error"));
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static MatchFacesResponse MatchFacesResponseFromJSON(JSONObject jsonObject) {
+        MatchFacesResponse result = new MatchFacesResponse();
+        try {
+            if (jsonObject.has("error"))
+                result.error = FaceProcessorErrorFromJSON(jsonObject.getJSONObject("error"));
+            if (jsonObject.has("matchedFaces")){
+                JSONArray jsonArray = jsonObject.getJSONArray("matchedFaces");
+                ArrayList<ComparedFacesPair> array = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++)
+                    array.add(ComparedFacesPairFromJSON(jsonArray.getJSONObject(i)));
+                result.matchedFaces = array;
+            }
+            if (jsonObject.has("unmatchedFaces")){
+                JSONArray jsonArray = jsonObject.getJSONArray("unmatchedFaces");
+                ArrayList<ComparedFacesPair> array = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++)
+                    array.add(ComparedFacesPairFromJSON(jsonArray.getJSONObject(i)));
+                result.unmatchedFaces = array;
             }
         } catch (JSONException ignored) {
         }
         return result;
     }
 
-    static Image ImageFromJson(JSONObject jsonObject) {
+    static Image ImageFromJSON(JSONObject jsonObject) {
         Image result = new Image();
         try {
             if (jsonObject.has("imageType"))
@@ -465,20 +610,52 @@ class JSONConstructor {
             if (jsonObject.has("tag"))
                 result.tag = jsonObject.getString("tag");
             if (jsonObject.has("bitmap"))
-                result.setImage(bitmapFromBase64(jsonObject.getString("bitmap")));
+                result.setImage(BitmapFromJSON(jsonObject.getString("bitmap")));
         } catch (JSONException ignored) {
         }
         return result;
     }
 
-    static Bitmap bitmapFromBase64(String base64) {
-        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap result = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length, options);
-        int sizeMultiplier = result.getByteCount() / 5000000;
-        if (result.getByteCount() > 5000000)
-            result = Bitmap.createScaledBitmap(result, result.getWidth() / (int) Math.sqrt(sizeMultiplier), result.getHeight() / (int) Math.sqrt(sizeMultiplier), false);
+    static LivenessRequest LivenessRequestFromJSON(JSONObject jsonObject) {
+        LivenessRequest result = new LivenessRequest();
+        try {
+            if (jsonObject.has("normalImageData")){
+                JSONArray jsonArray = jsonObject.getJSONArray("normalImageData");
+                byte[] array = new byte[jsonArray.length()];
+                for (int i = 0; i < jsonArray.length(); i++)
+                    array[i] = (byte) jsonArray.get(i);
+                result.normalImageData = array;
+            }
+            if (jsonObject.has("scaledImageData")){
+                JSONArray jsonArray = jsonObject.getJSONArray("scaledImageData");
+                byte[] array = new byte[jsonArray.length()];
+                for (int i = 0; i < jsonArray.length(); i++)
+                    array[i] = (byte) jsonArray.get(i);
+                result.scaledImageData = array;
+            }
+            if (jsonObject.has("guid"))
+                result.guid = jsonObject.getString("guid");
+        } catch (JSONException ignored) {
+        }
+        return result;
+    }
+
+    static MatchFacesRequest MatchFacesRequestFromJSON(JSONObject jsonObject) {
+        MatchFacesRequest result = new MatchFacesRequest();
+        try {
+            if (jsonObject.has("similarityThreshold"))
+                result.similarityThreshold = (float) jsonObject.getDouble("similarityThreshold");
+            if (jsonObject.has("images")){
+                JSONArray jsonArray = jsonObject.getJSONArray("images");
+                ArrayList<Image> array = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++)
+                    array.add(ImageFromJSON(jsonArray.getJSONObject(i)));
+                result.images = array;
+            }
+            if (jsonObject.has("customMetadata"))
+                result.customMetadata = new JSONObject(jsonObject.getString("customMetadata"));
+        } catch (JSONException ignored) {
+        }
         return result;
     }
 }
