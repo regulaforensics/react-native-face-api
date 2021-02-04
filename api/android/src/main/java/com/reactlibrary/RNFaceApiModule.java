@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.regula.facesdk.structs.MatchFacesRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,8 +39,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         return getCurrentActivity();
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private <T> T args(int index) throws JSONException {
+    private <T> T args(@SuppressWarnings("SameParameterValue") int index) throws JSONException {
         //noinspection unchecked
         return (T) data.get(index);
     }
@@ -108,7 +106,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                     setServiceUrl(callback, args(0));
                     break;
                 case "matchFaces":
-                    matchFaces(callback, JSONConstructor.MatchFacesRequestFromJson(new JSONObject((String) args(0))));
+                    matchFaces(callback, args(0));
                     break;
             }
         } catch (Exception ignored) {
@@ -158,7 +156,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         callback.success();
     }
 
-    private void matchFaces(Callback callback, MatchFacesRequest request) {
-        Instance().matchFaces(request, (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
+    private void matchFaces(Callback callback, String request) throws JSONException {
+        Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 }

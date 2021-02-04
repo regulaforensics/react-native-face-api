@@ -362,7 +362,7 @@ class JSONConstructor {
         if (faceCaptureResponse == null) return result;
         try {
             result.put("error", generateFaceCaptureError(faceCaptureResponse.error));
-            result.put("capturedImage", generateImage(faceCaptureResponse.capturedImage));
+            result.put("image", generateImage(faceCaptureResponse.image));
         } catch (JSONException ignored) {
         }
         return result;
@@ -395,8 +395,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (livenessResponse == null) return result;
         try {
-            result.put("bitmaps", generateArray(livenessResponse.bitmaps, JSONConstructor::generateBitmap));
-            result.put("faceIndex", livenessResponse.faceIndex);
+            result.put("bitmap", generateBitmap(livenessResponse.getBitmap()));
             result.put("liveness", livenessResponse.liveness);
             result.put("error", generateLivenessError(livenessResponse.error));
         } catch (JSONException ignored) {
@@ -524,8 +523,8 @@ class JSONConstructor {
         try {
             if (jsonObject.has("error"))
                 result.error = FaceCaptureErrorFromJSON(jsonObject.getJSONObject("error"));
-            if (jsonObject.has("capturedImage"))
-                result.capturedImage = ImageFromJSON(jsonObject.getJSONObject("capturedImage"));
+            if (jsonObject.has("image"))
+                result.image = ImageFromJSON(jsonObject.getJSONObject("image"));
         } catch (JSONException ignored) {
         }
         return result;
@@ -560,15 +559,6 @@ class JSONConstructor {
     static LivenessResponse LivenessResponseFromJSON(JSONObject jsonObject) {
         LivenessResponse result = new LivenessResponse();
         try {
-            if (jsonObject.has("bitmaps")){
-                JSONArray jsonArray = jsonObject.getJSONArray("bitmaps");
-                Bitmap[] array = new Bitmap[jsonArray.length()];
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array[i] = BitmapFromJSON(jsonArray.getString(i));
-                result.bitmaps = array;
-            }
-            if (jsonObject.has("faceIndex"))
-                result.faceIndex = jsonObject.getInt("faceIndex");
             if (jsonObject.has("liveness"))
                 result.liveness = jsonObject.getInt("liveness");
             if (jsonObject.has("error"))

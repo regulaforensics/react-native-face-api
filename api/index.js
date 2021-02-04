@@ -74,20 +74,6 @@ class AgeRange {
     }
 }
 
-class BoundingBox {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new BoundingBox()
-
-        result.left = jsonObject["left"]
-        result.top = jsonObject["top"]
-        result.height = jsonObject["height"]
-        result.width = jsonObject["width"]
-
-        return result;
-    }
-}
-
 class ComparedFace {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
@@ -109,6 +95,7 @@ class ComparedFacesPair {
         result.first = ComparedFace.fromJson(jsonObject["first"])
         result.second = ComparedFace.fromJson(jsonObject["second"])
         result.similarity = jsonObject["similarity"]
+        result.error = MatchFacesError.fromJson(jsonObject["error"])
 
         return result;
     }
@@ -133,27 +120,6 @@ class FaceCaptureResponse {
 
         result.error = FaceCaptureError.fromJson(jsonObject["error"])
         result.image = Image.fromJson(jsonObject["image"])
-
-        return result;
-    }
-}
-
-class FaceDetail {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new FaceDetail()
-
-        result.ageRange = AgeRange.fromJson(jsonObject["ageRange"])
-        result.boundingBox = BoundingBox.fromJson(jsonObject["boundingBox"])
-        result.gender = Gender.fromJson(jsonObject["gender"])
-        result.landmarks = []
-        if (jsonObject["landmarks"] != null)
-            for (const i in jsonObject["landmarks"])
-                result.landmarks.push(Landmark.fromJson(jsonObject["landmarks"][i]))
-        result.ethnicity = []
-        if (jsonObject["ethnicity"] != null)
-            for (const i in jsonObject["ethnicity"])
-                result.ethnicity.push(Ethnicity.fromJson(jsonObject["ethnicity"][i]))
 
         return result;
     }
