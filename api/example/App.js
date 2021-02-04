@@ -35,12 +35,12 @@ export default class App extends Component {
       onPress: () => Face.presentFaceCaptureActivity(result => {
         result = FaceCaptureResponse.fromJson(JSON.parse(result))
         if (first) {
-          image1.bitmap = result.capturedImage.bitmap
+          image1.bitmap = result.image.bitmap
           image1.imageType = Enum.eInputFaceType.ift_Live
           this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
         }
         else {
-          image2.bitmap = result.capturedImage.bitmap
+          image2.bitmap = result.image.bitmap
           image2.imageType = Enum.eInputFaceType.ift_Live
           this.setState({ img2: { uri: "data:image/png;base64," + image2.bitmap } })
         }
@@ -83,7 +83,7 @@ export default class App extends Component {
     Face.startLivenessMatching(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
 
-      image1.bitmap = result.bitmaps[result.faceIndex]
+      image1.bitmap = result.bitmap
       image1.imageType = Enum.eInputFaceType.ift_Live
       this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
       this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })

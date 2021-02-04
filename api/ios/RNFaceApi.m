@@ -1,9 +1,6 @@
-@import UIKit;
 #import "RNFaceApi.h"
 
 @implementation RNFaceApi
-
-@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
 
@@ -20,125 +17,99 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     Callback errorCallback = ^(NSString* response){
         eCallback(@[response]);
     };
-
-    [self sampleMethod :successCallback :errorCallback];
-
-    // if([action isEqualToString:@"getAPIVersion"])
-    //     [self getAPIVersion :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getAvailableScenarios"])
-    //     [self getAvailableScenarios :successCallback :errorCallback];
-    // else if([action isEqualToString:@"isRFIDAvailableForUse"])
-    //     [self isRFIDAvailableForUse :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getCoreMode"])
-    //     [self getCoreMode :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getCoreVersion"])
-    //     [self getCoreVersion :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseDate"])
-    //     [self getDatabaseDate :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseID"])
-    //     [self getDatabaseID :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseVersion"])
-    //     [self getDatabaseVersion :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDocumentReaderIsReady"])
-    //     [self getDocumentReaderIsReady :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDocumentReaderStatus"])
-    //     [self getDocumentReaderStatus :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseCountriesNumber"])
-    //     [self getDatabaseCountriesNumber :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseDocumentsNumber"])
-    //     [self getDatabaseDocumentsNumber :successCallback :errorCallback];
-    // else if([action isEqualToString:@"selectedScenario"])
-    //     [self selectedScenario :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getSessionLogFolder"])
-    //     [self getSessionLogFolder :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getDatabaseDescription"])
-    //     [self getDatabaseDescription :successCallback :errorCallback];
-    // else if([action isEqualToString:@"showScanner"])
-    //     [self showScanner :successCallback :errorCallback];
-    // else if([action isEqualToString:@"startNewPage"])
-    //     [self startNewPage :successCallback :errorCallback];
-    // else if([action isEqualToString:@"startNewSession"])
-    //     [self startNewSession :successCallback :errorCallback];
-    // else if([action isEqualToString:@"startRFIDReader"])
-    //     [self startRFIDReader :successCallback :errorCallback];
-    // else if([action isEqualToString:@"stopRFIDReader"])
-    //     [self stopRFIDReader :successCallback :errorCallback];
-    // else if([action isEqualToString:@"stopScanner"])
-    //     [self stopScanner :successCallback :errorCallback];
-    // else if([action isEqualToString:@"deinitializeReader"])
-    //     [self deinitializeReader :successCallback :errorCallback];
-    // else if([action isEqualToString:@"isAuthenticatorAvailableForUse"])
-    //     [self isAuthenticatorAvailableForUse :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getConfig"])
-    //     [self getConfig :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getRfidScenario"])
-    //     [self getRfidScenario :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getLicenseExpiryDate"])
-    //     [self getLicenseExpiryDate :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getLicenseCountryFilter"])
-    //     [self getLicenseCountryFilter :successCallback :errorCallback];
-    // else if([action isEqualToString:@"licenseIsRfidAvailable"])
-    //     [self licenseIsRfidAvailable :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getCameraSessionIsPaused"])
-    //     [self getCameraSessionIsPaused :successCallback :errorCallback];
-    // else if([action isEqualToString:@"removeDatabase"])
-    //     [self removeDatabase :successCallback :errorCallback];
-    // else if([action isEqualToString:@"cancelDBUpdate"])
-    //     [self cancelDBUpdate :successCallback :errorCallback];
-    // else if([action isEqualToString:@"resetConfiguration"])
-    //     [self resetConfiguration :successCallback :errorCallback];
-    // else if([action isEqualToString:@"clearPKDCertificates"])
-    //     [self clearPKDCertificates :successCallback :errorCallback];
-    // else if([action isEqualToString:@"readRFID"])
-    //     [self readRFID :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getRfidSessionStatus"])
-    //     [self getRfidSessionStatus :successCallback :errorCallback];
-    // else if([action isEqualToString:@"setEnableCoreLogs"])
-    //     [self setEnableCoreLogs :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"addPKDCertificates"])
-    //     [self addPKDCertificates :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"setCameraSessionIsPaused"])
-    //     [self setCameraSessionIsPaused :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"getScenario"])
-    //     [self getScenario :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImages"])
-    //     [self recognizeImages :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"showScannerWithCameraID"])
-    //     [self showScannerWithCameraID :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"runAutoUpdate"])
-    //     [self runAutoUpdate :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"setConfig"])
-    //     [self setConfig :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"setRfidScenario"])
-    //     [self setRfidScenario :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"initializeReader"])
-    //     [self initializeReader :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"prepareDatabase"])
-    //     [self prepareDatabase :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImage"])
-    //     [self recognizeImage :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"setRfidSessionStatus"])
-    //     [self setRfidSessionStatus :[args objectAtIndex:0] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"initializeReaderWithDatabasePath"])
-    //     [self initializeReaderWithDatabasePath :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImageFrame"])
-    //     [self recognizeImageFrame :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImageWithOpts"])
-    //     [self recognizeImageWithOpts :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeVideoFrame"])
-    //     [self recognizeVideoFrame :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"showScannerWithCameraIDAndOpts"])
-    //     [self showScannerWithCameraIDAndOpts :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImageWithImageInputParams"])
-    //     [self recognizeImageWithImageInputParams :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else if([action isEqualToString:@"recognizeImageWithCameraMode"])
-    //     [self recognizeImageWithCameraMode :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    // else
-    //     [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
+    if([action isEqualToString:@"getServiceUrl"])
+        [self getServiceUrl :successCallback :errorCallback];
+    else if([action isEqualToString:@"startLivenessMatching"])
+        [self startLivenessMatching :successCallback :errorCallback];
+    else if([action isEqualToString:@"getFaceSdkVersion"])
+        [self getFaceSdkVersion :successCallback :errorCallback];
+    else if([action isEqualToString:@"livenessParams"])
+        [self livenessParams :successCallback :errorCallback];
+    else if([action isEqualToString:@"presentFaceCaptureActivity"])
+        [self presentFaceCaptureActivity :successCallback :errorCallback];
+    else if([action isEqualToString:@"stopFaceCaptureActivity"])
+        [self stopFaceCaptureActivity :successCallback :errorCallback];
+    else if([action isEqualToString:@"stopLivenessProcessing"])
+        [self stopLivenessProcessing :successCallback :errorCallback];
+    else if([action isEqualToString:@"presentFaceCaptureActivityByCameraId"])
+        [self presentFaceCaptureActivityByCameraId :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"startLivenessMatchingByCameraId"])
+        [self startLivenessMatchingByCameraId :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setServiceUrl"])
+        [self setServiceUrl :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"matchFaces"])
+        [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
+    else
+        [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
 }
 
-- (void) sampleMethod:(Callback)successCallback :(Callback)errorCallback{
-    [self result:@"sample" :errorCallback];
+- (void) getServiceUrl:(Callback)successCallback :(Callback)errorCallback{
+    [self result:[RGLFace.service serviceURL] :successCallback];
+}
+
+- (void) startLivenessMatching:(Callback)successCallback :(Callback)errorCallback{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RGLFace.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
+    });
+}
+
+- (void) getFaceSdkVersion:(Callback)successCallback :(Callback)errorCallback{
+    [self result:[RGLFace.service version] :successCallback];
+}
+
+- (void) livenessParams:(Callback)successCallback :(Callback)errorCallback{
+    [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLLivenessParams:RGLFace.service.livenessParams]] :errorCallback];
+}
+
+- (void) presentFaceCaptureActivity:(Callback)successCallback :(Callback)errorCallback{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RGLFace.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
+    });
+}
+
+- (void) stopFaceCaptureActivity:(Callback)successCallback :(Callback)errorCallback{
+    [RGLFace.service stopFaceCaptureViewController];
+    [self result:@"" :successCallback];
+}
+
+- (void) stopLivenessProcessing:(Callback)successCallback :(Callback)errorCallback{
+    [RGLFace.service stopLivenessProcessing];
+    [self result:@"" :successCallback];
+}
+
+- (void) presentFaceCaptureActivityByCameraId:(NSNumber*)cameraId : (Callback)successCallback :(Callback)errorCallback{
+    [self result:@"this is an android-only method" :errorCallback];
+}
+
+- (void) startLivenessMatchingByCameraId:(NSNumber*)cameraId : (Callback)successCallback :(Callback)errorCallback{
+    [self result:@"this is an android-only method" :errorCallback];
+}
+
+- (void) setServiceUrl:(NSString*)url : (Callback)successCallback :(Callback)errorCallback{
+    [RGLFace.service setServiceURL:url];
+    [self result:@"" :successCallback];
+}
+
+- (void) matchFaces:(NSString*)requestString : (Callback)successCallback :(Callback)errorCallback{
+    [RGLFace.service matchFaces:[JSONConstructor RGLMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+}
+
+- (void (^)(RGLLivenessResponse * _Nonnull)) getLivenessCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RGLLivenessResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLLivenessResponse:response]] :successCallback];
+    };
+}
+
+- (void (^)(RGLFaceCaptureResponse * _Nonnull)) getFaceCaptureCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RGLFaceCaptureResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLFaceCaptureResponse:response]] :successCallback];
+    };
+}
+
+- (void (^)(RGLMatchFacesResponse * _Nonnull)) getMatchFacesCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RGLMatchFacesResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLMatchFacesResponse:response]] :successCallback];
+    };
 }
 
 @end

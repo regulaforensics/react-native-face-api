@@ -4,6 +4,9 @@
 #else
 #import <React/RCTBridgeModule.h>
 #endif
+#import "JSONConstructor.h"
+@import UIKit;
+@import FaceSDK;
 
 @interface RNFaceApi : NSObject <RCTBridgeModule>
 

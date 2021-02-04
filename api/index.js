@@ -132,7 +132,7 @@ class FaceCaptureResponse {
         const result = new FaceCaptureResponse()
 
         result.error = FaceCaptureError.fromJson(jsonObject["error"])
-        result.capturedImage = Image.fromJson(jsonObject["capturedImage"])
+        result.image = Image.fromJson(jsonObject["image"])
 
         return result;
     }
@@ -189,11 +189,7 @@ class LivenessResponse {
         if (jsonObject == null) return null
         const result = new LivenessResponse()
 
-        result.bitmaps = []
-        if (jsonObject["bitmaps"] != null)
-            for (const i in jsonObject["bitmaps"])
-                result.bitmaps.push(jsonObject["bitmaps"][i])
-        result.faceIndex = jsonObject["faceIndex"]
+        result.bitmap = jsonObject["bitmap"]
         result.liveness = jsonObject["liveness"]
         result.error = LivenessError.fromJson(jsonObject["error"])
 
