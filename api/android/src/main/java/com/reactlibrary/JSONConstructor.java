@@ -204,6 +204,7 @@ class JSONConstructor {
     }
 
     static String generateBitmap(Bitmap bitmap) {
+        if (bitmap == null) return "";
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
