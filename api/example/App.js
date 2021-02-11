@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import Regula from 'react-native-face-api'
+import Regula from '@regulaforensics/api_module_place_holder'
 
 const Face = Regula.Face
 const Enum = Face.Enum

@@ -1,18 +1,26 @@
 
 {
-  "name": "react-native-face-api",
-  "version": "1.0.14",
-  "description": "",
+  "name": "@regulaforensics/react-native-face-api",
+  "version": "1.0.0",
+  "description": "React Native module for compairing faces using phone`s camera",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native"
+    "react-native", "face", "scanner", "regula"
   ],
-  "author": "",
-  "license": "",
+  "author": "Regulaforensics",
+  "license": "commercial",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/regulaforensics/react-native-face-api.git"
+  },
   "peerDependencies": {
     "react-native": "^0.41.2"
+  },
+  "homepage": "https://mobile.regulaforensics.com",
+  "publishConfig": {
+    "access": "public"
   }
 }
