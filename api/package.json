@@ -16,9 +16,6 @@
     "type": "git",
     "url": "https://github.com/regulaforensics/react-native-face-api.git"
   },
-  "peerDependencies": {
-    "react-native": "^0.41.2"
-  },
   "homepage": "https://mobile.regulaforensics.com",
   "publishConfig": {
     "access": "public"
