@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         google()
@@ -38,7 +37,8 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
-    implementation('com.regula.documentreader:facesdk:5.4.655'){
+    //noinspection GradleDependency
+    implementation('com.regula.documentreader:facesdk:version_place_holder'){
         transitive = true
     }
 }
