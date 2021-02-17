@@ -1,45 +1,31 @@
+# Regula Face API (React Native version)
+Face API is a framework that is used for face matching, recognition and liveness detection.
 
-# react-native-face-api
+# Contents
+* [How to build the demo application](#how-to-build-the-demo-application)
+* [Documentation](#documentation)
+* [Additional information](#additional-information)
 
-## Getting started
-
-`$ npm install react-native-face-api --save`
-
-### Mostly automatic installation
-
-`$ react-native link react-native-face-api`
-
-### Manual installation
-
-
-#### iOS
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-face-api` and add `RNFaceApi.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libRNFaceApi.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
-
-#### Android
-
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNFaceApiPackage;` to the imports at the top of the file
-  - Add `new RNFaceApiPackage()` to the list returned by the `getPackages()` method
-2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-face-api'
-  	project(':react-native-face-api').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-face-api/android')
-  	```
-3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-face-api')
-  	```
-
-
-## Usage
-```javascript
-import RNFaceApi from 'react-native-face-api';
-
-// TODO: What to do with the module?
-RNFaceApi;
+## How to build the demo application
+1. Download or the clone current repository using the command `git clone https://github.com/regulaforensics/react-native-face-api.git`.
+2. Run the following commands within the root directory:
+```bash
+$ cd exemple
+$ npm install
+$ cd ios
+$ pod install
 ```
-  
+
+**Note**: make sure that Metro Bundler is running when you run your app. Otherwise, run `npx react-native start` command. If it fails to start, run `git init` from Project root, then `npx react-native start`.
+
+3. Android:
+  * Run `npx react-native run-android` inside `example` folder - this is just one way to run the app. You can also run it directly from within Android Studio.
+
+4. iOS:
+  * Run `npx react-native run-ios` inside `example` folder - this is just one way to run the app. You can also run it directly from within Xcode.
+
+## Documentation
+You can find documentation on API [here](https://docs.regulaforensics.com/react-native-face).
+
+## Additional information
+If you have any technical questions, feel free to [contact](mailto:support@regulaforensics.com) us or create issues [here](https://github.com/regulaforensics/react-native-face-api/issues).
