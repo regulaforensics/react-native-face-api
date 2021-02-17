@@ -17,7 +17,6 @@ export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      resultsActivity: false,
       img1: require('./images/portrait.png'),
       img2: require('./images/portrait.png'),
       similarity: "unknown",
@@ -65,11 +64,13 @@ export default class App extends Component {
 
   clearResults() {
     this.setState({ img2: require('./images/portrait.png'), img1: require('./images/portrait.png') })
-    image1 = null
-    image2 = null
+    image1 = new Face.Image()
+    image2 = new Face.Image()
   }
 
   matchFaces() {
+    if(image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
+      return
     request = new MatchFacesRequest()
     request.images = [image1, image2]
     Face.matchFaces(JSON.stringify(request), response => {
