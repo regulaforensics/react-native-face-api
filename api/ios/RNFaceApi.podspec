@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://regulaforensics.com'
 
   s.source       = { :http => 'file:' + __dir__ }
-  s.ios.deployment_target = '10.0.0'
+  s.ios.deployment_target = '9.0'
   s.source_files  = "*.{h,m}"
   s.dependency 'FaceSDKbranch_place_holder', 'version_place_holder'
   s.dependency 'React'
