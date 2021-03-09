@@ -33,6 +33,7 @@ export default class App extends Component {
       text: "Use camera",
       onPress: () => Face.presentFaceCaptureActivity(result => {
         result = FaceCaptureResponse.fromJson(JSON.parse(result))
+        if (result.image.bitmap == null) return
         if (first) {
           image1.bitmap = result.image.bitmap
           image1.imageType = Enum.eInputFaceType.ift_Live
@@ -44,11 +45,12 @@ export default class App extends Component {
           this.setState({ img2: { uri: "data:image/png;base64," + image2.bitmap } })
         }
       }, e => { })
-    }])
+    }], { cancelable: true })
   }
 
   useGallery(first) {
     launchImageLibrary({ includeBase64: true }, response => {
+      if (response.uri == null) return
       if (first) {
         this.setState({ img1: { uri: response.uri } })
         image1.bitmap = response.base64
@@ -69,14 +71,14 @@ export default class App extends Component {
   }
 
   matchFaces() {
-    if(image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
+    if (image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
       return
     request = new MatchFacesRequest()
     request.images = [image1, image2]
     Face.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
       matchedFaces = response.matchedFaces
-      this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity*100).toFixed(2) + "%") : "error" })
+      this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
     }, e => { this.setState({ similarity: e }) })
   }
 
