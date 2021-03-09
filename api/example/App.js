@@ -19,53 +19,49 @@ export default class App extends Component {
     this.state = {
       img1: require('./images/portrait.png'),
       img2: require('./images/portrait.png'),
-      similarity: "unknown",
-      liveness: "unlnown"
+      similarity: "nil",
+      liveness: "nil"
     }
   }
 
   pickImage(first) {
-    Alert.alert("Select option", "", [{
+    Alert.alert("Select option", "", [
+    {
       text: "Use gallery",
-      onPress: () => this.useGallery(first)
+      onPress: () => launchImageLibrary({ includeBase64: true }, response => {
+        this.setImage(first, response.base64, Enum.eInputFaceType.ift_DocumentPrinted)
+      })
     },
     {
       text: "Use camera",
       onPress: () => Face.presentFaceCaptureActivity(result => {
-        result = FaceCaptureResponse.fromJson(JSON.parse(result))
-        if (result.image.bitmap == null) return
-        if (first) {
-          image1.bitmap = result.image.bitmap
-          image1.imageType = Enum.eInputFaceType.ift_Live
-          this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
-        }
-        else {
-          image2.bitmap = result.image.bitmap
-          image2.imageType = Enum.eInputFaceType.ift_Live
-          this.setState({ img2: { uri: "data:image/png;base64," + image2.bitmap } })
-        }
+        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.eInputFaceType.ift_Live)
       }, e => { })
     }], { cancelable: true })
   }
 
-  useGallery(first) {
-    launchImageLibrary({ includeBase64: true }, response => {
-      if (response.uri == null) return
-      if (first) {
-        this.setState({ img1: { uri: response.uri } })
-        image1.bitmap = response.base64
-        image1.imageType = Enum.eInputFaceType.ift_DocumentPrinted
-      } else {
-        this.setState({ img2: { uri: response.uri } })
-        image2.bitmap = response.base64
-        image2.imageType = Enum.eInputFaceType.ift_DocumentPrinted
-      }
-    })
-
+  setImage(first, base64, type){
+    if (base64 == null) return
+    this.setState({ similarity: "nil" })
+    if (first) {
+      image1.bitmap = base64
+      image1.imageType = type
+      this.setState({ img1: { uri: "data:image/png;base64," + base64 } })
+    }
+    else {
+      image2.bitmap = base64
+      image2.imageType = type
+      this.setState({ img2: { uri: "data:image/png;base64," + base64 } })
+    }
   }
 
   clearResults() {
-    this.setState({ img2: require('./images/portrait.png'), img1: require('./images/portrait.png') })
+    this.setState({ 
+      img1: require('./images/portrait.png'), 
+      img2: require('./images/portrait.png'),
+      similarity: "nil",
+      liveness: "nil"
+     })
     image1 = new Face.Image()
     image2 = new Face.Image()
   }
@@ -73,6 +69,7 @@ export default class App extends Component {
   matchFaces() {
     if (image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
       return
+    this.setState({ similarity: "Processing..." })
     request = new MatchFacesRequest()
     request.images = [image1, image2]
     Face.matchFaces(JSON.stringify(request), response => {
@@ -85,11 +82,9 @@ export default class App extends Component {
   liveness() {
     Face.startLivenessMatching(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
-
-      image1.bitmap = result.bitmap
-      image1.imageType = Enum.eInputFaceType.ift_Live
-      this.setState({ img1: { uri: "data:image/png;base64," + image1.bitmap } })
-      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
+      
+      this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
+      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "nil" })
     }, e => { })
   }
 
