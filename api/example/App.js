@@ -47,6 +47,7 @@ export default class App extends Component {
       image1.bitmap = base64
       image1.imageType = type
       this.setState({ img1: { uri: "data:image/png;base64," + base64 } })
+      this.setState({ liveness: "nil" })
     }
     else {
       image2.bitmap = base64
@@ -84,7 +85,7 @@ export default class App extends Component {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
       this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
-      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "nil" })
+      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "not passed" })
     }, e => { })
   }
 
