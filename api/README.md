@@ -10,7 +10,7 @@ Face API is a framework that is used for face matching, recognition and liveness
 1. Download or the clone current repository using the command `git clone https://github.com/regulaforensics/react-native-face-api.git`.
 2. Run the following commands within the root directory:
 ```bash
-$ cd exemple
+$ cd example
 $ npm install
 $ cd ios
 $ pod install
