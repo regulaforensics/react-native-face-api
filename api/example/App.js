@@ -85,7 +85,8 @@ export default class App extends Component {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
       this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
-      this.setState({ liveness: result["liveness"] == 0 ? "passed" : "not passed" })
+      if(result.bitmap != null)
+        this.setState({ liveness: result["liveness"] == 0 ? "passed" : "not passed" })
     }, e => { })
   }
 
