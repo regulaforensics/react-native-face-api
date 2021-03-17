@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.regula.facesdk.Face.Instance;
 
