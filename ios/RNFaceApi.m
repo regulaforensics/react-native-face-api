@@ -17,6 +17,7 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     Callback errorCallback = ^(NSString* response){
         eCallback(@[response]);
     };
+
     if([action isEqualToString:@"getServiceUrl"])
         [self getServiceUrl :successCallback :errorCallback];
     else if([action isEqualToString:@"startLivenessMatching"])
