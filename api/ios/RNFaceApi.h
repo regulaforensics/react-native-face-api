@@ -11,4 +11,4 @@
 @interface RNFaceApi : NSObject <RCTBridgeModule>
 
 @end
-  
+

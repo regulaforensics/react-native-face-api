@@ -11,7 +11,7 @@ class FaceCaptureError {
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
 
-        return result;
+        return result
     }
 }
 
@@ -23,7 +23,7 @@ class FaceProcessorError {
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
 
-        return result;
+        return result
     }
 }
 
@@ -35,7 +35,7 @@ class LivenessError {
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
 
-        return result;
+        return result
     }
 }
 
@@ -47,7 +47,7 @@ class MatchFacesError {
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
 
-        return result;
+        return result
     }
 }
 
@@ -58,7 +58,7 @@ class LivenessParams {
 
         result.attemptsCount = jsonObject["attemptsCount"]
 
-        return result;
+        return result
     }
 }
 
@@ -70,7 +70,7 @@ class AgeRange {
         result.high = jsonObject["high"]
         result.low = jsonObject["low"]
 
-        return result;
+        return result
     }
 }
 
@@ -83,7 +83,7 @@ class ComparedFace {
         result.imageType = jsonObject["imageType"]
         result.position = jsonObject["position"]
 
-        return result;
+        return result
     }
 }
 
@@ -97,7 +97,7 @@ class ComparedFacesPair {
         result.similarity = jsonObject["similarity"]
         result.error = MatchFacesError.fromJson(jsonObject["error"])
 
-        return result;
+        return result
     }
 }
 
@@ -109,7 +109,7 @@ class Ethnicity {
         result.confidence = jsonObject["confidence"]
         result.value = jsonObject["value"]
 
-        return result;
+        return result
     }
 }
 
@@ -121,7 +121,7 @@ class FaceCaptureResponse {
         result.error = FaceCaptureError.fromJson(jsonObject["error"])
         result.image = Image.fromJson(jsonObject["image"])
 
-        return result;
+        return result
     }
 }
 
@@ -133,7 +133,7 @@ class Gender {
         result.confidence = jsonObject["confidence"]
         result.value = jsonObject["value"]
 
-        return result;
+        return result
     }
 }
 
@@ -146,7 +146,7 @@ class Landmark {
         result.x = jsonObject["x"]
         result.y = jsonObject["y"]
 
-        return result;
+        return result
     }
 }
 
@@ -159,7 +159,7 @@ class LivenessResponse {
         result.liveness = jsonObject["liveness"]
         result.error = LivenessError.fromJson(jsonObject["error"])
 
-        return result;
+        return result
     }
 }
 
@@ -178,7 +178,7 @@ class MatchFacesResponse {
             for (const i in jsonObject["unmatchedFaces"])
                 result.unmatchedFaces.push(ComparedFacesPair.fromJson(jsonObject["unmatchedFaces"][i]))
 
-        return result;
+        return result
     }
 }
 
@@ -191,7 +191,7 @@ class Image {
         result.tag = jsonObject["tag"]
         result.bitmap = jsonObject["bitmap"]
 
-        return result;
+        return result
     }
 }
 
@@ -214,7 +214,7 @@ class LivenessRequest {
                 result.requestBody.push(jsonObject["requestBody"][i])
         result.guid = jsonObject["guid"]
 
-        return result;
+        return result
     }
 }
 
@@ -230,7 +230,7 @@ class MatchFacesRequest {
                 result.images.push(Image.fromJson(jsonObject["images"][i]))
         result.customMetadata = jsonObject["customMetadata"]
 
-        return result;
+        return result
     }
 }
 
