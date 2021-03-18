@@ -48,8 +48,7 @@ export default class App extends Component {
       image1.imageType = type
       this.setState({ img1: { uri: "data:image/png;base64," + base64 } })
       this.setState({ liveness: "nil" })
-    }
-    else {
+    } else {
       image2.bitmap = base64
       image2.imageType = type
       this.setState({ img2: { uri: "data:image/png;base64," + base64 } })
