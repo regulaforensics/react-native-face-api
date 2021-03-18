@@ -86,7 +86,7 @@ export default class App extends Component {
       
       this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
       if(result.bitmap != null)
-        this.setState({ liveness: result["liveness"] == 0 ? "passed" : "not passed" })
+        this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
     }, e => { })
   }
 
