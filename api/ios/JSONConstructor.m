@@ -11,8 +11,10 @@
 +(RGLMatchFacesRequest*)RGLMatchFacesRequestFromJSON:(NSDictionary*)input {
     RGLMatchFacesRequest* result = [[RGLMatchFacesRequest alloc] initWithImages:[JSONConstructor NSArrayRGLImageFromJSON:[input valueForKey:@"images"]]];
 
-    result.customMetadata = [input valueForKey:@"customMetadata"];
-    result.similarityThreshold = [[input valueForKey:@"similarityThreshold"] numberValue];
+    if([input valueForKey:@"customMetadata"] != nil)
+        result.customMetadata = [input valueForKey:@"customMetadata"];
+    if([input valueForKey:@"similarityThreshold"] != nil)
+        result.similarityThreshold = [[input valueForKey:@"similarityThreshold"] numberValue];
 
     return result;
 }
@@ -20,8 +22,10 @@
 +(RGLImage*)RGLImageFromJSON:(NSDictionary*)input {
     RGLImage* result = [[RGLImage alloc]initWithImage:[JSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]]];
 
-    result.tag = [input valueForKey:@"tag"];
-    result.imageType = [[input valueForKey:@"imageType"] integerValue];
+    if([input valueForKey:@"tag"] != nil)
+        result.tag = [input valueForKey:@"tag"];
+    if([input valueForKey:@"imageType"] != nil)
+        result.imageType = [[input valueForKey:@"imageType"] integerValue];
 
     return result;
 }
