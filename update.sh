@@ -80,10 +80,10 @@ if [ "$Version_ios" == '+' ]; then
     rm index.html
 fi
 if [ "$Version_android" == '+' ]; then
-    MAVEN_MATADATA="$URL_ANDROID/maven-metadata.xml"
-    /usr/local/bin/wget -O maven-metadata.xml $MAVEN_MATADATA
+    MAVEN_METADATA="$URL_ANDROID/maven-metadata.xml"
+    /usr/local/bin/wget -O maven-metadata.xml $MAVEN_METADATA
     if [[ $? -ne 0 ]]; then
-        echo "Failed on wget call for $MAVEN_MATADATA"
+        echo "Failed on wget call for $MAVEN_METADATA"
         rm -rf "$Base_path/../../react-native-face-api"
         exit 1
     fi
