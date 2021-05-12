@@ -59,7 +59,7 @@ fi
 PKG_NAME="@regulaforensics/react-native-face-api$DEST_TYPE"
 PKG_NAME_CLEAN="react-native-face-api$DEST_TYPE"
 if [ "$React_module_version" == '+' ]; then
-	LatestModuleVersion="$(sudo npm view $PKG_NAME version)"
+	LatestModuleVersion="$(npm view $PKG_NAME version)"
 	React_module_version="${LatestModuleVersion%.*}.$((${LatestModuleVersion##*.}+1))"
 fi
 if [ "$React_module_version" == '.1' ]; then
@@ -123,7 +123,7 @@ rm -fr "$Base_path/example/package.json-e"
 sed -i -e "s/api_module_place_holder/$PKG_NAME_CLEAN/" "$Base_path/example/App.js"
 rm -fr "$Base_path/example/App.js-e"
 
-if sudo /usr/local/bin/npm publish ; then
+if /usr/local/bin/npm publish ; then
     echo ''
     echo 'SUCCESS!'
     echo ''
