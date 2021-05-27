@@ -61,19 +61,6 @@ export class MatchFacesError {
     }
 }
 
-export class LivenessParams {
-    attemptsCount?: number
-
-    static fromJson(jsonObject?: any): LivenessParams {
-        if (jsonObject == null) return null
-        const result = new LivenessParams
-
-        result.attemptsCount = jsonObject["attemptsCount"]
-
-        return result
-    }
-}
-
 export class AgeRange {
     high?: number
     low?: number
@@ -357,14 +344,13 @@ export const Enum = {
 
 export default class Face {
     static getServiceUrl(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static startLivenessMatching(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static startLiveness(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static getFaceSdkVersion(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static livenessParams(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static presentFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopLivenessProcessing(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static presentFaceCaptureActivityByCameraId(cameraId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static startLivenessMatchingByCameraId(cameraId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static startLivenessByCameraId(cameraId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }

@@ -51,17 +51,6 @@ export class MatchFacesError {
     }
 }
 
-export class LivenessParams {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new LivenessParams()
-
-        result.attemptsCount = jsonObject["attemptsCount"]
-
-        return result
-    }
-}
-
 export class AgeRange {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
@@ -290,14 +279,13 @@ export const Enum = {
 const Face = {}
 
 Face.getServiceUrl = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getServiceUrl", [], successCallback, errorCallback)
-Face.startLivenessMatching = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatching", [], successCallback, errorCallback)
+Face.startLiveness = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLiveness", [], successCallback, errorCallback)
 Face.getFaceSdkVersion = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getFaceSdkVersion", [], successCallback, errorCallback)
-Face.livenessParams = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "livenessParams", [], successCallback, errorCallback)
 Face.presentFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivity", [], successCallback, errorCallback)
 Face.stopFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopFaceCaptureActivity", [], successCallback, errorCallback)
 Face.stopLivenessProcessing = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopLivenessProcessing", [], successCallback, errorCallback)
 Face.presentFaceCaptureActivityByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityByCameraId", [cameraId], successCallback, errorCallback)
-Face.startLivenessMatchingByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessMatchingByCameraId", [cameraId], successCallback, errorCallback)
+Face.startLivenessByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessByCameraId", [cameraId], successCallback, errorCallback)
 Face.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 Face.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 
