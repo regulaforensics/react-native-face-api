@@ -9,7 +9,6 @@ import com.regula.facesdk.exception.FaceCaptureError;
 import com.regula.facesdk.exception.FaceProcessorError;
 import com.regula.facesdk.exception.LivenessError;
 import com.regula.facesdk.exception.MatchFacesError;
-import com.regula.facesdk.params.LivenessParams;
 import com.regula.facesdk.results.AgeRange;
 import com.regula.facesdk.results.ComparedFace;
 import com.regula.facesdk.results.ComparedFacesPair;
@@ -301,16 +300,6 @@ class JSONConstructor {
         return result;
     }
 
-    static JSONObject generateLivenessParams(LivenessParams input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("attemptsCount", input.attemptsCount);
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static JSONObject generateAgeRange(AgeRange input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
@@ -454,16 +443,6 @@ class JSONConstructor {
     }
 
     // From JSON
-
-    static LivenessParams LivenessParamsFromJSON(JSONObject input) {
-        LivenessParams result = new LivenessParams();
-        try {
-            if (input.has("attemptsCount"))
-                result.attemptsCount = input.getInt("attemptsCount");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
 
     static AgeRange AgeRangeFromJSON(JSONObject input) {
         AgeRange result = new AgeRange();
