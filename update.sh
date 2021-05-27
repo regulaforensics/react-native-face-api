@@ -17,7 +17,7 @@ React_module_version=$7
 PODS_URL_RELEASE='https://pods.regulaforensics.com/FaceSDK/'
 PODS_URL_BETA='https://pods.regulaforensics.com/FaceSDKBeta/'
 MAVEN_URL_RELEASE='https://maven.regulaforensics.com/RegulaDocumentReader/com/regula/documentreader/facesdk/'
-MAVEN_URL_BETA='https://maven.regulaforensics.com/RegulaDocumentReader/Beta/com/regula/documentreader/facesdk/'
+MAVEN_URL_BETA='https://maven.regulaforensics.com/RegulaDocumentReader/Beta/com/regula/face/api/'
 if [ "$Branch_ios" == 'Beta' ]; then
     STATE_IOS='Beta'
     URL_IOS=$PODS_URL_BETA
