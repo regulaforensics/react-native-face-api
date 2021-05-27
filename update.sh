@@ -91,9 +91,9 @@ if [ "$Version_android" == '+' ]; then
     rm maven-metadata.xml
 fi
 
-if ! curl --output /dev/null --silent --head --fail "$URL_ANDROID$Version_android/facesdk-$Version_android.aar"
+if ! curl --output /dev/null --silent --head --fail "$URL_ANDROID$Version_android/api-$Version_android.aar"
 then
-    echo "Invalid URL for android: $URL_ANDROID$Version_android/facesdk-$Version_android.aar"
+    echo "Invalid URL for android: $URL_ANDROID$Version_android/api-$Version_android.aar"
     rm -rf "$Base_path/../../react-native-face-api"
     exit 1
 fi
