@@ -1,17 +1,10 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import Regula from '@regulaforensics/react-native-face-api-beta'
+import Face, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, Image as FaceImage } from '@regulaforensics/react-native-face-api-beta'
 
-const Face = Regula.Face
-const Enum = Face.Enum
-const FaceCaptureResponse = Face.FaceCaptureResponse
-const LivenessResponse = Face.LivenessResponse
-const MatchFacesResponse = Face.MatchFacesResponse
-const MatchFacesRequest = Face.MatchFacesRequest
-
-var image1 = new Face.Image()
-var image2 = new Face.Image()
+var image1 = new FaceImage()
+var image2 = new FaceImage()
 
 export default class App extends Component {
   constructor(props) {
@@ -48,8 +41,7 @@ export default class App extends Component {
       image1.imageType = type
       this.setState({ img1: { uri: "data:image/png;base64," + base64 } })
       this.setState({ liveness: "nil" })
-    }
-    else {
+    } else {
       image2.bitmap = base64
       image2.imageType = type
       this.setState({ img2: { uri: "data:image/png;base64," + base64 } })
@@ -63,8 +55,8 @@ export default class App extends Component {
       similarity: "nil",
       liveness: "nil"
      })
-    image1 = new Face.Image()
-    image2 = new Face.Image()
+    image1 = new FaceImage()
+    image2 = new FaceImage()
   }
 
   matchFaces() {
