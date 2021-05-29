@@ -14,18 +14,16 @@
     if([input valueForKey:@"customMetadata"] != nil)
         result.customMetadata = [input valueForKey:@"customMetadata"];
     if([input valueForKey:@"similarityThreshold"] != nil)
-        result.similarityThreshold = [[input valueForKey:@"similarityThreshold"] numberValue];
+        result.similarityThreshold = [input valueForKey:@"similarityThreshold"];
 
     return result;
 }
 
 +(RGLImage*)RGLImageFromJSON:(NSDictionary*)input {
-    RGLImage* result = [[RGLImage alloc]initWithImage:[JSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]]];
+    RGLImage* result = [[RGLImage alloc] initWithImage:[JSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
 
     if([input valueForKey:@"tag"] != nil)
         result.tag = [input valueForKey:@"tag"];
-    if([input valueForKey:@"imageType"] != nil)
-        result.imageType = [[input valueForKey:@"imageType"] integerValue];
 
     return result;
 }
@@ -43,15 +41,6 @@
 }
 
     // To JSON
-
-+(NSMutableDictionary* _Nonnull)generateRGLLivenessParams:(RGLLivenessParams* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"attemptsCount"] = @(input.attemptsCount);
-
-    return result;
-}
 
 +(NSMutableDictionary* _Nonnull)generateRGLLivenessResponse:(RGLLivenessResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];

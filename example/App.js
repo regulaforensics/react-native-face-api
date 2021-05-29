@@ -73,7 +73,7 @@ export default class App extends Component {
   }
 
   liveness() {
-    Face.startLivenessMatching(result => {
+    Face.startLiveness(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
       this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)

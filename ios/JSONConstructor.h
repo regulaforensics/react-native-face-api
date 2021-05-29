@@ -8,7 +8,6 @@
 
 +(NSString* _Nonnull)dictToString:(NSMutableDictionary* _Nonnull)input;
 +(RGLMatchFacesRequest* _Nonnull)RGLMatchFacesRequestFromJSON:(NSDictionary* _Nonnull)input;
-+(NSMutableDictionary* _Nonnull)generateRGLLivenessParams:(RGLLivenessParams* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRGLLivenessResponse:(RGLLivenessResponse* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRGLFaceCaptureResponse:(RGLFaceCaptureResponse* _Nullable)input;
