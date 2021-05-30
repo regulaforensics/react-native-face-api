@@ -34,6 +34,19 @@ repositories {
     mavenCentral()
 }
 
+rootProject.allprojects {
+    repositories {
+        maven {
+            url "http://maven.regulaforensics.com/RegulaDocumentReader"
+            allowInsecureProtocol true
+        }
+        maven {
+            url "http://maven.regulaforensics.com/RegulaDocumentReader/Beta"
+            allowInsecureProtocol true
+        }
+    }
+}
+
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
