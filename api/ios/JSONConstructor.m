@@ -8,8 +8,8 @@
 
 // From JSON
 
-+(RGLMatchFacesRequest*)RGLMatchFacesRequestFromJSON:(NSDictionary*)input {
-    RGLMatchFacesRequest* result = [[RGLMatchFacesRequest alloc] initWithImages:[JSONConstructor NSArrayRGLImageFromJSON:[input valueForKey:@"images"]]];
++(RFSMatchFacesRequest*)RFSMatchFacesRequestFromJSON:(NSDictionary*)input {
+    RFSMatchFacesRequest* result = [[RFSMatchFacesRequest alloc] initWithImages:[JSONConstructor NSArrayRFSImageFromJSON:[input valueForKey:@"images"]]];
 
     if([input valueForKey:@"customMetadata"] != nil)
         result.customMetadata = [input valueForKey:@"customMetadata"];
@@ -19,8 +19,8 @@
     return result;
 }
 
-+(RGLImage*)RGLImageFromJSON:(NSDictionary*)input {
-    RGLImage* result = [[RGLImage alloc] initWithImage:[JSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
++(RFSImage*)RFSImageFromJSON:(NSDictionary*)input {
+    RFSImage* result = [[RFSImage alloc] initWithImage:[JSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
 
     if([input valueForKey:@"tag"] != nil)
         result.tag = [input valueForKey:@"tag"];
@@ -32,10 +32,10 @@
     return [UIImage imageWithData:[[NSData alloc]initWithBase64EncodedString:input options:NSDataBase64DecodingIgnoreUnknownCharacters]];
 }
 
-+(NSMutableArray<RGLImage*>*)NSArrayRGLImageFromJSON:(NSArray*)input {
-    NSMutableArray<RGLImage*>* result = [[NSMutableArray alloc] init];
++(NSMutableArray<RFSImage*>*)NSArrayRFSImageFromJSON:(NSArray*)input {
+    NSMutableArray<RFSImage*>* result = [[NSMutableArray alloc] init];
             for(NSDictionary* item in input)
-                [result addObject:[JSONConstructor RGLImageFromJSON:item]];
+                [result addObject:[JSONConstructor RFSImageFromJSON:item]];
 
     return result;
 }
