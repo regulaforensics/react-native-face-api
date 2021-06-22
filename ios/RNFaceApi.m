@@ -43,32 +43,32 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 }
 
 - (void) getServiceUrl:(Callback)successCallback :(Callback)errorCallback{
-    [self result:[RGLFace.service serviceURL] :successCallback];
+    [self result:[RFSFaceSDK.service serviceURL] :successCallback];
 }
 
 - (void) startLiveness:(Callback)successCallback :(Callback)errorCallback{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [RGLFace.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
+        [RFSFaceSDK.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
     });
 }
 
 - (void) getFaceSdkVersion:(Callback)successCallback :(Callback)errorCallback{
-    [self result:[RGLFace.service version] :successCallback];
+    [self result:[RFSFaceSDK.service version] :successCallback];
 }
 
 - (void) presentFaceCaptureActivity:(Callback)successCallback :(Callback)errorCallback{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [RGLFace.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
+        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
     });
 }
 
 - (void) stopFaceCaptureActivity:(Callback)successCallback :(Callback)errorCallback{
-    [RGLFace.service stopFaceCaptureViewController];
+    [RFSFaceSDK.service stopFaceCaptureViewController];
     [self result:@"" :successCallback];
 }
 
 - (void) stopLivenessProcessing:(Callback)successCallback :(Callback)errorCallback{
-    [RGLFace.service stopLivenessProcessing];
+    [RFSFaceSDK.service stopLivenessProcessing];
     [self result:@"" :successCallback];
 }
 
@@ -81,29 +81,29 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 }
 
 - (void) setServiceUrl:(NSString*)url : (Callback)successCallback :(Callback)errorCallback{
-    [RGLFace.service setServiceURL:url];
+    [RFSFaceSDK.service setServiceURL:url];
     [self result:@"" :successCallback];
 }
 
 - (void) matchFaces:(NSString*)requestString : (Callback)successCallback :(Callback)errorCallback{
-    [RGLFace.service matchFaces:[JSONConstructor RGLMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+    [RFSFaceSDK.service matchFaces:[JSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
-- (void (^)(RGLLivenessResponse * _Nonnull)) getLivenessCompletion:(Callback)successCallback :(Callback)errorCallback {
-    return ^(RGLLivenessResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLLivenessResponse:response]] :successCallback];
+- (void (^)(RFSLivenessResponse * _Nonnull)) getLivenessCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RFSLivenessResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSLivenessResponse:response]] :successCallback];
     };
 }
 
-- (void (^)(RGLFaceCaptureResponse * _Nonnull)) getFaceCaptureCompletion:(Callback)successCallback :(Callback)errorCallback {
-    return ^(RGLFaceCaptureResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLFaceCaptureResponse:response]] :successCallback];
+- (void (^)(RFSFaceCaptureResponse * _Nonnull)) getFaceCaptureCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RFSFaceCaptureResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSFaceCaptureResponse:response]] :successCallback];
     };
 }
 
-- (void (^)(RGLMatchFacesResponse * _Nonnull)) getMatchFacesCompletion:(Callback)successCallback :(Callback)errorCallback {
-    return ^(RGLMatchFacesResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLMatchFacesResponse:response]] :successCallback];
+- (void (^)(RFSMatchFacesResponse * _Nonnull)) getMatchFacesCompletion:(Callback)successCallback :(Callback)errorCallback {
+    return ^(RFSMatchFacesResponse* response) {
+        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSMatchFacesResponse:response]] :successCallback];
     };
 }
 

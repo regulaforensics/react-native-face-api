@@ -298,10 +298,10 @@ export const eFaceRProcessorErrorCodes = {
     FR_FACE_ALIGHNER_FAILED: 4,
     FR_DESCRIPTOR_EXTRACTOR_ERROR: 5,
     SERVER_RESPONSE_IS_EMPTY: 1001,
-    RGLFaceProcessorResultCodeNoLicense: 200,
-    RGLFaceProcessorResultCodeIsNotInitialized: 201,
-    RGLFaceProcessorResultCodeCommandIsNotSupported: 202,
-    RGLFaceProcessorResultCodeCommandParamsReadError: 203,
+    NO_LICENSE: 200,
+    NOT_INITIALIZED: 201,
+    COMMAND_IS_NOT_SUPPORTED: 202,
+    COMMAND_PARAMS_READ_ERROR: 203,
 }
 
 export const eInputFaceType = {
@@ -322,6 +322,7 @@ export const LivenessErrorCode = {
     INTERNAL_ERROR: 1000,
     SERVER_ERROR: 1001,
     ZOOM_NOT_SUPPORTED: 1002,
+    NO_LICENSE: 200,
     CANCELLED: 600,
     PROCESSING_TIMEOUT: 601,
     SERVER_RESPONSE_IS_EMPTY: 602,
