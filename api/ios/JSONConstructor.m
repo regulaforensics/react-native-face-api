@@ -42,7 +42,7 @@
 
     // To JSON
 
-+(NSMutableDictionary* _Nonnull)generateRGLLivenessResponse:(RGLLivenessResponse* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSLivenessResponse:(RFSLivenessResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
@@ -63,17 +63,17 @@
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRGLFaceCaptureResponse:(RGLFaceCaptureResponse* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSFaceCaptureResponse:(RFSFaceCaptureResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"image"] = [self generateRGLImage:input.image];
+    result[@"image"] = [self generateRFSImage:input.image];
     result[@"error"] = [self generateNSError:input.error];
 
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRGLImage:(RGLImage* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSImage:(RFSImage* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
@@ -85,42 +85,42 @@
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRGLMatchFacesResponse:(RGLMatchFacesResponse* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesResponse:(RFSMatchFacesResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
     result[@"error"] = [self generateNSError:input.error];
     if(input.matchedFaces != nil){
         NSMutableArray *array = [NSMutableArray new];
-        for(RGLComparedFacesPair* item in input.matchedFaces)
+        for(RFSComparedFacesPair* item in input.matchedFaces)
             if(item != nil)
-                [array addObject:[self generateRGLComparedFacesPair:item]];
+                [array addObject:[self generateRFSComparedFacesPair:item]];
         result[@"matchedFaces"] = array;
     }
     if(input.unmatchedFaces != nil){
         NSMutableArray *array = [NSMutableArray new];
-        for(RGLComparedFacesPair* item in input.unmatchedFaces)
+        for(RFSComparedFacesPair* item in input.unmatchedFaces)
             if(item != nil)
-                [array addObject:[self generateRGLComparedFacesPair:item]];
+                [array addObject:[self generateRFSComparedFacesPair:item]];
         result[@"unmatchedFaces"] = array;
     }
 
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRGLComparedFacesPair:(RGLComparedFacesPair* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSComparedFacesPair:(RFSComparedFacesPair* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"first"] = [self generateRGLComparedFace:input.first];
-    result[@"second"] = [self generateRGLComparedFace:input.second];
+    result[@"first"] = [self generateRFSComparedFace:input.first];
+    result[@"second"] = [self generateRFSComparedFace:input.second];
     result[@"similarity"] = input.similarity;
     result[@"error"] = [self generateNSError:input.error];
 
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRGLComparedFace:(RGLComparedFace* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSComparedFace:(RFSComparedFace* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
