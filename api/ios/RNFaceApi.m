@@ -86,24 +86,24 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 }
 
 - (void) matchFaces:(NSString*)requestString : (Callback)successCallback :(Callback)errorCallback{
-    [RFSFaceSDK.service matchFaces:[JSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+    [RFSFaceSDK.service matchFaces:[RFSJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
 - (void (^)(RFSLivenessResponse * _Nonnull)) getLivenessCompletion:(Callback)successCallback :(Callback)errorCallback {
     return ^(RFSLivenessResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSLivenessResponse:response]] :successCallback];
+        [self result:[RFSJSONConstructor dictToString:[RFSJSONConstructor generateRFSLivenessResponse:response]] :successCallback];
     };
 }
 
 - (void (^)(RFSFaceCaptureResponse * _Nonnull)) getFaceCaptureCompletion:(Callback)successCallback :(Callback)errorCallback {
     return ^(RFSFaceCaptureResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSFaceCaptureResponse:response]] :successCallback];
+        [self result:[RFSJSONConstructor dictToString:[RFSJSONConstructor generateRFSFaceCaptureResponse:response]] :successCallback];
     };
 }
 
 - (void (^)(RFSMatchFacesResponse * _Nonnull)) getMatchFacesCompletion:(Callback)successCallback :(Callback)errorCallback {
     return ^(RFSMatchFacesResponse* response) {
-        [self result:[JSONConstructor dictToString:[JSONConstructor generateRFSMatchFacesResponse:response]] :successCallback];
+        [self result:[RFSJSONConstructor dictToString:[RFSJSONConstructor generateRFSMatchFacesResponse:response]] :successCallback];
     };
 }
 
