@@ -1,10 +1,10 @@
-#ifndef JSONConstructor_h
-#define JSONConstructor_h
+#ifndef RFSJSONConstructor_h
+#define RFSJSONConstructor_h
 
 @import UIKit;
 @import FaceSDK;
 
-@interface JSONConstructor : NSObject
+@interface RFSJSONConstructor : NSObject
 
 +(NSString* _Nonnull)dictToString:(NSMutableDictionary* _Nonnull)input;
 +(RFSMatchFacesRequest* _Nonnull)RFSMatchFacesRequestFromJSON:(NSDictionary* _Nonnull)input;
