@@ -300,17 +300,6 @@ class JSONConstructor {
         return result;
     }
 
-    static JSONObject generateAgeRange(AgeRange input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("high", input.high);
-            result.put("low", input.low);
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static JSONObject generateComparedFace(ComparedFace input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
@@ -336,46 +325,12 @@ class JSONConstructor {
         return result;
     }
 
-    static JSONObject generateEthnicity(Ethnicity input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("confidence", input.confidence);
-            result.put("value", input.value);
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static JSONObject generateFaceCaptureResponse(FaceCaptureResponse input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
             result.put("error", generateFaceCaptureError(input.error));
             result.put("image", generateImage(input.image));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static JSONObject generateGender(Gender input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("confidence", input.confidence);
-            result.put("value", input.value);
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static JSONObject generateLandmark(Landmark input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("type", input.type);
-            result.put("x", input.x);
-            result.put("y", input.y);
         } catch (JSONException ignored) {
         }
         return result;
@@ -444,18 +399,6 @@ class JSONConstructor {
 
     // From JSON
 
-    static AgeRange AgeRangeFromJSON(JSONObject input) {
-        AgeRange result = new AgeRange();
-        try {
-            if (input.has("high"))
-                result.high = input.getInt("high");
-            if (input.has("low"))
-                result.low = input.getInt("low");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static ComparedFace ComparedFaceFromJSON(JSONObject input) {
         ComparedFace result = new ComparedFace();
         try {
@@ -486,18 +429,6 @@ class JSONConstructor {
         return result;
     }
 
-    static Ethnicity EthnicityFromJSON(JSONObject input) {
-        Ethnicity result = new Ethnicity();
-        try {
-            if (input.has("confidence"))
-                result.confidence = input.getInt("confidence");
-            if (input.has("value"))
-                result.value = input.getInt("value");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static FaceCaptureResponse FaceCaptureResponseFromJSON(JSONObject input) {
         FaceCaptureResponse result = new FaceCaptureResponse();
         try {
@@ -505,32 +436,6 @@ class JSONConstructor {
                 result.error = FaceCaptureErrorFromJSON(input.getJSONObject("error"));
             if (input.has("image"))
                 result.image = ImageFromJSON(input.getJSONObject("image"));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static Gender GenderFromJSON(JSONObject input) {
-        Gender result = new Gender();
-        try {
-            if (input.has("confidence"))
-                result.confidence = (float) input.getDouble("confidence");
-            if (input.has("value"))
-                result.value = input.getInt("value");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static Landmark LandmarkFromJSON(JSONObject input) {
-        Landmark result = new Landmark();
-        try {
-            if (input.has("type"))
-                result.type = input.getInt("type");
-            if (input.has("x"))
-                result.x = input.getInt("x");
-            if (input.has("y"))
-                result.y = input.getInt("y");
         } catch (JSONException ignored) {
         }
         return result;

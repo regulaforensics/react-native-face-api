@@ -4,7 +4,7 @@
 #else
 #import <React/RCTBridgeModule.h>
 #endif
-#import "RFSJSONConstructor.h"
+#import "RFSWJSONConstructor.h"
 @import UIKit;
 @import FaceSDK;
 
