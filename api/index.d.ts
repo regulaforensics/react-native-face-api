@@ -343,7 +343,7 @@ export const Enum = {
    LivenessStatus,
 }
 
-export default class Face {
+export default class FaceSDK {
     static getServiceUrl(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static startLiveness(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static getFaceSdkVersion(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
