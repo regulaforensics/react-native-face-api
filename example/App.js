@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import Face, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, Image as FaceImage } from '@regulaforensics/react-native-face-api-beta'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, Image as FaceImage } from '@regulaforensics/react-native-face-api-beta'
 
 var image1 = new FaceImage()
 var image2 = new FaceImage()
@@ -27,7 +27,7 @@ export default class App extends Component {
     },
     {
       text: "Use camera",
-      onPress: () => Face.presentFaceCaptureActivity(result => {
+      onPress: () => FaceSDK.presentFaceCaptureActivity(result => {
         this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.eInputFaceType.ift_Live)
       }, e => { })
     }], { cancelable: true })
@@ -65,7 +65,7 @@ export default class App extends Component {
     this.setState({ similarity: "Processing..." })
     request = new MatchFacesRequest()
     request.images = [image1, image2]
-    Face.matchFaces(JSON.stringify(request), response => {
+    FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
       matchedFaces = response.matchedFaces
       this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
@@ -73,7 +73,7 @@ export default class App extends Component {
   }
 
   liveness() {
-    Face.startLiveness(result => {
+    FaceSDK.startLiveness(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
       this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
