@@ -1,6 +1,6 @@
-#import "RFSJSONConstructor.h"
+#import "RFSWJSONConstructor.h"
 
-@implementation RFSJSONConstructor
+@implementation RFSWJSONConstructor
 
 +(NSString*)dictToString:(NSMutableDictionary*)input {
     return [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:input options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
@@ -9,7 +9,7 @@
 // From JSON
 
 +(RFSMatchFacesRequest*)RFSMatchFacesRequestFromJSON:(NSDictionary*)input {
-    RFSMatchFacesRequest* result = [[RFSMatchFacesRequest alloc] initWithImages:[RFSJSONConstructor NSArrayRFSImageFromJSON:[input valueForKey:@"images"]]];
+    RFSMatchFacesRequest* result = [[RFSMatchFacesRequest alloc] initWithImages:[RFSWJSONConstructor NSArrayRFSImageFromJSON:[input valueForKey:@"images"]]];
 
     if([input valueForKey:@"customMetadata"] != nil)
         result.customMetadata = [input valueForKey:@"customMetadata"];
@@ -20,7 +20,7 @@
 }
 
 +(RFSImage*)RFSImageFromJSON:(NSDictionary*)input {
-    RFSImage* result = [[RFSImage alloc] initWithImage:[RFSJSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
+    RFSImage* result = [[RFSImage alloc] initWithImage:[RFSWJSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
 
     if([input valueForKey:@"tag"] != nil)
         result.tag = [input valueForKey:@"tag"];
@@ -35,7 +35,7 @@
 +(NSMutableArray<RFSImage*>*)NSArrayRFSImageFromJSON:(NSArray*)input {
     NSMutableArray<RFSImage*>* result = [[NSMutableArray alloc] init];
             for(NSDictionary* item in input)
-                [result addObject:[RFSJSONConstructor RFSImageFromJSON:item]];
+                [result addObject:[RFSWJSONConstructor RFSImageFromJSON:item]];
 
     return result;
 }

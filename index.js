@@ -51,18 +51,6 @@ export class MatchFacesError {
     }
 }
 
-export class AgeRange {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new AgeRange()
-
-        result.high = jsonObject["high"]
-        result.low = jsonObject["low"]
-
-        return result
-    }
-}
-
 export class ComparedFace {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
@@ -90,18 +78,6 @@ export class ComparedFacesPair {
     }
 }
 
-export class Ethnicity {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new Ethnicity()
-
-        result.confidence = jsonObject["confidence"]
-        result.value = jsonObject["value"]
-
-        return result
-    }
-}
-
 export class FaceCaptureResponse {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
@@ -109,31 +85,6 @@ export class FaceCaptureResponse {
 
         result.error = FaceCaptureError.fromJson(jsonObject["error"])
         result.image = Image.fromJson(jsonObject["image"])
-
-        return result
-    }
-}
-
-export class Gender {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new Gender()
-
-        result.confidence = jsonObject["confidence"]
-        result.value = jsonObject["value"]
-
-        return result
-    }
-}
-
-export class Landmark {
-    static fromJson(jsonObject) {
-        if (jsonObject == null) return null
-        const result = new Landmark()
-
-        result.type = jsonObject["type"]
-        result.x = jsonObject["x"]
-        result.y = jsonObject["y"]
 
         return result
     }
