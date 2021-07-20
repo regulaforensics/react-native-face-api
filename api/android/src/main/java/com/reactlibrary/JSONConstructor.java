@@ -5,22 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
-import com.regula.facesdk.exception.FaceCaptureError;
-import com.regula.facesdk.exception.FaceProcessorError;
-import com.regula.facesdk.exception.LivenessError;
-import com.regula.facesdk.exception.MatchFacesError;
-import com.regula.facesdk.results.AgeRange;
-import com.regula.facesdk.results.ComparedFace;
-import com.regula.facesdk.results.ComparedFacesPair;
-import com.regula.facesdk.results.Ethnicity;
-import com.regula.facesdk.results.FaceCaptureResponse;
-import com.regula.facesdk.results.Gender;
-import com.regula.facesdk.results.Landmark;
-import com.regula.facesdk.results.LivenessResponse;
-import com.regula.facesdk.results.MatchFacesResponse;
-import com.regula.facesdk.structs.Image;
-import com.regula.facesdk.structs.LivenessRequest;
-import com.regula.facesdk.structs.MatchFacesRequest;
+import com.regula.facesdk.exception.ComparedFacesPairException;
+import com.regula.facesdk.exception.FaceCaptureException;
+import com.regula.facesdk.exception.LivenessErrorException;
+import com.regula.facesdk.exception.MatchFacesException;
+import com.regula.facesdk.model.Image;
+import com.regula.facesdk.model.results.ComparedFace;
+import com.regula.facesdk.model.results.ComparedFacesPair;
+import com.regula.facesdk.model.results.FaceCaptureResponse;
+import com.regula.facesdk.model.results.LivenessResponse;
+import com.regula.facesdk.model.results.MatchFacesResponse;
+import com.regula.facesdk.request.MatchFacesRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -222,80 +217,74 @@ class JSONConstructor {
         return result;
     }
 
-    static FaceCaptureError FaceCaptureErrorFromJSON(JSONObject input) {
+    static MatchFacesRequest MatchFacesRequestFromJSON(JSONObject input) {
         try {
-            return new FaceCaptureError(input.getInt("errorCode"));
-        } catch (JSONException e) {
-            return null;
+            MatchFacesRequest result;
+            List<Image> images = new ArrayList<>();
+            if (input.has("images")) {
+                JSONArray jsonArray_images = input.getJSONArray("images");
+                for (int i = 0; i < jsonArray_images.length(); i++)
+                    images.add(ImageFromJSON(jsonArray_images.getJSONObject(i)));
+            }
+            if (input.has("similarityThreshold")) {
+                float similarityThreshold = (float) input.getDouble("similarityThreshold");
+                result = new MatchFacesRequest(images, similarityThreshold);
+            } else
+                result = new MatchFacesRequest(images);
+            if (input.has("customMetadata"))
+                result.setCustomMetadata(new JSONObject(input.getString("customMetadata")));
+            return result;
+        } catch (JSONException ignored) {
         }
-    }
-
-    static FaceProcessorError FaceProcessorErrorFromJSON(JSONObject input) {
-        try {
-            return new FaceProcessorError(input.getInt("errorCode"));
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    static LivenessError LivenessErrorFromJSON(JSONObject input) {
-        try {
-            return new LivenessError(input.getInt("errorCode"));
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    static MatchFacesError MatchFacesErrorFromJSON(JSONObject input) {
-        try {
-            return new MatchFacesError(input.getInt("errorCode"));
-        } catch (JSONException e) {
-            return null;
-        }
+        return null;
     }
 
     // To JSON
 
-    static JSONObject generateFaceCaptureError(FaceCaptureError input) {
+    static JSONObject generateFaceCaptureException(FaceCaptureException input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
             result.put("errorCode", input.getErrorCode());
             result.put("message", input.getMessage());
-        } catch (JSONException ignored) {
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
-    static JSONObject generateFaceProcessorError(FaceProcessorError input) {
+    static JSONObject generateLivenessErrorException(LivenessErrorException input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
             result.put("errorCode", input.getErrorCode());
             result.put("message", input.getMessage());
-        } catch (JSONException ignored) {
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
-    static JSONObject generateLivenessError(LivenessError input) {
+    static JSONObject generateMatchFacesException(MatchFacesException input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
             result.put("errorCode", input.getErrorCode());
             result.put("message", input.getMessage());
-        } catch (JSONException ignored) {
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
-    static JSONObject generateMatchFacesError(MatchFacesError input) {
+    static JSONObject generateComparedFacesPairException(ComparedFacesPairException input) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
             result.put("errorCode", input.getErrorCode());
             result.put("message", input.getMessage());
-        } catch (JSONException ignored) {
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -304,10 +293,11 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("tag", input.tag);
-            result.put("imageType", input.imageType);
-            result.put("position", input.position);
-        } catch (JSONException ignored) {
+            result.put("tag", input.getTag());
+            result.put("imageType", input.getImageType());
+            result.put("position", input.getPosition());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -316,11 +306,12 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("first", generateComparedFace(input.first));
-            result.put("second", generateComparedFace(input.second));
-            result.put("similarity", input.similarity);
-            result.put("error", generateMatchFacesError(input.error));
-        } catch (JSONException ignored) {
+            result.put("first", generateComparedFace(input.getFirst()));
+            result.put("second", generateComparedFace(input.getSecond()));
+            result.put("similarity", input.getSimilarity());
+            result.put("exception", generateComparedFacesPairException(input.getException()));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -329,9 +320,10 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("error", generateFaceCaptureError(input.error));
-            result.put("image", generateImage(input.image));
-        } catch (JSONException ignored) {
+            result.put("exception", generateFaceCaptureException(input.getException()));
+            result.put("image", generateImage(input.getImage()));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -341,9 +333,10 @@ class JSONConstructor {
         if (input == null) return result;
         try {
             result.put("bitmap", generateBitmap(input.getBitmap()));
-            result.put("liveness", input.liveness);
-            result.put("error", generateLivenessError(input.error));
-        } catch (JSONException ignored) {
+            result.put("liveness", input.getLiveness());
+            result.put("exception", generateLivenessErrorException(input.getException()));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -352,10 +345,11 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("error", generateFaceProcessorError(input.error));
-            result.put("matchedFaces", generateList(input.matchedFaces, JSONConstructor::generateComparedFacesPair));
-            result.put("unmatchedFaces", generateList(input.unmatchedFaces, JSONConstructor::generateComparedFacesPair));
-        } catch (JSONException ignored) {
+            result.put("exception", generateMatchFacesException(input.getException()));
+            result.put("matchedFaces", generateList(input.getMatchedFaces(), JSONConstructor::generateComparedFacesPair));
+            result.put("unmatchedFaces", generateList(input.getUnmatchedFaces(), JSONConstructor::generateComparedFacesPair));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -364,23 +358,11 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("imageType", input.imageType);
-            result.put("tag", input.tag);
+            result.put("imageType", input.getImageType());
+            result.put("tag", input.getTag());
             result.put("bitmap", generateBitmap(input.getBitmap()));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static JSONObject generateLivenessRequest(LivenessRequest input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("normalImageData", generateByteArray(input.normalImageData));
-            result.put("scaledImageData", generateByteArray(input.scaledImageData));
-            result.put("requestBody", generateByteArray(input.getRequestBody()));
-            result.put("guid", input.guid);
-        } catch (JSONException ignored) {
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -389,148 +371,30 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("similarityThreshold", input.similarityThreshold);
-            result.put("images", generateList(input.images, JSONConstructor::generateImage));
-            result.put("customMetadata", input.customMetadata);
-        } catch (JSONException ignored) {
+            result.put("similarityThreshold", input.getSimilarityThreshold());
+            result.put("images", generateList(input.getImages(), JSONConstructor::generateImage));
+            result.put("customMetadata", input.getCustomMetadata());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     // From JSON
 
-    static ComparedFace ComparedFaceFromJSON(JSONObject input) {
-        ComparedFace result = new ComparedFace();
-        try {
-            if (input.has("tag"))
-                result.tag = input.getString("tag");
-            if (input.has("imageType"))
-                result.imageType = input.getInt("imageType");
-            if (input.has("position"))
-                result.position = input.getInt("position");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static ComparedFacesPair ComparedFacesPairFromJSON(JSONObject input) {
-        ComparedFacesPair result = new ComparedFacesPair();
-        try {
-            if (input.has("first"))
-                result.first = ComparedFaceFromJSON(input.getJSONObject("first"));
-            if (input.has("second"))
-                result.second = ComparedFaceFromJSON(input.getJSONObject("second"));
-            if (input.has("similarity"))
-                result.similarity = input.getDouble("similarity");
-            if (input.has("error"))
-                result.error = MatchFacesErrorFromJSON(input.getJSONObject("error"));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static FaceCaptureResponse FaceCaptureResponseFromJSON(JSONObject input) {
-        FaceCaptureResponse result = new FaceCaptureResponse();
-        try {
-            if (input.has("error"))
-                result.error = FaceCaptureErrorFromJSON(input.getJSONObject("error"));
-            if (input.has("image"))
-                result.image = ImageFromJSON(input.getJSONObject("image"));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static LivenessResponse LivenessResponseFromJSON(JSONObject input) {
-        LivenessResponse result = new LivenessResponse();
-        try {
-            if (input.has("liveness"))
-                result.liveness = input.getInt("liveness");
-            if (input.has("error"))
-                result.error = LivenessErrorFromJSON(input.getJSONObject("error"));
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static MatchFacesResponse MatchFacesResponseFromJSON(JSONObject input) {
-        MatchFacesResponse result = new MatchFacesResponse();
-        try {
-            if (input.has("error"))
-                result.error = FaceProcessorErrorFromJSON(input.getJSONObject("error"));
-            if (input.has("matchedFaces")){
-                JSONArray jsonArray = input.getJSONArray("matchedFaces");
-                ArrayList<ComparedFacesPair> array = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array.add(ComparedFacesPairFromJSON(jsonArray.getJSONObject(i)));
-                result.matchedFaces = array;
-            }
-            if (input.has("unmatchedFaces")){
-                JSONArray jsonArray = input.getJSONArray("unmatchedFaces");
-                ArrayList<ComparedFacesPair> array = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array.add(ComparedFacesPairFromJSON(jsonArray.getJSONObject(i)));
-                result.unmatchedFaces = array;
-            }
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
     static Image ImageFromJSON(JSONObject input) {
-        Image result = new Image();
         try {
-            if (input.has("imageType"))
-                result.imageType = input.getInt("imageType");
-            if (input.has("tag"))
-                result.tag = input.getString("tag");
+            int imageType = input.getInt("imageType");
+            Bitmap bitmap = null;
             if (input.has("bitmap"))
-                result.setImage(BitmapFromJSON(input.getString("bitmap")));
-        } catch (JSONException ignored) {
+                bitmap = BitmapFromJSON(input.getString("bitmap"));
+            Image result = new Image(imageType, bitmap);
+            if (input.has("tag"))
+                result.setTag(input.getString("tag"));
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return result;
-    }
-
-    static LivenessRequest LivenessRequestFromJSON(JSONObject input) {
-        LivenessRequest result = new LivenessRequest();
-        try {
-            if (input.has("normalImageData")){
-                JSONArray jsonArray = input.getJSONArray("normalImageData");
-                byte[] array = new byte[jsonArray.length()];
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array[i] = (byte) jsonArray.get(i);
-                result.normalImageData = array;
-            }
-            if (input.has("scaledImageData")){
-                JSONArray jsonArray = input.getJSONArray("scaledImageData");
-                byte[] array = new byte[jsonArray.length()];
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array[i] = (byte) jsonArray.get(i);
-                result.scaledImageData = array;
-            }
-            if (input.has("guid"))
-                result.guid = input.getString("guid");
-        } catch (JSONException ignored) {
-        }
-        return result;
-    }
-
-    static MatchFacesRequest MatchFacesRequestFromJSON(JSONObject input) {
-        MatchFacesRequest result = new MatchFacesRequest();
-        try {
-            if (input.has("similarityThreshold"))
-                result.similarityThreshold = (float) input.getDouble("similarityThreshold");
-            if (input.has("images")){
-                JSONArray jsonArray = input.getJSONArray("images");
-                ArrayList<Image> array = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++)
-                    array.add(ImageFromJSON(jsonArray.getJSONObject(i)));
-                result.images = array;
-            }
-            if (input.has("customMetadata"))
-                result.customMetadata = new JSONObject(input.getString("customMetadata"));
-        } catch (JSONException ignored) {
-        }
-        return result;
+        return null;
     }
 }
