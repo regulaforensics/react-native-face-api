@@ -22,13 +22,13 @@ export default class App extends Component {
     {
       text: "Use gallery",
       onPress: () => launchImageLibrary({ includeBase64: true }, response => {
-        this.setImage(first, response.base64, Enum.eInputFaceType.ift_DocumentPrinted)
+        this.setImage(first, response.base64, Enum.ImageType.IMAGE_TYPE_PRINTED)
       })
     },
     {
       text: "Use camera",
       onPress: () => FaceSDK.presentFaceCaptureActivity(result => {
-        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.eInputFaceType.ift_Live)
+        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
       }, e => { })
     }], { cancelable: true })
   }
@@ -76,7 +76,7 @@ export default class App extends Component {
     FaceSDK.startLiveness(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
-      this.setImage(true, result.bitmap, Enum.eInputFaceType.ift_Live)
+      this.setImage(true, result.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
       if(result.bitmap != null)
         this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
     }, e => { })
