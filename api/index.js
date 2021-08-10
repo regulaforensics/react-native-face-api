@@ -229,5 +229,6 @@ FaceSDK.presentFaceCaptureActivityByCameraId = (cameraId, successCallback, error
 FaceSDK.startLivenessByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessByCameraId", [cameraId], successCallback, errorCallback)
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
+FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
 
 export default FaceSDK
