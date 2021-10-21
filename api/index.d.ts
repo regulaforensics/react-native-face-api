@@ -250,6 +250,11 @@ export const MatchFacesErrorCodes = {
     PROCESSING_FAILED: 11,
 }
 
+export const RFSCameraPosition = {
+    RFSCameraPositionBack: 0,
+    RFSCameraPositionFront: 1,
+}
+
 export const Enum = {
    ComparedFacesPairErrorCodes,
    FaceCaptureResultCodes,
@@ -257,6 +262,7 @@ export const Enum = {
    LivenessErrorCode,
    LivenessStatus,
    MatchFacesErrorCodes,
+   RFSCameraPosition,
 }
 
 export default class FaceSDK {
@@ -266,9 +272,10 @@ export default class FaceSDK {
     static presentFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopLivenessProcessing(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static presentFaceCaptureActivityByCameraId(cameraId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static startLivenessByCameraId(cameraId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static presentFaceCaptureActivityWithConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static startLivenessWithConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static matchFacesWithConfig(request: MatchFacesRequest, config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }
