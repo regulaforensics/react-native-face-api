@@ -109,8 +109,8 @@ then
 fi
 
 cd "$Base_path"
-sed -i -e "s/version_place_holder/$Version_ios/" "$Base_path/ios/RNFaceApi.podspec"
-sed -i -e "s/branch_place_holder/$STATE_IOS/" "$Base_path/ios/RNFaceApi.podspec"
+sed -i -e "s/version_place_holder/$Version_ios/" "$Base_path/RNFaceApi.podspec"
+sed -i -e "s/branch_place_holder/$STATE_IOS/" "$Base_path/RNFaceApi.podspec"
 rm -fr "$Base_path/ios/RNFaceApi.podspec-e"
 /usr/local/bin/jq --arg PKG_NAME "$PKG_NAME" '.name = $PKG_NAME' package.json > tmp.$$.json && mv tmp.$$.json package.json
 /usr/local/bin/jq --arg React_module_version "$React_module_version" '.version = $React_module_version' package.json > tmp.$$.json && mv tmp.$$.json package.json
