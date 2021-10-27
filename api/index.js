@@ -208,6 +208,11 @@ export const MatchFacesErrorCodes = {
     PROCESSING_FAILED: 11,
 }
 
+export const RFSCameraPosition = {
+    RFSCameraPositionBack: 0,
+    RFSCameraPositionFront: 1,
+}
+
 export const Enum = {
    ComparedFacesPairErrorCodes,
    FaceCaptureResultCodes,
@@ -215,6 +220,7 @@ export const Enum = {
    LivenessErrorCode,
    LivenessStatus,
    MatchFacesErrorCodes,
+   RFSCameraPosition,
 }
 
 const FaceSDK = {}
@@ -225,9 +231,11 @@ FaceSDK.getFaceSdkVersion = (successCallback, errorCallback) => RNFaceApi.exec("
 FaceSDK.presentFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivity", [], successCallback, errorCallback)
 FaceSDK.stopFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopFaceCaptureActivity", [], successCallback, errorCallback)
 FaceSDK.stopLivenessProcessing = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopLivenessProcessing", [], successCallback, errorCallback)
-FaceSDK.presentFaceCaptureActivityByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityByCameraId", [cameraId], successCallback, errorCallback)
-FaceSDK.startLivenessByCameraId = (cameraId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessByCameraId", [cameraId], successCallback, errorCallback)
+FaceSDK.presentFaceCaptureActivityWithConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityWithConfig", [config], successCallback, errorCallback)
+FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessWithConfig", [config], successCallback, errorCallback)
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
+FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
+FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
 
 export default FaceSDK
