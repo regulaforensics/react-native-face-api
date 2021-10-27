@@ -10,7 +10,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8C6CAAFB26C17DFC006835D3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C6CAAFD26C17DFC006835D3 /* LaunchScreen.storyboard */; };
 		ED1B4D57DF4F1E4F4B106ED3 /* libPods-FaceApi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C30695BA7B5428B5C0078F /* libPods-FaceApi.a */; };
 /* End PBXBuildFile section */
 
@@ -29,8 +29,8 @@
 		2ADB181B4CA39A9715E21864 /* libPods-FaceApi-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceApi-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		46E18EDC6C0480CEB9C923B6 /* Pods-FaceApi-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceApi-tvOS.release.xcconfig"; path = "Target Support Files/Pods-FaceApi-tvOS/Pods-FaceApi-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		7A841189AF1272F822B27359 /* libPods-FaceApi-FaceApiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceApi-FaceApiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FaceApi/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8280E422E90AC565D64F63F8 /* Pods-FaceApi-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceApi-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-FaceApi-tvOS/Pods-FaceApi-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		8C6CAAFC26C17DFC006835D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9AA47E55D3A2055662C76017 /* libPods-FaceApi-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceApi-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA151905ADD470CB04BB4D54 /* Pods-FaceApi-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceApi-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-FaceApi-tvOSTests/Pods-FaceApi-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		C4C30695BA7B5428B5C0078F /* libPods-FaceApi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceApi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,7 +93,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				8C6CAAFD26C17DFC006835D3 /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = FaceApi;
@@ -203,7 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				8C6CAAFB26C17DFC006835D3 /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -317,6 +317,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		8C6CAAFD26C17DFC006835D3 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8C6CAAFC26C17DFC006835D3 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			path = FaceApi;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
