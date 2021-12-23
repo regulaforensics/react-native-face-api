@@ -2,6 +2,8 @@ package com.reactlibrary;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -17,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.regula.facesdk.FaceSDK.Instance;
+
+import java.util.Locale;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public class RNFaceApiModule extends ReactContextBaseJavaModule {
@@ -185,6 +189,12 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     }
 
     private void setLanguage(Callback callback, @SuppressWarnings("unused") String language) {
-        callback.error("setLanguage() is an ios-only method");
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        Resources resources = getActivity().getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        callback.success();
     }
 }
