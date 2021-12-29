@@ -40,10 +40,33 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"setLanguage"])
         [self setLanguage :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setConfig"])
+        [self setConfig :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"matchFacesWithConfig"])
         [self matchFacesWithConfig :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
+}
+
+-(unsigned int)intFromHexString:(NSString *)hexStr {
+    unsigned int hexInt = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexStr];
+    [scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"#"]];
+    [scanner scanHexInt:&hexInt];
+
+    return hexInt;
+}
+
+-(UIColor *)getUIColorObjectFromHexString:(NSString *)hexStr alpha:(CGFloat)alpha {
+    unsigned int hexInt = [self intFromHexString:hexStr];
+
+    UIColor *color =
+    [UIColor colorWithRed:((CGFloat) ((hexInt & 0xFF0000) >> 16))/255
+                    green:((CGFloat) ((hexInt & 0xFF00) >> 8))/255
+                     blue:((CGFloat) (hexInt & 0xFF))/255
+                    alpha:alpha];
+
+    return color;
 }
 
 - (void) getServiceUrl:(Callback)successCallback :(Callback)errorCallback{
@@ -145,6 +168,42 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     return ^(RFSMatchFacesResponse* response) {
         [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSMatchFacesResponse:response]] :successCallback];
     };
+}
+
+- (void) setConfig:(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
+    if([config valueForKey:@"hintView"] != nil){
+        NSDictionary* hintView = [config valueForKey:@"hintView"];
+        RFSHintView *hintViewAppearance = [RFSHintView appearanceWhenContainedInInstancesOfClasses:@[RFSLivenessContentView.class]];
+        if([hintView valueForKey:@"cornerRadius"] != nil)
+            hintViewAppearance.cornerRadius = [[hintView valueForKey:@"cornerRadius"] floatValue];
+        if([hintView valueForKey:@"backgroundColorFront"] != nil)
+            [hintViewAppearance setBackgroundColor:[self getUIColorObjectFromHexString:[hintView valueForKey:@"backgroundColorFront"] alpha:1] forState:RFSHintViewStateFront];
+        if([hintView valueForKey:@"backgroundColorRear"] != nil)
+            [hintViewAppearance setBackgroundColor:[self getUIColorObjectFromHexString:[hintView valueForKey:@"backgroundColorRear"] alpha:1] forState:RFSHintViewStateRear];
+        if([hintView valueForKey:@"textColorFront"] != nil)
+            [hintViewAppearance setTextColor:[self getUIColorObjectFromHexString:[hintView valueForKey:@"textColorFront"] alpha:1] forState:RFSHintViewStateFront];
+        if([hintView valueForKey:@"textColorRear"] != nil)
+            [hintViewAppearance setTextColor:[self getUIColorObjectFromHexString:[hintView valueForKey:@"textColorRear"] alpha:1] forState:RFSHintViewStateRear];
+    }
+    if([config valueForKey:@"hintLabel"] != nil){
+        NSDictionary* hintLabel = [config valueForKey:@"hintLabel"];
+        UILabel *hintLabelAppearance = [UILabel appearanceWhenContainedInInstancesOfClasses:@[RFSHintView.class, RFSLivenessContentView.class]];
+        if([hintLabel valueForKey:@"textColor"] != nil)
+            hintLabelAppearance.textColor = [self getUIColorObjectFromHexString:[hintLabel valueForKey:@"textColor"] alpha:1];
+        if([hintLabel valueForKey:@"textFont"] != nil)
+            hintLabelAppearance.font = [UIFont fontWithName:[hintLabel valueForKey:@"textFont"] size:[hintLabel valueForKey:@"textSize"] == nil ? 17 : [[hintLabel valueForKey:@"textSize"] floatValue]];
+    }
+    if([config valueForKey:@"toolbar"] != nil){
+        NSDictionary* toolbar = [config valueForKey:@"toolbar"];
+        RFSCameraToolbarView *toolbarAppearance = [RFSCameraToolbarView appearanceWhenContainedInInstancesOfClasses:@[RFSLivenessContentView.class]];
+        if([toolbar valueForKey:@"backgroundColor"] != nil)
+            toolbarAppearance.backgroundColor = [self getUIColorObjectFromHexString:[toolbar valueForKey:@"backgroundColor"] alpha:1];
+        if([toolbar valueForKey:@"tintColorFront"] != nil)
+            [toolbarAppearance setTintColor:[self getUIColorObjectFromHexString:[toolbar valueForKey:@"tintColorFront"] alpha:1] forState:RFSCameraToolbarViewStateFront];
+        if([toolbar valueForKey:@"tintColorRear"] != nil)
+            [toolbarAppearance setTintColor:[self getUIColorObjectFromHexString:[toolbar valueForKey:@"tintColorRear"] alpha:1] forState:RFSCameraToolbarViewStateRear];
+    }
+    [self result:@"" :successCallback];
 }
 
 -(RFSCameraPosition)RFSCameraPositionWithNSInteger:(NSInteger)value {
