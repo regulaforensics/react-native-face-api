@@ -236,6 +236,7 @@ FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RN
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
+FaceSDK.setConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setConfig", [config], successCallback, errorCallback)
 FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
 
 export default FaceSDK

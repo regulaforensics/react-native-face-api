@@ -115,6 +115,9 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "setLanguage":
                     setLanguage(callback, args(0));
                     break;
+                case "setConfig":
+                    setConfig(callback, args(0));
+                    break;
                 case "matchFacesWithConfig":
                     matchFacesWithConfig(callback, args(0), args(1));
                     break;
@@ -178,6 +181,10 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         callback.success();
     }
 
+    private void setConfig(Callback callback, JSONObject config) {
+        callback.error("setConfig() is an ios-only method");
+    }
+
     private void matchFaces(Callback callback, String request) throws JSONException {
         Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
@@ -191,7 +198,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     private void setLanguage(Callback callback, @SuppressWarnings("unused") String language) {
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
-        Resources resources = getActivity().getResources();
+        Resources resources = getContext().getResources();
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
