@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, Image as FaceImage } from '@regulaforensics/react-native-face-api-beta'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage } from '@regulaforensics/react-native-face-api-beta'
 
-var image1 = new FaceImage()
-var image2 = new FaceImage()
+var image1 = new MatchFacesImage()
+var image2 = new MatchFacesImage()
 
 export default class App extends Component {
   constructor(props) {
@@ -55,8 +55,8 @@ export default class App extends Component {
       similarity: "nil",
       liveness: "nil"
      })
-    image1 = new FaceImage()
-    image2 = new FaceImage()
+    image1 = new MatchFacesImage()
+    image2 = new MatchFacesImage()
   }
 
   matchFaces() {
@@ -64,7 +64,7 @@ export default class App extends Component {
       return
     this.setState({ similarity: "Processing..." })
     request = new MatchFacesRequest()
-    request.images = [image1, image2]
+    request.matchFacesImages = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
       matchedFaces = response.matchedFaces
