@@ -173,6 +173,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
             builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
         if(config.has("showHelpTextAnimation"))
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
+        if(config.has("locationTrackingEnabled"))
+            builder.setLocationTrackingEnabled(config.getBoolean("locationTrackingEnabled"));
         Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
     }
 
