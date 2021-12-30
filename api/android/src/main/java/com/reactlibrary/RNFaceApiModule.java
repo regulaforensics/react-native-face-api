@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import static com.regula.facesdk.FaceSDK.Instance;
 
 import java.util.Locale;
+import java.util.Objects;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public class RNFaceApiModule extends ReactContextBaseJavaModule {

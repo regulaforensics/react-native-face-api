@@ -3,6 +3,8 @@ package com.reactlibrary;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Base64;
 
 import com.regula.facesdk.exception.FaceCaptureException;
@@ -14,6 +16,7 @@ import com.regula.facesdk.model.results.FaceCaptureResponse;
 import com.regula.facesdk.model.results.LivenessResponse;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFace;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFacesPair;
+import com.regula.facesdk.model.results.matchfaces.MatchFacesDetection;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesDetectionFace;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesResponse;
 import com.regula.facesdk.request.MatchFacesRequest;
