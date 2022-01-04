@@ -9,12 +9,10 @@
 // From JSON
 
 +(RFSMatchFacesRequest*)RFSMatchFacesRequestFromJSON:(NSDictionary*)input {
-    RFSMatchFacesRequest* result = [[RFSMatchFacesRequest alloc] initWithImages:[RFSWJSONConstructor NSArrayRFSImageFromJSON:[input valueForKey:@"matchFacesImages"]]];
+    RFSMatchFacesRequest* result = [[RFSMatchFacesRequest alloc] initWithImages:[RFSWJSONConstructor NSArrayRFSMatchFacesImageFromJSON:[input valueForKey:@"matchFacesImages"]]];
 
-    if([input valueForKey:@"customMetadata"] != nil)
-        result.customMetadata = [input valueForKey:@"customMetadata"];
-    if([input valueForKey:@"similarityThreshold"] != nil)
-        result.similarityThreshold = [input valueForKey:@"similarityThreshold"];
+    if([input valueForKey:@"thumbnails"] != nil)
+        result.thumbnails = [[input valueForKey:@"thumbnails"] boolValue];
 
     return result;
 }
@@ -22,10 +20,34 @@
 +(RFSImage*)RFSImageFromJSON:(NSDictionary*)input {
     RFSImage* result = [[RFSImage alloc] initWithImage:[RFSWJSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]] type:[[input valueForKey:@"imageType"] integerValue]];
 
-    if([input valueForKey:@"tag"] != nil)
-        result.tag = [input valueForKey:@"tag"];
+    return result;
+}
+
++(NSMutableDictionary*)generateCGRect:(CGRect)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+
+    result[@"top"] = @(input.origin.y);
+    result[@"left"] = @(input.origin.x);
+    result[@"bottom"] = @(input.origin.y+input.size.height);
+    result[@"right"] = @(input.origin.x+input.size.width);
 
     return result;
+}
+
++(RFSMatchFacesImage*)RFSMatchFacesImageFromJSON:(NSDictionary*)input {
+    UIImage* image = [RFSWJSONConstructor UIImageFromJSON:[input valueForKey:@"bitmap"]];
+    bool hasDetectAll = false;
+    bool detectAll = false;
+    RFSImageType imageType = RFSImageTypePrinted;
+    if([input valueForKey:@"detectAll"] != nil){
+        hasDetectAll = true;
+        detectAll = [input valueForKey:@"detectAll"];
+    }
+    if([input valueForKey:@"imageType"] != nil)
+        imageType = [[input valueForKey:@"imageType"] integerValue];
+    if(hasDetectAll)
+        return [[RFSMatchFacesImage alloc] initWithImage:image imageType:imageType detectAll:detectAll];
+    return [[RFSMatchFacesImage alloc] initWithImage:image imageType:imageType];
 }
 
 +(UIImage*)UIImageFromJSON:(NSString*)input {
@@ -40,112 +62,12 @@
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRFSLivenessError:(NSError* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"errorCode"] = [NSNumber numberWithInteger:[self NSIntegerWithRFSLivenessError:input.code]];
-    result[@"message"] = input.localizedDescription;
++(NSMutableArray<RFSMatchFacesImage*>*)NSArrayRFSMatchFacesImageFromJSON:(NSArray*)input {
+    NSMutableArray<RFSMatchFacesImage*>* result = [[NSMutableArray alloc] init];
+            for(NSDictionary* item in input)
+                [result addObject:[RFSWJSONConstructor RFSMatchFacesImageFromJSON:item]];
 
     return result;
-}
-
-+(NSInteger)NSIntegerWithRFSLivenessError:(RFSLivenessError)value {
-    if(value == RFSLivenessErrorCancelled)
-        return (NSInteger)5;
-    else if(value == RFSLivenessErrorProcessingTimeout)
-        return (NSInteger)6;
-    else if(value == RFSLivenessErrorProcessingFailed)
-        return (NSInteger)8;
-    else if(value == RFSLivenessErrorAPICallFailed)
-        return (NSInteger)7;
-    else if(value == RFSLivenessErrorProcessingAttemptsEnded)
-        return (NSInteger)9;
-    else if(value == RFSLivenessErrorNoLicense)
-        return (NSInteger)4;
-
-    return 0;
-}
-
-+(NSMutableDictionary* _Nonnull)generateRFSFaceCaptureError:(NSError* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"errorCode"] = [NSNumber numberWithInteger:[self NSIntegerWithRFSFaceCaptureError:input.code]];
-    result[@"message"] = input.localizedDescription;
-
-    return result;
-}
-
-+(NSInteger)NSIntegerWithRFSFaceCaptureError:(RFSFaceCaptureError)value {
-    if(value == RFSFaceCaptureErrorCancelled)
-        return (NSInteger)1;
-
-    return 0;
-}
-
-+(NSMutableDictionary* _Nonnull)generateRFSComparedFacesPairError:(NSError* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"errorCode"] = [NSNumber numberWithInteger:[self NSIntegerWithRFSComparedFacesPairError:input.code]];
-    result[@"message"] = input.localizedDescription;
-
-    return result;
-}
-
-+(NSInteger)NSIntegerWithRFSComparedFacesPairError:(RFSComparedFacesPairError)value {
-    if(value == RFSComparedFacesPairErrorImageEmpty)
-        return (NSInteger)1;
-    else if(value == RFSComparedFacesPairErrorFaceNotDetected)
-        return (NSInteger)2;
-    else if(value == RFSComparedFacesPairErrorLandmarksNotDetected)
-        return (NSInteger)3;
-    else if(value == RFSComparedFacesPairErrorFaceAlignerFailed)
-        return (NSInteger)4;
-    else if(value == RFSComparedFacesPairErrorDescriptorExtractorError)
-        return (NSInteger)5;
-    else if(value == RFSComparedFacesPairErrorAPICallFailed)
-        return (NSInteger)6;
-
-    return 0;
-}
-
-+(NSMutableDictionary* _Nonnull)generateRFSMatchFacesError:(NSError* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"errorCode"] = [NSNumber numberWithInteger:[self NSIntegerWithRFSMatchFacesError:input.code]];
-    result[@"message"] = input.localizedDescription;
-
-    return result;
-}
-
-+(NSInteger)NSIntegerWithRFSMatchFacesError:(RFSMatchFacesError)value {
-    if(value == RFSComparedFacesPairErrorImageEmpty)
-        return (NSInteger)1;
-    else if(value == RFSMatchFacesErrorFaceNotDetected)
-        return (NSInteger)2;
-    else if(value == RFSMatchFacesErrorLandmarksNotDetected)
-        return (NSInteger)3;
-    else if(value == RFSMatchFacesErrorFaceAlignerFailed)
-        return (NSInteger)4;
-    else if(value == RFSMatchFacesErrorDescriptorExtractorError)
-        return (NSInteger)5;
-    else if(value == RFSMatchFacesErrorNoLicense)
-        return (NSInteger)6;
-    else if(value == RFSMatchFacesErrorNotInitialized)
-        return (NSInteger)7;
-    else if(value == RFSMatchFacesErrorCommandNotSupported)
-        return (NSInteger)8;
-    else if(value == RFSMatchFacesErrorCommandParamsReadError)
-        return (NSInteger)9;
-    else if(value == RFSMatchFacesErrorAPICallFailed)
-        return (NSInteger)10;
-    else if(value == RFSMatchFacesErrorProcessingFailed)
-        return (NSInteger)11;
-
-    return 0;
 }
 
     // To JSON
@@ -156,7 +78,8 @@
 
     result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
     result[@"liveness"] = @(input.liveness);
-    result[@"exception"] = [self generateRFSLivenessError:input.error];
+    result[@"exception"] = [self generateNSError:input.error];
+    result[@"guid"] = input.guid;
 
     return result;
 }
@@ -166,7 +89,7 @@
     if(input == nil) return result;
 
     result[@"image"] = [self generateRFSImage:input.image];
-    result[@"exception"] = [self generateRFSFaceCaptureError:input.error];
+    result[@"exception"] = [self generateNSError:input.error];
 
     return result;
 }
@@ -175,10 +98,19 @@
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"identifier"] = input.identifier;
-    result[@"tag"] = input.tag;
     result[@"imageType"] = @(input.imageType);
     result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesImage:(RFSMatchFacesImage* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"imageType"] = @(input.imageType);
+    result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
+    result[@"detectAll"] = @(input.detectAll);
 
     return result;
 }
@@ -187,44 +119,103 @@
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"exception"] = [self generateRFSMatchFacesError:input.error];
-    if(input.matchedFaces != nil){
+    result[@"exception"] = [self generateNSError:input.error];
+    if(input.results != nil){
         NSMutableArray *array = [NSMutableArray new];
-        for(RFSComparedFacesPair* item in input.matchedFaces)
+        for(RFSMatchFacesComparedFacesPair* item in input.results)
             if(item != nil)
-                [array addObject:[self generateRFSComparedFacesPair:item]];
-        result[@"matchedFaces"] = array;
+                [array addObject:[self generateRFSMatchFacesComparedFacesPair:item]];
+        result[@"results"] = array;
     }
-    if(input.unmatchedFaces != nil){
+    if(input.detections != nil){
         NSMutableArray *array = [NSMutableArray new];
-        for(RFSComparedFacesPair* item in input.unmatchedFaces)
+        for(RFSMatchFacesDetection* item in input.detections)
             if(item != nil)
-                [array addObject:[self generateRFSComparedFacesPair:item]];
-        result[@"unmatchedFaces"] = array;
+                [array addObject:[self generateRFSMatchFacesDetection:item]];
+        result[@"facesResponse"] = array;
     }
 
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRFSComparedFacesPair:(RFSComparedFacesPair* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesComparedFacesPair:(RFSMatchFacesComparedFacesPair* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"first"] = [self generateRFSComparedFace:input.first];
-    result[@"second"] = [self generateRFSComparedFace:input.second];
+    result[@"first"] = [self generateRFSMatchFacesComparedFace:input.first];
+    result[@"second"] = [self generateRFSMatchFacesComparedFace:input.second];
+    result[@"score"] = input.score;
     result[@"similarity"] = input.similarity;
-    result[@"exception"] = [self generateRFSComparedFacesPairError:input.error];
+    result[@"exception"] = [self generateNSError:input.error];
 
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRFSComparedFace:(RFSComparedFace* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesComparedFace:(RFSMatchFacesComparedFace* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"tag"] = input.tag;
-    result[@"imageType"] = @(input.imageType);
-    result[@"position"] = input.position;
+    result[@"imageIndex"] = input.imageIndex;
+    result[@"faceIndex"] = input.faceIndex;
+    result[@"image"] = [self generateRFSMatchFacesImage:input.image];
+    result[@"face"] = [self generateRFSMatchFacesDetectionFace:input.face];
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesDetectionFace:(RFSMatchFacesDetectionFace* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"rotationAngle"] = input.rotationAngle;
+    result[@"faceIndex"] = input.faceIndex;
+    result[@"thumbnail"] = [UIImageJPEGRepresentation(input.thumbnailImage, 1.0) base64EncodedStringWithOptions:0];
+    if(input.landmarks != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSPoint* item in input.landmarks)
+            if(item != nil)
+                [array addObject:[self generateRFSPoint:item]];
+        result[@"landmarks"] = array;
+    }
+    result[@"faceRect"] = [self generateCGRect:input.faceRect];
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSPoint:(RFSPoint* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"x"] = @(input.x);
+    result[@"y"] = @(input.y);
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"errorCode"] = @(input.code);
+    result[@"message"] = input.localizedDescription;
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesDetection:(RFSMatchFacesDetection* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"image"] = [self generateRFSMatchFacesImage:input.image];
+    result[@"imageIndex"] = input.imageIndex;
+    if(input.faces != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSMatchFacesDetectionFace* item in input.faces)
+            if(item != nil)
+                [array addObject:[self generateRFSMatchFacesDetectionFace:item]];
+        result[@"faces"] = array;
+    }
+    result[@"exception"] = [self generateNSError:input.error];
 
     return result;
 }
