@@ -341,8 +341,6 @@ class JSONConstructor {
         if (input == null) return result;
         try {
             result.put("exception", generateMatchFacesException(input.getException()));
-            result.put("matchedFaces", generateList(input.getMatchedFaces(), JSONConstructor::generateMatchFacesComparedFacesPair));
-            result.put("unmatchedFaces", generateList(input.getUnmatchedFaces(), JSONConstructor::generateMatchFacesComparedFacesPair));
             result.put("facesResponse", generateList(input.getFacesResponse(), JSONConstructor::generateMatchFacesDetection));
             result.put("results", generateList(input.getResults(), JSONConstructor::generateMatchFacesComparedFacesPair));
         } catch (JSONException e) {
@@ -356,7 +354,6 @@ class JSONConstructor {
         if (input == null) return result;
         try {
             result.put("imageType", input.getImageType());
-            result.put("tag", input.getTag());
             result.put("bitmap", generateBitmap(input.getBitmap()));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -409,8 +406,8 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("detectionFace", generateMatchFacesDetectionFace(input.getDetectionFace()));
-            result.put("matchesFaceImage", generateMatchFacesImage(input.getMatchesFaceImage()));
+            result.put("face", generateMatchFacesDetectionFace(input.getDetectionFace()));
+            result.put("image", generateMatchFacesImage(input.getMatchesFaceImage()));
             result.put("faceIndex", input.getFaceIndex());
             result.put("imageIndex", input.getImageIndex());
         } catch (JSONException e) {

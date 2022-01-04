@@ -82,8 +82,6 @@ export class LivenessResponse {
 
 export class MatchFacesResponse {
     exception?: MatchFacesException
-    matchedFaces?: MatchFacesComparedFacesPair[]
-    unmatchedFaces?: MatchFacesComparedFacesPair[]
     facesResponse?: MatchFacesDetection[]
     results?: MatchFacesComparedFacesPair[]
 
@@ -92,18 +90,6 @@ export class MatchFacesResponse {
         const result = new MatchFacesResponse
 
         result.exception = MatchFacesException.fromJson(jsonObject["exception"])
-        result.matchedFaces = []
-        if (jsonObject["matchedFaces"] != null) {
-            for (const i in jsonObject["matchedFaces"]) {
-                result.matchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["matchedFaces"][i]))
-            }
-        }
-        result.unmatchedFaces = []
-        if (jsonObject["unmatchedFaces"] != null) {
-            for (const i in jsonObject["unmatchedFaces"]) {
-                result.unmatchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["unmatchedFaces"][i]))
-            }
-        }
         result.facesResponse = []
         if (jsonObject["facesResponse"] != null) {
             for (const i in jsonObject["facesResponse"]) {
@@ -123,7 +109,6 @@ export class MatchFacesResponse {
 
 export class Image {
     imageType?: number
-    tag?: string
     bitmap?: string
 
     static fromJson(jsonObject?: any): Image {
@@ -131,7 +116,6 @@ export class Image {
         const result = new Image
 
         result.imageType = jsonObject["imageType"]
-        result.tag = jsonObject["tag"]
         result.bitmap = jsonObject["bitmap"]
 
         return result
@@ -199,8 +183,8 @@ export class MatchFacesComparedFacesPair {
 }
 
 export class MatchFacesComparedFace {
-    detectionFace?: MatchFacesDetectionFace
-    matchesFaceImage?: MatchFacesImage
+    face?: MatchFacesDetectionFace
+    image?: MatchFacesImage
     faceIndex?: number
     imageIndex?: number
 
@@ -208,8 +192,8 @@ export class MatchFacesComparedFace {
         if (jsonObject == null) return null
         const result = new MatchFacesComparedFace
 
-        result.detectionFace = MatchFacesDetectionFace.fromJson(jsonObject["detectionFace"])
-        result.matchesFaceImage = MatchFacesImage.fromJson(jsonObject["matchesFaceImage"])
+        result.face = MatchFacesDetectionFace.fromJson(jsonObject["face"])
+        result.image = MatchFacesImage.fromJson(jsonObject["image"])
         result.faceIndex = jsonObject["faceIndex"]
         result.imageIndex = jsonObject["imageIndex"]
 
