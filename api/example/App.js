@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage } from '@regulaforensics/api_module_place_holder'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/api_module_place_holder'
 
 var image1 = new MatchFacesImage()
 var image2 = new MatchFacesImage()
@@ -64,11 +64,11 @@ export default class App extends Component {
       return
     this.setState({ similarity: "Processing..." })
     request = new MatchFacesRequest()
-    request.matchFacesImages = [image1, image2]
+    request.images = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
-      results = response.results
-      this.setState({ similarity: results.length > 0 ? ((results[0].similarity * 100).toFixed(2) + "%") : "error" })
+      split = new MatchFacesSimilarityThresholdSplit(response.results, 0.75)
+      this.setState({ similarity: split.matchedFaces.length > 0 ? ((split.matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
     }, e => { this.setState({ similarity: e }) })
   }
 

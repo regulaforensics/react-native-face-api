@@ -119,6 +119,8 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
             [builder setCameraSwitchEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+//         if([config valueForKey:@"locationTrackingEnabled"] != nil)
+//             [builder setLocationTrackingEnabled:[[config valueForKey:@"locationTrackingEnabled"] boolValue]];
         if([config valueForKey:@"showHelpTextAnimation"] != nil)
             [builder setEnableHintAnimation:[[config valueForKey:@"showHelpTextAnimation"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)

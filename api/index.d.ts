@@ -82,7 +82,7 @@ export class LivenessResponse {
 
 export class MatchFacesResponse {
     exception?: MatchFacesException
-    facesResponse?: MatchFacesDetection[]
+    detections?: MatchFacesDetection[]
     results?: MatchFacesComparedFacesPair[]
 
     static fromJson(jsonObject?: any): MatchFacesResponse {
@@ -90,10 +90,10 @@ export class MatchFacesResponse {
         const result = new MatchFacesResponse
 
         result.exception = MatchFacesException.fromJson(jsonObject["exception"])
-        result.facesResponse = []
-        if (jsonObject["facesResponse"] != null) {
-            for (const i in jsonObject["facesResponse"]) {
-                result.facesResponse.push(MatchFacesDetection.fromJson(jsonObject["facesResponse"][i]))
+        result.detections = []
+        if (jsonObject["detections"] != null) {
+            for (const i in jsonObject["detections"]) {
+                result.detections.push(MatchFacesDetection.fromJson(jsonObject["detections"][i]))
             }
         }
         result.results = []
@@ -123,7 +123,7 @@ export class Image {
 }
 
 export class MatchFacesRequest {
-    matchFacesImages?: MatchFacesImage[]
+    images?: MatchFacesImage[]
     customMetadata?: any
     thumbnails?: boolean
 
@@ -131,10 +131,10 @@ export class MatchFacesRequest {
         if (jsonObject == null) return null
         const result = new MatchFacesRequest
 
-        result.matchFacesImages = []
-        if (jsonObject["matchFacesImages"] != null) {
-            for (const i in jsonObject["matchFacesImages"]) {
-                result.matchFacesImages.push(MatchFacesImage.fromJson(jsonObject["matchFacesImages"][i]))
+        result.images = []
+        if (jsonObject["images"] != null) {
+            for (const i in jsonObject["images"]) {
+                result.images.push(MatchFacesImage.fromJson(jsonObject["images"][i]))
             }
         }
         result.customMetadata = jsonObject["customMetadata"]
@@ -148,6 +148,7 @@ export class MatchFacesImage {
     imageType?: number
     detectAll?: boolean
     bitmap?: string
+    identifier?: string
 
     static fromJson(jsonObject?: any): MatchFacesImage {
         if (jsonObject == null) return null
@@ -156,6 +157,7 @@ export class MatchFacesImage {
         result.imageType = jsonObject["imageType"]
         result.detectAll = jsonObject["detectAll"]
         result.bitmap = jsonObject["bitmap"]
+        result.identifier = jsonObject["identifier"]
 
         return result
     }
@@ -285,13 +287,36 @@ export class Rect {
     }
 }
 
-export const ComparedFacesPairErrorCodes = {
-    IMAGE_EMPTY: 1,
-    FACE_NOT_DETECTED: 2,
-    LANDMARKS_NOT_DETECTED: 3,
-    FACE_ALIGNER_FAILED: 4,
-    DESCRIPTOR_EXTRACTOR_ERROR: 5,
-    API_CALL_FAILED: 6,
+export class MatchFacesSimilarityThresholdSplit {
+    results?: MatchFacesComparedFacesPair[]
+    threshold?: number
+    matchedFaces?: MatchFacesComparedFacesPair[]
+    unmatchedFaces?: MatchFacesComparedFacesPair[]
+    constructor(results, threshold) {
+        this.results = results
+        this.threshold = threshold
+        this.matchedFaces = this.getFaces(true)
+        this.unmatchedFaces = this.getFaces(false)
+    }
+
+    getFaces(matched: boolean): MatchFacesComparedFacesPair[]{
+        const output = []
+        for(const pair of this.results){
+            if(matched){
+                if(pair.similarity > this.threshold && JSON.stringify(pair.exception) == "{}")
+                    output.push(pair)
+            } else {
+                if(pair.similarity <= this.threshold || JSON.stringify(pair.exception) != "{}")
+                    output.push(pair)
+            }
+        }
+        return output
+    }
+}
+
+export const CameraPosition = {
+    CameraPositionBack: 0,
+    CameraPositionFront: 1,
 }
 
 export const FaceCaptureResultCodes = {
@@ -307,6 +332,31 @@ export const ImageType = {
     IMAGE_TYPE_RFID: 2,
     IMAGE_TYPE_LIVE: 3,
     IMAGE_TYPE_LIVE_WITH_DOC: 4,
+    EXTERNAL: 5,
+}
+
+export const LivenessBackendErrorCodes = {
+    NO_LICENSE: 200,
+    UNDEFINED: -1,
+    LOW_QUALITY: 231,
+    HIGH_ASYMMETRY: 232,
+    TRACK_BREAK: 246,
+    CLOSED_EYES_DETECTED: 230,
+    FACE_OVER_EMOTIONAL: 233,
+    SUNGLASSES_DETECTED: 234,
+    SMALL_AGE: 235,
+    HEADDRESS_DETECTED: 236,
+    MEDICINE_MASK_DETECTED: 239,
+    OCCLUSION_DETECTED: 240,
+    FOREHEAD_GLASSES_DETECTED: 242,
+    MOUTH_OPENED: 243,
+    ART_MASK_DETECTED: 244,
+    NOT_MATCHED: 237,
+    IMAGES_COUNT_LIMIT_EXCEEDED: 238,
+    ELECTRONIC_DEVICE_DETECTED: 245,
+    WRONG_GEO: 247,
+    WRONG_OF: 248,
+    WRONG_VIEW: 249,
 }
 
 export const LivenessErrorCode = {
@@ -318,12 +368,16 @@ export const LivenessErrorCode = {
     PROCESSING_TIMEOUT: 6,
     API_CALL_FAILED: 7,
     PROCESSING_FAILED: 8,
-    PROCESSING_ATTEMPTS_ENDED: 9,
 }
 
 export const LivenessStatus = {
     PASSED: 0,
     UNKNOWN: 1,
+}
+
+export const MatchFacesDetectionCode = {
+    IMAGE_EMPTY: 1,
+    FACE_NOT_DETECTED: 2,
 }
 
 export const MatchFacesErrorCodes = {
@@ -333,26 +387,20 @@ export const MatchFacesErrorCodes = {
     FACE_ALIGNER_FAILED: 4,
     DESCRIPTOR_EXTRACTOR_ERROR: 5,
     NO_LICENSE: 6,
-    NOT_INITIALIZED: 7,
-    COMMAND_IS_NOT_SUPPORTED: 8,
-    COMMAND_PARAMS_READ_ERROR: 9,
-    API_CALL_FAILED: 10,
-    PROCESSING_FAILED: 11,
-}
-
-export const RFSCameraPosition = {
-    RFSCameraPositionBack: 0,
-    RFSCameraPositionFront: 1,
+    COUNT_LIMIT_EXCEEDED: 7,
+    API_CALL_FAILED: 8,
+    PROCESSING_FAILED: 9,
 }
 
 export const Enum = {
-   ComparedFacesPairErrorCodes,
+   CameraPosition,
    FaceCaptureResultCodes,
    ImageType,
+   LivenessBackendErrorCodes,
    LivenessErrorCode,
    LivenessStatus,
+   MatchFacesDetectionCode,
    MatchFacesErrorCodes,
-   RFSCameraPosition,
 }
 
 export default class FaceSDK {

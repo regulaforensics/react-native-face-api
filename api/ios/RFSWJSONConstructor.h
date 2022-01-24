@@ -3,6 +3,7 @@
 
 @import UIKit;
 @import FaceSDK;
+@import FaceSDK.Private;
 
 @interface RFSWJSONConstructor : NSObject
 
