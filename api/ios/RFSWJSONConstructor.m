@@ -1,4 +1,5 @@
 #import "RFSWJSONConstructor.h"
+@import FaceSDK.Private;
 
 @implementation RFSWJSONConstructor
 

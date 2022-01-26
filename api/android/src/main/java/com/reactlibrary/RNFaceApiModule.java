@@ -116,12 +116,6 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "setLanguage":
                     setLanguage(callback, args(0));
                     break;
-                case "setConfig":
-                    setConfig(callback, args(0));
-                    break;
-                case "matchFacesWithConfig":
-                    matchFacesWithConfig(callback, args(0), args(1));
-                    break;
             }
         } catch (Exception ignored) {
         }
@@ -184,18 +178,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         callback.success();
     }
 
-    private void setConfig(Callback callback, JSONObject config) {
-        callback.error("setConfig() is an ios-only method");
-    }
-
     private void matchFaces(Callback callback, String request) throws JSONException {
         Instance().matchFaces(Objects.requireNonNull(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request))), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
-    }
-
-    private void matchFacesWithConfig(Callback callback, String request, JSONObject config) throws JSONException {
-        MatchFaceConfiguration.Builder builder = new MatchFaceConfiguration.Builder();
-        config.has("TODO"); // in order to remove warning Unused
-        Instance().matchFaces(Objects.requireNonNull(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request))), builder.build(),(response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 
     private void setLanguage(Callback callback, @SuppressWarnings("unused") String language) {

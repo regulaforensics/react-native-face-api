@@ -303,10 +303,10 @@ export class MatchFacesSimilarityThresholdSplit {
         const output = []
         for(const pair of this.results){
             if(matched){
-                if(pair.similarity > this.threshold && JSON.stringify(pair.exception) == "{}")
+                if(pair.similarity >= this.threshold && JSON.stringify(pair.exception) == "{}")
                     output.push(pair)
             } else {
-                if(pair.similarity <= this.threshold || JSON.stringify(pair.exception) != "{}")
+                if(pair.similarity < this.threshold || JSON.stringify(pair.exception) != "{}")
                     output.push(pair)
             }
         }
@@ -328,35 +328,11 @@ export const FaceCaptureResultCodes = {
 }
 
 export const ImageType = {
-    IMAGE_TYPE_PRINTED: 1,
-    IMAGE_TYPE_RFID: 2,
-    IMAGE_TYPE_LIVE: 3,
-    IMAGE_TYPE_LIVE_WITH_DOC: 4,
+    PRINTED: 1,
+    RFID: 2,
+    LIVE: 3,
+    DOCUMENT_WITH_LIVE: 4,
     EXTERNAL: 5,
-}
-
-export const LivenessBackendErrorCodes = {
-    NO_LICENSE: 200,
-    UNDEFINED: -1,
-    LOW_QUALITY: 231,
-    HIGH_ASYMMETRY: 232,
-    TRACK_BREAK: 246,
-    CLOSED_EYES_DETECTED: 230,
-    FACE_OVER_EMOTIONAL: 233,
-    SUNGLASSES_DETECTED: 234,
-    SMALL_AGE: 235,
-    HEADDRESS_DETECTED: 236,
-    MEDICINE_MASK_DETECTED: 239,
-    OCCLUSION_DETECTED: 240,
-    FOREHEAD_GLASSES_DETECTED: 242,
-    MOUTH_OPENED: 243,
-    ART_MASK_DETECTED: 244,
-    NOT_MATCHED: 237,
-    IMAGES_COUNT_LIMIT_EXCEEDED: 238,
-    ELECTRONIC_DEVICE_DETECTED: 245,
-    WRONG_GEO: 247,
-    WRONG_OF: 248,
-    WRONG_VIEW: 249,
 }
 
 export const LivenessErrorCode = {
@@ -375,11 +351,6 @@ export const LivenessStatus = {
     UNKNOWN: 1,
 }
 
-export const MatchFacesDetectionCode = {
-    IMAGE_EMPTY: 1,
-    FACE_NOT_DETECTED: 2,
-}
-
 export const MatchFacesErrorCodes = {
     IMAGE_EMPTY: 1,
     FACE_NOT_DETECTED: 2,
@@ -396,10 +367,8 @@ export const Enum = {
    CameraPosition,
    FaceCaptureResultCodes,
    ImageType,
-   LivenessBackendErrorCodes,
    LivenessErrorCode,
    LivenessStatus,
-   MatchFacesDetectionCode,
    MatchFacesErrorCodes,
 }
 
@@ -415,6 +384,4 @@ export default class FaceSDK {
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static setConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static matchFacesWithConfig(request: MatchFacesRequest, config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }
