@@ -22,13 +22,13 @@ export default class App extends Component {
     {
       text: "Use gallery",
       onPress: () => launchImageLibrary({ includeBase64: true }, response => {
-        this.setImage(first, response.base64, Enum.ImageType.IMAGE_TYPE_PRINTED)
+        this.setImage(first, response.base64, Enum.ImageType.PRINTED)
       })
     },
     {
       text: "Use camera",
       onPress: () => FaceSDK.presentFaceCaptureActivity(result => {
-        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
+        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.LIVE)
       }, e => { })
     }], { cancelable: true })
   }
@@ -67,8 +67,10 @@ export default class App extends Component {
     request.images = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
-      split = new MatchFacesSimilarityThresholdSplit(response.results, 0.75)
-      this.setState({ similarity: split.matchedFaces.length > 0 ? ((split.matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
+      FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response.results), str => {
+        split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))
+        this.setState({ similarity: split.matchedFaces.length > 0 ? ((split.matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
+      }, e => { this.setState({ similarity: e }) })
     }, e => { this.setState({ similarity: e }) })
   }
 
@@ -76,7 +78,7 @@ export default class App extends Component {
     FaceSDK.startLiveness(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
-      this.setImage(true, result.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
+      this.setImage(true, result.bitmap, Enum.ImageType.LIVE)
       if(result.bitmap != null)
         this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
     }, e => { })

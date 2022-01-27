@@ -288,29 +288,27 @@ export class Rect {
 }
 
 export class MatchFacesSimilarityThresholdSplit {
-    results?: MatchFacesComparedFacesPair[]
-    threshold?: number
     matchedFaces?: MatchFacesComparedFacesPair[]
     unmatchedFaces?: MatchFacesComparedFacesPair[]
-    constructor(results, threshold) {
-        this.results = results
-        this.threshold = threshold
-        this.matchedFaces = this.getFaces(true)
-        this.unmatchedFaces = this.getFaces(false)
-    }
 
-    getFaces(matched: boolean): MatchFacesComparedFacesPair[]{
-        const output = []
-        for(const pair of this.results){
-            if(matched){
-                if(pair.similarity >= this.threshold && JSON.stringify(pair.exception) == "{}")
-                    output.push(pair)
-            } else {
-                if(pair.similarity < this.threshold || JSON.stringify(pair.exception) != "{}")
-                    output.push(pair)
+    static fromJson(jsonObject?: any): MatchFacesSimilarityThresholdSplit {
+        if (jsonObject == null) return null
+        const result = new MatchFacesSimilarityThresholdSplit
+
+        result.matchedFaces = []
+        if (jsonObject["matchedFaces"] != null) {
+            for (const i in jsonObject["matchedFaces"]) {
+                result.matchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["matchedFaces"][i]))
             }
         }
-        return output
+        result.unmatchedFaces = []
+        if (jsonObject["unmatchedFaces"] != null) {
+            for (const i in jsonObject["unmatchedFaces"]) {
+                result.unmatchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["unmatchedFaces"][i]))
+            }
+        }
+
+        return result
     }
 }
 
@@ -384,4 +382,5 @@ export default class FaceSDK {
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static matchFacesSimilarityThresholdSplit(faces: MatchFacesComparedFacesPair[], similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }

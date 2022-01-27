@@ -217,25 +217,20 @@ export class Rect {
 }
 
 export class MatchFacesSimilarityThresholdSplit {
-    constructor(results, threshold) {
-        this.results = results
-        this.threshold = threshold
-        this.matchedFaces = this.getFaces(true)
-        this.unmatchedFaces = this.getFaces(false)
-    }
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new MatchFacesSimilarityThresholdSplit()
 
-    getFaces(matched){
-        const output = []
-        for(const pair of this.results){
-            if(matched){
-                if(pair.similarity >= this.threshold && JSON.stringify(pair.exception) == "{}")
-                    output.push(pair)
-            } else {
-                if(pair.similarity < this.threshold || JSON.stringify(pair.exception) != "{}")
-                    output.push(pair)
-            }
-        }
-        return output
+        result.matchedFaces = []
+        if (jsonObject["matchedFaces"] != null)
+            for (const i in jsonObject["matchedFaces"])
+                result.matchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["matchedFaces"][i]))
+        result.unmatchedFaces = []
+        if (jsonObject["unmatchedFaces"] != null)
+            for (const i in jsonObject["unmatchedFaces"])
+                result.unmatchedFaces.push(MatchFacesComparedFacesPair.fromJson(jsonObject["unmatchedFaces"][i]))
+
+        return result
     }
 }
 
@@ -312,5 +307,6 @@ FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RN
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
+FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)
 
 export default FaceSDK

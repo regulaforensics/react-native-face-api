@@ -12,7 +12,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.regula.facesdk.configuration.FaceCaptureConfiguration;
 import com.regula.facesdk.configuration.LivenessConfiguration;
-import com.regula.facesdk.configuration.MatchFaceConfiguration;
+import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFacesPair;
+import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 
 import static com.regula.facesdk.FaceSDK.Instance;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -116,6 +118,9 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "setLanguage":
                     setLanguage(callback, args(0));
                     break;
+                case "matchFacesSimilarityThresholdSplit":
+                    matchFacesSimilarityThresholdSplit(callback, args(0), args(1));
+                    break;
             }
         } catch (Exception ignored) {
         }
@@ -180,6 +185,12 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void matchFaces(Callback callback, String request) throws JSONException {
         Instance().matchFaces(Objects.requireNonNull(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request))), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
+    }
+
+    private void matchFacesSimilarityThresholdSplit(Callback callback, String array, Double similarity) throws JSONException {
+        List<MatchFacesComparedFacesPair> faces = JSONConstructor.MatchFacesComparedFacesPairListFromJSON(new JSONArray(array));
+        MatchFacesSimilarityThresholdSplit split = new MatchFacesSimilarityThresholdSplit(faces, similarity);
+        callback.success(JSONConstructor.generateMatchFacesSimilarityThresholdSplit(split).toString());
     }
 
     private void setLanguage(Callback callback, @SuppressWarnings("unused") String language) {
