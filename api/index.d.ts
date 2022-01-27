@@ -313,8 +313,8 @@ export class MatchFacesSimilarityThresholdSplit {
 }
 
 export const CameraPosition = {
-    CameraPositionBack: 0,
-    CameraPositionFront: 1,
+    Back: 0,
+    Front: 1,
 }
 
 export const FaceCaptureResultCodes = {
