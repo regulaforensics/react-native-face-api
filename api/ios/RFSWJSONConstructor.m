@@ -29,9 +29,9 @@
 +(NSMutableDictionary*)generateCGRect:(CGRect)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
 
-    result[@"bottom"] = @(input.origin.y);
+    result[@"top"] = @(input.origin.y);
     result[@"left"] = @(input.origin.x);
-    result[@"top"] = @(input.origin.y+input.size.height);
+    result[@"bottom"] = @(input.origin.y+input.size.height);
     result[@"right"] = @(input.origin.x+input.size.width);
 
     return result;
@@ -172,7 +172,7 @@
         right = [[input valueForKey:@"right"] floatValue];
     }
 
-    return CGRectMake(left, bottom, right - left, top - bottom);
+    return CGRectMake(left, top, right - left, bottom - top);
 }
 
 +(NSMutableArray<RFSPoint*>*)NSArrayRFSPointFromJSON:(NSArray*)input {
