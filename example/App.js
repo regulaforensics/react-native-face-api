@@ -67,8 +67,8 @@ export default class App extends Component {
     request.images = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
-      FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response.results), str => {
-        split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))
+      FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response.results), 0.75, str => {
+        var split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))
         this.setState({ similarity: split.matchedFaces.length > 0 ? ((split.matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
       }, e => { this.setState({ similarity: e }) })
     }, e => { this.setState({ similarity: e }) })
