@@ -392,7 +392,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("@enum", generateerrorCode(input.getErrorCode()));
+            result.put("errorCode", generateFaceCaptureErrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -404,7 +404,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("@enum", generateerrorCode(input.getErrorCode()));
+            result.put("errorCode", generateLivenessErrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -416,7 +416,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("@enum", generateerrorCode(input.getErrorCode()));
+            result.put("errorCode", generateMatchFacesErrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -441,7 +441,7 @@ class JSONConstructor {
         if (input == null) return result;
         try {
             result.put("bitmap", generateBitmap(input.getBitmap()));
-            result.put("@enum", generateliveness(input.getLiveness()));
+            result.put("liveness", generateLivenessStatus(input.getLiveness()));
             result.put("guid", input.getGuid());
             result.put("exception", generateLivenessErrorException(input.getException()));
         } catch (JSONException e) {
@@ -467,7 +467,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("@enum", generateimageType(input.getImageType()));
+            result.put("imageType", generateImageType(input.getImageType()));
             result.put("bitmap", generateBitmap(input.getBitmap()));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -492,7 +492,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("@enum", generateimageType(input.getImageType()));
+            result.put("imageType", generateImageType(input.getImageType()));
             result.put("detectAll", input.isDetectAll());
             result.put("bitmap", generateBitmap(input.getBitmap()));
             result.put("identifier", input.getIdentifier());
