@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Base64;
 
+import com.regula.facesdk.enums.*;
 import com.regula.facesdk.exception.FaceCaptureException;
 import com.regula.facesdk.exception.LivenessErrorException;
 import com.regula.facesdk.exception.MatchFacesException;
@@ -252,7 +253,7 @@ class JSONConstructor {
             boolean detectAll = false;
             if (input.has("detectAll"))
                 detectAll = input.getBoolean("detectAll");
-            return new MatchFacesImage(bitmap, imageType, detectAll);
+            return new MatchFacesImage(bitmap, ImageTypeFromJSON(imageType), detectAll);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -270,7 +271,7 @@ class JSONConstructor {
             String tag = null;
             if (input.has("tag"))
                 tag = input.getString("tag");
-            return new Image(imageType, tag, bitmap);
+            return new Image(ImageTypeFromJSON(imageType), tag, bitmap);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -316,11 +317,10 @@ class JSONConstructor {
     static MatchFacesException MatchFacesExceptionFromJSON(JSONObject input) {
         try {
             if (input.has("errorCode"))
-                return new MatchFacesException(input.getInt("errorCode"));
+                return new MatchFacesException(MatchFacesErrorCodeFromJSON(input.getInt("errorCode")));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println("err MatchFacesExceptionFromJSON");
         return null;
     }
 
@@ -392,7 +392,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("errorCode", input.getErrorCode());
+            result.put("@enum", generateerrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -404,7 +404,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("errorCode", input.getErrorCode());
+            result.put("@enum", generateerrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -416,7 +416,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("errorCode", input.getErrorCode());
+            result.put("@enum", generateerrorCode(input.getErrorCode()));
             result.put("message", input.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -441,7 +441,7 @@ class JSONConstructor {
         if (input == null) return result;
         try {
             result.put("bitmap", generateBitmap(input.getBitmap()));
-            result.put("liveness", input.getLiveness());
+            result.put("@enum", generateliveness(input.getLiveness()));
             result.put("guid", input.getGuid());
             result.put("exception", generateLivenessErrorException(input.getException()));
         } catch (JSONException e) {
@@ -467,7 +467,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("imageType", input.getImageType());
+            result.put("@enum", generateimageType(input.getImageType()));
             result.put("bitmap", generateBitmap(input.getBitmap()));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -492,7 +492,7 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("imageType", input.getImageType());
+            result.put("@enum", generateimageType(input.getImageType()));
             result.put("detectAll", input.isDetectAll());
             result.put("bitmap", generateBitmap(input.getBitmap()));
             result.put("identifier", input.getIdentifier());
@@ -598,6 +598,55 @@ class JSONConstructor {
         return result;
     }
 
+    static int generateImageType(ImageType input) {
+        if (input == ImageType.PRINTED) return 1;
+        if (input == ImageType.RFID) return 2;
+        if (input == ImageType.LIVE) return 3;
+        if (input == ImageType.DOCUMENT_WITH_LIVE) return 4;
+        if (input == ImageType.EXTERNAL) return 5;
+        return 0;
+    }
+
+    static int generateMatchFacesErrorCode(MatchFacesErrorCode input) {
+        if (input == MatchFacesErrorCode.IMAGE_EMPTY) return 1;
+        if (input == MatchFacesErrorCode.FACE_NOT_DETECTED) return 2;
+        if (input == MatchFacesErrorCode.LANDMARKS_NOT_DETECTED) return 3;
+        if (input == MatchFacesErrorCode.FACE_ALIGNER_FAILED) return 4;
+        if (input == MatchFacesErrorCode.DESCRIPTOR_EXTRACTOR_ERROR) return 5;
+        if (input == MatchFacesErrorCode.NO_LICENSE) return 6;
+        if (input == MatchFacesErrorCode.IMAGES_COUNT_LIMIT_EXCEEDED) return 7;
+        if (input == MatchFacesErrorCode.API_CALL_FAILED) return 8;
+        if (input == MatchFacesErrorCode.PROCESSING_FAILED) return 9;
+        return 0;
+    }
+
+    static int generateFaceCaptureErrorCode(FaceCaptureErrorCode input) {
+        if (input == FaceCaptureErrorCode.CANCEL) return 1;
+        if (input == FaceCaptureErrorCode.CAMERA_NOT_AVAILABLE) return 2;
+        if (input == FaceCaptureErrorCode.CAMERA_NO_PERMISSION) return 3;
+        if (input == FaceCaptureErrorCode.IN_PROGRESS_ALREADY) return 4;
+        if (input == FaceCaptureErrorCode.CONTEXT_IS_NULL) return 5;
+        return 0;
+    }
+
+    static int generateLivenessErrorCode(LivenessErrorCode input) {
+        if (input == LivenessErrorCode.CONTEXT_IS_NULL) return 1;
+        if (input == LivenessErrorCode.IN_PROGRESS_ALREADY) return 2;
+        if (input == LivenessErrorCode.ZOOM_NOT_SUPPORTED) return 3;
+        if (input == LivenessErrorCode.NO_LICENSE) return 4;
+        if (input == LivenessErrorCode.CANCELLED) return 5;
+        if (input == LivenessErrorCode.PROCESSING_TIMEOUT) return 6;
+        if (input == LivenessErrorCode.API_CALL_FAILED) return 7;
+        if (input == LivenessErrorCode.PROCESSING_FAILED) return 8;
+        return 0;
+    }
+
+    static int generateLivenessStatus(LivenessStatus input) {
+        if (input == LivenessStatus.PASSED) return 0;
+        if (input == LivenessStatus.UNKNOWN) return 1;
+        return 0;
+    }
+
     // From JSON
 
     static Point PointFromJSON(JSONObject input) {
@@ -630,5 +679,98 @@ class JSONConstructor {
             e.printStackTrace();
         }
         return null;
+    }
+
+    static ImageType ImageTypeFromJSON(int input) {
+        switch (input) {
+            case 1:
+                return ImageType.PRINTED;
+            case 2:
+                return ImageType.RFID;
+            case 3:
+                return ImageType.LIVE;
+            case 4:
+                return ImageType.DOCUMENT_WITH_LIVE;
+            case 5:
+                return ImageType.EXTERNAL;
+            default:
+                return null;
+        }
+    }
+
+    static MatchFacesErrorCode MatchFacesErrorCodeFromJSON(int input) {
+        switch (input) {
+            case 1:
+                return MatchFacesErrorCode.IMAGE_EMPTY;
+            case 2:
+                return MatchFacesErrorCode.FACE_NOT_DETECTED;
+            case 3:
+                return MatchFacesErrorCode.LANDMARKS_NOT_DETECTED;
+            case 4:
+                return MatchFacesErrorCode.FACE_ALIGNER_FAILED;
+            case 5:
+                return MatchFacesErrorCode.DESCRIPTOR_EXTRACTOR_ERROR;
+            case 6:
+                return MatchFacesErrorCode.NO_LICENSE;
+            case 7:
+                return MatchFacesErrorCode.IMAGES_COUNT_LIMIT_EXCEEDED;
+            case 8:
+                return MatchFacesErrorCode.API_CALL_FAILED;
+            case 9:
+                return MatchFacesErrorCode.PROCESSING_FAILED;
+            default:
+                return null;
+        }
+    }
+
+    static FaceCaptureErrorCode FaceCaptureErrorCodeFromJSON(int input) {
+        switch (input) {
+            case 1:
+                return FaceCaptureErrorCode.CANCEL;
+            case 2:
+                return FaceCaptureErrorCode.CAMERA_NOT_AVAILABLE;
+            case 3:
+                return FaceCaptureErrorCode.CAMERA_NO_PERMISSION;
+            case 4:
+                return FaceCaptureErrorCode.IN_PROGRESS_ALREADY;
+            case 5:
+                return FaceCaptureErrorCode.CONTEXT_IS_NULL;
+            default:
+                return null;
+        }
+    }
+
+    static LivenessErrorCode LivenessErrorCodeFromJSON(int input) {
+        switch (input) {
+            case 1:
+                return LivenessErrorCode.CONTEXT_IS_NULL;
+            case 2:
+                return LivenessErrorCode.IN_PROGRESS_ALREADY;
+            case 3:
+                return LivenessErrorCode.ZOOM_NOT_SUPPORTED;
+            case 4:
+                return LivenessErrorCode.NO_LICENSE;
+            case 5:
+                return LivenessErrorCode.CANCELLED;
+            case 6:
+                return LivenessErrorCode.PROCESSING_TIMEOUT;
+            case 7:
+                return LivenessErrorCode.API_CALL_FAILED;
+            case 8:
+                return LivenessErrorCode.PROCESSING_FAILED;
+            default:
+                return null;
+        }
+    }
+
+    static LivenessStatus LivenessStatusFromJSON(int input) {
+        switch (input) {
+            case 0:
+                return LivenessStatus.PASSED;
+            case 1:
+                return LivenessStatus.UNKNOWN;
+            default:
+                return null;
+        }
     }
 }
