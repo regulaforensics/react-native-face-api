@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, Image as FaceImage } from '@regulaforensics/react-native-face-api'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/react-native-face-api'
 
-var image1 = new FaceImage()
-var image2 = new FaceImage()
+var image1 = new MatchFacesImage()
+var image2 = new MatchFacesImage()
 
 export default class App extends Component {
   constructor(props) {
@@ -22,13 +22,13 @@ export default class App extends Component {
     {
       text: "Use gallery",
       onPress: () => launchImageLibrary({ includeBase64: true }, response => {
-        this.setImage(first, response.base64, Enum.ImageType.IMAGE_TYPE_PRINTED)
+        this.setImage(first, response.base64, Enum.ImageType.PRINTED)
       })
     },
     {
       text: "Use camera",
       onPress: () => FaceSDK.presentFaceCaptureActivity(result => {
-        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
+        this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.LIVE)
       }, e => { })
     }], { cancelable: true })
   }
@@ -55,8 +55,8 @@ export default class App extends Component {
       similarity: "nil",
       liveness: "nil"
      })
-    image1 = new FaceImage()
-    image2 = new FaceImage()
+    image1 = new MatchFacesImage()
+    image2 = new MatchFacesImage()
   }
 
   matchFaces() {
@@ -67,8 +67,10 @@ export default class App extends Component {
     request.images = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
-      matchedFaces = response.matchedFaces
-      this.setState({ similarity: matchedFaces.length > 0 ? ((matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
+      FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response.results), 0.75, str => {
+        var split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))
+        this.setState({ similarity: split.matchedFaces.length > 0 ? ((split.matchedFaces[0].similarity * 100).toFixed(2) + "%") : "error" })
+      }, e => { this.setState({ similarity: e }) })
     }, e => { this.setState({ similarity: e }) })
   }
 
@@ -76,7 +78,7 @@ export default class App extends Component {
     FaceSDK.startLiveness(result => {
       result = LivenessResponse.fromJson(JSON.parse(result))
       
-      this.setImage(true, result.bitmap, Enum.ImageType.IMAGE_TYPE_LIVE)
+      this.setImage(true, result.bitmap, Enum.ImageType.LIVE)
       if(result.bitmap != null)
         this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
     }, e => { })

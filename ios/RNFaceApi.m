@@ -40,10 +40,31 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"setLanguage"])
         [self setLanguage :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"matchFacesWithConfig"])
-        [self matchFacesWithConfig :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
+    else if([action isEqualToString:@"matchFacesSimilarityThresholdSplit"])
+        [self matchFacesSimilarityThresholdSplit :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
+}
+
+-(unsigned int)intFromHexString:(NSString *)hexStr {
+    unsigned int hexInt = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexStr];
+    [scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"#"]];
+    [scanner scanHexInt:&hexInt];
+
+    return hexInt;
+}
+
+-(UIColor *)getUIColorObjectFromHexString:(NSString *)hexStr alpha:(CGFloat)alpha {
+    unsigned int hexInt = [self intFromHexString:hexStr];
+
+    UIColor *color =
+    [UIColor colorWithRed:((CGFloat) ((hexInt & 0xFF0000) >> 16))/255
+                    green:((CGFloat) ((hexInt & 0xFF00) >> 8))/255
+                     blue:((CGFloat) (hexInt & 0xFF))/255
+                    alpha:alpha];
+
+    return color;
 }
 
 - (void) getServiceUrl:(Callback)successCallback :(Callback)errorCallback{
@@ -115,8 +136,11 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
-- (void) matchFacesWithConfig:(NSString*)requestString :(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
-    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+- (void) matchFacesSimilarityThresholdSplit:(NSString*)str :(NSNumber*)similarity :(Callback)successCallback :(Callback)errorCallback{
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:[str dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    NSArray<RFSMatchFacesComparedFacesPair *> *faces = [RFSWJSONConstructor NSArrayRFSMatchFacesComparedFacesPairFromJSON:array];
+    RFSMatchFacesSimilarityThresholdSplit *split = [RFSMatchFacesSimilarityThresholdSplit splitPairs:faces bySimilarityThreshold:similarity];
+    [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSMatchFacesSimilarityThresholdSplit:split]] :successCallback];
 }
 
 - (void) setLanguage:(NSString*)language :(Callback)successCallback :(Callback)errorCallback{

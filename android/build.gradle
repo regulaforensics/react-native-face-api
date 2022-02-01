@@ -16,7 +16,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -49,7 +49,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
     //noinspection GradleDependency
-    implementation('com.regula.face:api:3.1.1351'){
+    implementation('com.regula.face:api:3.2.1572'){
         transitive = true
     }
 }
