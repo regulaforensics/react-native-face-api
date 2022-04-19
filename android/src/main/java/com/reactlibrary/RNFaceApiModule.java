@@ -154,26 +154,30 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void presentFaceCaptureActivityWithConfig(Callback callback, JSONObject config) throws JSONException {
         FaceCaptureConfiguration.Builder builder = new FaceCaptureConfiguration.Builder();
-        if(config.has("cameraId"))
+        if (config.has("forceToUseHuaweiVision"))
+            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
+        if (config.has("cameraId"))
             builder.setCameraId(config.getInt("cameraId"));
-        if(config.has("cameraSwitchEnabled"))
+        if (config.has("cameraSwitchEnabled"))
             builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
-        if(config.has("showHelpTextAnimation"))
+        if (config.has("showHelpTextAnimation"))
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
         Instance().presentFaceCaptureActivity(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
     }
 
     private void startLivenessWithConfig(Callback callback, JSONObject config) throws JSONException {
         LivenessConfiguration.Builder builder = new LivenessConfiguration.Builder();
-        if(config.has("attemptsCount"))
+        if (config.has("forceToUseHuaweiVision"))
+            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
+        if (config.has("attemptsCount"))
             builder.setAttemptsCount(config.getInt("attemptsCount"));
-        if(config.has("cameraId"))
+        if (config.has("cameraId"))
             builder.setCameraId(config.getInt("cameraId"));
-        if(config.has("cameraSwitchEnabled"))
+        if (config.has("cameraSwitchEnabled"))
             builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
-        if(config.has("showHelpTextAnimation"))
+        if (config.has("showHelpTextAnimation"))
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
-        if(config.has("locationTrackingEnabled"))
+        if (config.has("locationTrackingEnabled"))
             builder.setLocationTrackingEnabled(config.getBoolean("locationTrackingEnabled"));
         Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
     }
