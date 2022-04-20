@@ -307,7 +307,7 @@ class JSONConstructor {
             float score = 0;
             if (input.has("score"))
                 score = (float)input.getDouble("score");
-            return new MatchFacesComparedFacesPair.a().a(first, second, exception, similarity, score).a();
+            return new MatchFacesComparedFacesPair(first, second, exception, similarity, score);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -338,7 +338,7 @@ class JSONConstructor {
             MatchFacesDetectionFace face = null;
             if (input.has("face"))
                 face = MatchFacesDetectionFaceFromJSON(input.getJSONObject("face"));
-            return new MatchFacesComparedFace.a().a(imageIndex, image, faceIndex, face).a();
+            return new MatchFacesComparedFace(imageIndex, image, faceIndex, face);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -359,7 +359,7 @@ class JSONConstructor {
             Rect faceRect = null;
             if (input.has("faceRect"))
                 faceRect = RectFromJSON(input.getJSONObject("faceRect"));
-            return new MatchFacesDetectionFace.a().a(faceIndex, rotationAngle, landmarks, faceRect).a();
+            return new MatchFacesDetectionFace(faceIndex, rotationAngle, landmarks, faceRect);
         } catch (JSONException e) {
             e.printStackTrace();
         }
