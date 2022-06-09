@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.regula.facesdk.configuration.FaceCaptureConfiguration;
 import com.regula.facesdk.configuration.LivenessConfiguration;
+import com.regula.facesdk.configuration.MatchFaceConfiguration;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFacesPair;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit;
 
@@ -23,7 +24,6 @@ import static com.regula.facesdk.FaceSDK.Instance;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public class RNFaceApiModule extends ReactContextBaseJavaModule {
@@ -115,6 +115,9 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "matchFaces":
                     matchFaces(callback, args(0));
                     break;
+                case "matchFacesWithConfig":
+                    matchFacesWithConfig(callback, args(0), args(1));
+                    break;
                 case "setLanguage":
                     setLanguage(callback, args(0));
                     break;
@@ -162,6 +165,10 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
             builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
         if (config.has("showHelpTextAnimation"))
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
+        if (config.has("closeButtonEnabled"))
+            builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
+        if (config.has("torchButtonEnabled"))
+            builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
         Instance().presentFaceCaptureActivity(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
     }
 
@@ -179,6 +186,10 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
         if (config.has("locationTrackingEnabled"))
             builder.setLocationTrackingEnabled(config.getBoolean("locationTrackingEnabled"));
+        if (config.has("closeButtonEnabled"))
+            builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
+        if (config.has("torchButtonEnabled"))
+            builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
         Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
     }
 
@@ -188,7 +199,14 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     }
 
     private void matchFaces(Callback callback, String request) throws JSONException {
-        Instance().matchFaces(Objects.requireNonNull(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request))), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
+        Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
+    }
+
+    private void matchFacesWithConfig(Callback callback, String request, JSONObject config) throws JSONException {
+        MatchFaceConfiguration.Builder builder = new MatchFaceConfiguration.Builder();
+        if (config.has("forceToUseHuaweiVision"))
+            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
+        Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), builder.build(), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 
     private void matchFacesSimilarityThresholdSplit(Callback callback, String array, Double similarity) throws JSONException {

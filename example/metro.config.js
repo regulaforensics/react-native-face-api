@@ -1,16 +1,17 @@
-const path = require('path');
-const folders = ["../", path.resolve(path.join(__dirname, './node_modules'))];
+/**
+ * Metro configuration for React Native
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
+
 module.exports = {
   transformer: {
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,
-        inlineRequires: true,
+        inlineRequires: false,
       },
     }),
   },
-  resolver: {
-    nodeModulesPaths: folders
-  },
-  watchFolders: folders,
 };
