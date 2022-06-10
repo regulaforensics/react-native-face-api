@@ -381,6 +381,7 @@ export default class FaceSDK {
     static startLivenessWithConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static matchFacesWithConfig(request: MatchFacesRequest, config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFacesSimilarityThresholdSplit(faces: string, similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }

@@ -306,6 +306,7 @@ FaceSDK.presentFaceCaptureActivityWithConfig = (config, successCallback, errorCa
 FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessWithConfig", [config], successCallback, errorCallback)
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
+FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
 FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)
 

@@ -38,6 +38,8 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self setServiceUrl :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"matchFaces"])
         [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"matchFacesWithConfig"])
+        [self matchFacesWithConfig :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else if([action isEqualToString:@"setLanguage"])
         [self setLanguage :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"matchFacesSimilarityThresholdSplit"])
@@ -100,11 +102,15 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 - (void) presentFaceCaptureActivityWithConfig:(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
     RFSFaceCaptureConfiguration *configuration = [RFSFaceCaptureConfiguration configurationWithBuilder:^(RFSFaceCaptureConfigurationBuilder  * _Nonnull builder) {
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
-            [builder setCameraSwitchEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
         if([config valueForKey:@"showHelpTextAnimation"] != nil)
             [builder setEnableHintAnimation:[[config valueForKey:@"showHelpTextAnimation"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)
             [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"torchButtonEnabled"] integerValue]]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"closeButtonEnabled"] integerValue]]];
     }];
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
@@ -116,11 +122,15 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         if([config valueForKey:@"attemptsCount"] != nil)
             [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
-            [builder setCameraSwitchEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
         if([config valueForKey:@"showHelpTextAnimation"] != nil)
             [builder setEnableHintAnimation:[[config valueForKey:@"showHelpTextAnimation"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)
             [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"torchButtonEnabled"] integerValue]]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"closeButtonEnabled"] integerValue]]];
     }];
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSFaceSDK.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
@@ -133,6 +143,10 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 }
 
 - (void) matchFaces:(NSString*)requestString :(Callback)successCallback :(Callback)errorCallback{
+    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+}
+
+- (void) matchFacesWithConfig:(NSString*)requestString :(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
     [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
