@@ -241,20 +241,9 @@ export const CameraPosition = {
     Front: 1,
 }
 
-export const FaceCaptureErrorCode = {
-    CANCEL: 1,
-    CAMERA_NOT_AVAILABLE: 2,
-    CAMERA_NO_PERMISSION: 3,
-    IN_PROGRESS_ALREADY: 4,
-    CONTEXT_IS_NULL: 5,
-}
-
-export const ImageType = {
-    PRINTED: 1,
-    RFID: 2,
-    LIVE: 3,
-    DOCUMENT_WITH_LIVE: 4,
-    EXTERNAL: 5,
+export const LivenessStatus = {
+    PASSED: 0,
+    UNKNOWN: 1,
 }
 
 export const LivenessErrorCode = {
@@ -268,9 +257,20 @@ export const LivenessErrorCode = {
     PROCESSING_FAILED: 8,
 }
 
-export const LivenessStatus = {
-    PASSED: 0,
-    UNKNOWN: 1,
+export const ImageType = {
+    PRINTED: 1,
+    RFID: 2,
+    LIVE: 3,
+    DOCUMENT_WITH_LIVE: 4,
+    EXTERNAL: 5,
+}
+
+export const FaceCaptureErrorCode = {
+    CANCEL: 1,
+    CAMERA_NOT_AVAILABLE: 2,
+    CAMERA_NO_PERMISSION: 3,
+    IN_PROGRESS_ALREADY: 4,
+    CONTEXT_IS_NULL: 5,
 }
 
 export const MatchFacesErrorCodes = {
@@ -287,10 +287,10 @@ export const MatchFacesErrorCodes = {
 
 export const Enum = {
    CameraPosition,
-   FaceCaptureErrorCode,
-   ImageType,
-   LivenessErrorCode,
    LivenessStatus,
+   LivenessErrorCode,
+   ImageType,
+   FaceCaptureErrorCode,
    MatchFacesErrorCodes,
 }
 
