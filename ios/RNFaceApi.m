@@ -131,6 +131,8 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setTorchButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"torchButtonEnabled"] integerValue]]];
         if([config valueForKey:@"closeButtonEnabled"] != nil)
             [builder setCloseButtonEnabled:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"closeButtonEnabled"] integerValue]]];
+        if([config valueForKey:@"recordingProcess"] != nil)
+            [builder setRecordingProcessEnabled:[[config valueForKey:@"recordingProcess"] boolValue]];
     }];
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSFaceSDK.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];

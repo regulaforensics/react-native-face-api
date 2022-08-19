@@ -190,6 +190,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
             builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
         if (config.has("torchButtonEnabled"))
             builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
+        if (config.has("recordingProcess"))
+            builder.setRecordingProcess(config.getBoolean("recordingProcess"));
         Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
     }
 
