@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert } from 'react-native'
+import { StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert, LogBox, NativeEventEmitter } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/react-native-face-api-beta'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit, RNFaceApi } from '@regulaforensics/react-native-face-api-beta'
+
+LogBox.ignoreLogs(['new NativeEventEmitter']);
+const eventManager = new NativeEventEmitter(RNFaceApi)
 
 var image1 = new MatchFacesImage()
 var image2 = new MatchFacesImage()
@@ -9,6 +12,24 @@ var image2 = new MatchFacesImage()
 export default class App extends Component {
   constructor(props) {
     super(props)
+
+    eventManager.addListener('videoEncoderCompletionEvent', json => {
+      response = JSON.parse(json)
+      transactionId = response["transactionId"];
+      success = response["success"];
+      console.log("video_encoder_completion:");
+      console.log("    success: " + success);
+      console.log("    transactionId: " + transactionId);
+    })
+
+    FaceSDK.init(json => {
+      response = JSON.parse(json)
+      if (!response["success"]) {
+        console.log("Init failed: ");
+        console.log(json);
+      }
+    }, e => { })
+
     this.state = {
       img1: require('./images/portrait.png'),
       img2: require('./images/portrait.png'),
@@ -81,7 +102,7 @@ export default class App extends Component {
 
       this.setImage(true, result.bitmap, Enum.ImageType.LIVE)
       if (result.bitmap != null)
-        this.setState({ liveness: result["liveness"] == 0 ? "passed" : "unknown" })
+        this.setState({ liveness: result["liveness"] == Enum.LivenessStatus.PASSED ? "passed" : "unknown" })
     }, e => { })
   }
 
