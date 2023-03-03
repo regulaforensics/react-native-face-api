@@ -15,10 +15,35 @@ export class FaceCaptureException {
     }
 }
 
+export class InitException {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new InitException()
+
+        result.errorCode = jsonObject["errorCode"]
+        result.message = jsonObject["message"]
+
+        return result
+    }
+}
+
 export class LivenessErrorException {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
         const result = new LivenessErrorException()
+
+        result.errorCode = jsonObject["errorCode"]
+        result.underlyingException = LivenessBackendException.fromJson(jsonObject["underlyingException"])
+        result.message = jsonObject["message"]
+
+        return result
+    }
+}
+
+export class LivenessBackendException {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new LivenessBackendException()
 
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
@@ -58,7 +83,8 @@ export class LivenessResponse {
 
         result.bitmap = jsonObject["bitmap"]
         result.liveness = jsonObject["liveness"]
-        result.guid = jsonObject["guid"]
+        result.sessionId = jsonObject["sessionId"]
+        result.transactionId = jsonObject["transactionId"]
         result.exception = LivenessErrorException.fromJson(jsonObject["exception"])
 
         return result
@@ -91,6 +117,11 @@ export class Image {
 
         result.imageType = jsonObject["imageType"]
         result.bitmap = jsonObject["bitmap"]
+        result.tag = jsonObject["tag"]
+        result.imageData = []
+        if (jsonObject["imageData"] != null)
+            for (const i in jsonObject["imageData"])
+                result.imageData.push(jsonObject["imageData"][i])
 
         return result
     }
@@ -234,27 +265,358 @@ export class MatchFacesSimilarityThresholdSplit {
     }
 }
 
+export class DetectFacesRequest {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesRequest()
+
+        result.scenario = jsonObject["scenario"]
+        result.image = jsonObject["image"]
+        result.configuration = DetectFacesConfiguration.fromJson(jsonObject["configuration"])
+
+        return result
+    }
+}
+
+export class DetectFacesConfiguration {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesConfiguration()
+
+        result.attributes = []
+        if (jsonObject["attributes"] != null)
+            for (const i in jsonObject["attributes"])
+                result.attributes.push(jsonObject["attributes"][i])
+        result.customQuality = []
+        if (jsonObject["customQuality"] != null)
+            for (const i in jsonObject["customQuality"])
+                result.customQuality.push(ImageQualityCharacteristic.fromJson(jsonObject["customQuality"][i]))
+        result.outputImageParams = OutputImageParams.fromJson(jsonObject["outputImageParams"])
+        result.onlyCentralFace = jsonObject["onlyCentralFace"]
+
+        return result
+    }
+}
+
+export class OutputImageParams {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new OutputImageParams()
+
+        result.backgroundColor = jsonObject["backgroundColor"]
+        result.crop = OutputImageCrop.fromJson(jsonObject["crop"])
+
+        return result
+    }
+}
+
+export class OutputImageCrop {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new OutputImageCrop()
+
+        result.type = jsonObject["type"]
+        result.size = Size.fromJson(jsonObject["size"])
+        result.padColor = jsonObject["padColor"]
+        result.returnOriginalRect = jsonObject["returnOriginalRect"]
+
+        return result
+    }
+}
+
+export class ImageQualityCharacteristic {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new ImageQualityCharacteristic()
+
+        result.characteristicName = jsonObject["characteristicName"]
+        result.imageQualityGroup = jsonObject["imageQualityGroup"]
+        result.recommendedRange = ImageQualityRange.fromJson(jsonObject["recommendedRange"])
+        result.customRange = ImageQualityRange.fromJson(jsonObject["customRange"])
+
+        return result
+    }
+}
+
+export class ImageQualityRange {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new ImageQualityRange()
+
+        result.min = jsonObject["min"]
+        result.max = jsonObject["max"]
+
+        return result
+    }
+}
+
+export class Size {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new Size()
+
+        result.width = jsonObject["width"]
+        result.height = jsonObject["height"]
+
+        return result
+    }
+}
+
+export class DetectFacesResponse {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesResponse()
+
+        result.detection = DetectFaceResult.fromJson(jsonObject["detection"])
+        result.scenario = jsonObject["scenario"]
+        result.error = DetectFacesErrorException.fromJson(jsonObject["error"])
+        result.allDetections = []
+        if (jsonObject["allDetections"] != null)
+            for (const i in jsonObject["allDetections"])
+                result.allDetections.push(DetectFaceResult.fromJson(jsonObject["allDetections"][i]))
+
+        return result
+    }
+}
+
+export class DetectFacesErrorException {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesErrorException()
+
+        result.errorCode = jsonObject["errorCode"]
+        result.underlyingException = DetectFacesBackendException.fromJson(jsonObject["underlyingException"])
+        result.message = jsonObject["message"]
+
+        return result
+    }
+}
+
+export class DetectFacesBackendException {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesBackendException()
+
+        result.errorCode = jsonObject["errorCode"]
+        result.message = jsonObject["message"]
+
+        return result
+    }
+}
+
+export class DetectFaceResult {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFaceResult()
+
+        result.quality = []
+        if (jsonObject["quality"] != null)
+            for (const i in jsonObject["quality"])
+                result.quality.push(ImageQualityResult.fromJson(jsonObject["quality"][i]))
+        result.attributes = []
+        if (jsonObject["attributes"] != null)
+            for (const i in jsonObject["attributes"])
+                result.attributes.push(DetectFacesAttributeResult.fromJson(jsonObject["attributes"][i]))
+        result.landmarks = []
+        if (jsonObject["landmarks"] != null)
+            for (const i in jsonObject["landmarks"])
+                result.landmarks.push(Point.fromJson(jsonObject["landmarks"][i]))
+        result.crop = jsonObject["crop"]
+        result.faceRect = Rect.fromJson(jsonObject["faceRect"])
+        result.originalRect = Rect.fromJson(jsonObject["originalRect"])
+        result.isQualityCompliant = jsonObject["isQualityCompliant"]
+
+        return result
+    }
+}
+
+export class ImageQualityResult {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new ImageQualityResult()
+
+        result.name = jsonObject["name"]
+        result.group = jsonObject["group"]
+        result.status = jsonObject["status"]
+        result.range = ImageQualityRange.fromJson(jsonObject["range"])
+        result.value = jsonObject["value"]
+
+        return result
+    }
+}
+
+export class DetectFacesAttributeResult {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new DetectFacesAttributeResult()
+
+        result.attribute = jsonObject["attribute"]
+        result.value = jsonObject["value"]
+        result.range = ImageQualityRange.fromJson(jsonObject["range"])
+        result.confidence = jsonObject["confidence"]
+
+        return result
+    }
+}
+
 // Enum
 
-export const CameraPosition = {
-    Back: 0,
-    Front: 1,
+export const ImageQualityGroupName = {
+    IMAGE_CHARACTERISTICS: 1,
+    HEAD_SIZE_AND_POSITION: 2,
+    FACE_QUALITY: 3,
+    EYES_CHARACTERISTICS: 4,
+    SHADOWS_AND_LIGHTNING: 5,
+    POSE_AND_EXPRESSION: 6,
+    HEAD_OCCLUSION: 7,
+    BACKGROUND: 8,
+    UNKNOWN: 9,
+}
+
+export const DetectFacesErrorCode = {
+    IMAGE_EMPTY: "IMAGE_EMPTY",
+    FR_FACE_NOT_DETECTED: "FR_FACE_NOT_DETECTED",
+    FACER_NO_LICENSE: "FACER_NO_LICENSE",
+    FACER_IS_NOT_INITIALIZED: "FACER_IS_NOT_INITIALIZED",
+    FACER_COMMAND_IS_NOT_SUPPORTED: "FACER_COMMAND_IS_NOT_SUPPORTED",
+    FACER_COMMAND_PARAMS_READ_ERROR: "FACER_COMMAND_PARAMS_READ_ERROR",
+    PROCESSING_FAILED: "PROCESSING_FAILED",
+    REQUEST_FAILED: "REQUEST_FAILED",
+    API_CALL_FAILED: "API_CALL_FAILED",
+}
+
+export const InitErrorCode = {
+    IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
+    CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
+    MISSING_CORE: "MISSING_CORE",
+    INTERNAL_CORE_ERROR: "INTERNAL_CORE_ERROR",
 }
 
 export const LivenessStatus = {
-    PASSED: 0,
-    UNKNOWN: 1,
+    PASSED: "PASSED",
+    UNKNOWN: "UNKNOWN",
+}
+
+export const CameraErrorCode = {
+    CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
+    CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
 }
 
 export const LivenessErrorCode = {
-    CONTEXT_IS_NULL: 1,
-    IN_PROGRESS_ALREADY: 2,
-    ZOOM_NOT_SUPPORTED: 3,
-    NO_LICENSE: 4,
-    CANCELLED: 5,
-    PROCESSING_TIMEOUT: 6,
-    API_CALL_FAILED: 7,
-    PROCESSING_FAILED: 8,
+    CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
+    IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
+    ZOOM_NOT_SUPPORTED: "ZOOM_NOT_SUPPORTED",
+    NO_LICENSE: "NO_LICENSE",
+    CANCELLED: "CANCELLED",
+    PROCESSING_TIMEOUT: "PROCESSING_TIMEOUT",
+    API_CALL_FAILED: "API_CALL_FAILED",
+    PROCESSING_FAILED: "PROCESSING_FAILED",
+    NOT_INITIALIZED: "NOT_INITIALIZED",
+    CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
+    CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
+    PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
+}
+
+export const DetectFacesBackendErrorCode = {
+    FR_FACE_NOT_DETECTED: 2,
+    FACER_NO_LICENSE: 200,
+    FACER_IS_NOT_INITIALIZED: 201,
+    FACER_COMMAND_IS_NOT_SUPPORTED: 202,
+    FACER_COMMAND_PARAMS_READ_ERROR: 203,
+    UNDEFINED: -1,
+}
+
+export const MatchFacesErrorCode = {
+    IMAGE_EMPTY: "IMAGE_EMPTY",
+    FACE_NOT_DETECTED: "FACE_NOT_DETECTED",
+    LANDMARKS_NOT_DETECTED: "LANDMARKS_NOT_DETECTED",
+    FACE_ALIGNER_FAILED: "FACE_ALIGNER_FAILED",
+    DESCRIPTOR_EXTRACTOR_ERROR: "DESCRIPTOR_EXTRACTOR_ERROR",
+    NO_LICENSE: "NO_LICENSE",
+    IMAGES_COUNT_LIMIT_EXCEEDED: "IMAGES_COUNT_LIMIT_EXCEEDED",
+    API_CALL_FAILED: "API_CALL_FAILED",
+    PROCESSING_FAILED: "PROCESSING_FAILED",
+}
+
+export const ImageQualityCharacteristicName = {
+    IMAGE_WIDTH: "ImageWidth",
+    IMAGE_HEIGHT: "ImageHeight",
+    IMAGE_WIDTH_TO_HEIGHT: "ImageWidthToHeight",
+    IMAGE_CHANNELS_NUMBER: "ImageChannelsNumber",
+    PADDING_RATIO: "PaddingRatio",
+    FACE_MID_POINT_HORIZONTAL_POSITION: "FaceMidPointHorizontalPosition",
+    FACE_MID_POINT_VERTICAL_POSITION: "FaceMidPointVerticalPosition",
+    HEAD_WIDTH_RATIO: "HeadWidthRatio",
+    HEAD_HEIGHT_RATIO: "HeadHeightRatio",
+    EYES_DISTANCE: "EyesDistance",
+    YAW: "Yaw",
+    PITCH: "Pitch",
+    ROLL: "Roll",
+    BLUR_LEVEL: "BlurLevel",
+    NOISE_LEVEL: "NoiseLevel",
+    UNNATURAL_SKIN_TONE: "UnnaturalSkinTone",
+    FACE_DYNAMIC_RANGE: "FaceDynamicRange",
+    EYE_RIGHT_CLOSED: "EyeRightClosed",
+    EYE_LEFT_CLOSED: "EyeLeftClosed",
+    EYE_RIGHT_OCCLUDED: "EyeRightOccluded",
+    EYE_LEFT_OCCLUDED: "EyeLeftOccluded",
+    EYES_RED: "EyesRed",
+    EYE_RIGHT_COVERED_WITH_HAIR: "EyeRightCoveredWithHair",
+    EYE_LEFT_COVERED_WITH_HAIR: "EyeLeftCoveredWithHair",
+    OFF_GAZE: "OffGaze",
+    TOO_DARK: "TooDark",
+    TOO_LIGHT: "TooLight",
+    FACE_GLARE: "FaceGlare",
+    SHADOWS_ON_FACE: "ShadowsOnFace",
+    SHOULDERS_POSE: "ShouldersPose",
+    EXPRESSION_LEVEL: "ExpressionLevel",
+    MOUTH_OPEN: "MouthOpen",
+    SMILE: "Smile",
+    DARK_GLASSES: "DarkGlasses",
+    REFLECTION_ON_GLASSES: "ReflectionOnGlasses",
+    FRAMES_TOO_HEAVY: "FramesTooHeavy",
+    FACE_OCCLUDED: "FaceOccluded",
+    HEAD_COVERING: "HeadCovering",
+    FOREHEAD_COVERING: "ForeheadCovering",
+    STRONG_MAKEUP: "StrongMakeup",
+    HEAD_PHONES: "Headphones",
+    MEDICAL_MASK: "MedicalMask",
+    BACKGROUND_UNIFORMITY: "BackgroundUniformity",
+    SHADOWS_ON_BACKGROUND: "ShadowsOnBackground",
+    OTHER_FACES: "OtherFaces",
+    BACKGROUND_COLOR_MATCH: "BackgroundColorMatch",
+    UNKNOWN: "Unknown",
+}
+
+export const DetectFacesScenario = {
+    CROP_CENTRAL_FACE: "CropCentralFace",
+    CROP_ALL_FACES: "CropAllFaces",
+    THUMBNAIL: "Thumbnail",
+    ATTRIBUTES_ALL: "AttributesAll",
+    QUALITY_FULL: "QualityFull",
+    QUALITY_ICAO: "QualityICAO",
+    QUALITY_VISA_SCHENGEN: "QualityVisaSchengen",
+    QUALITY_VISA_USA: "QualityVisaUSA",
+}
+
+export const OutputImageCropAspectRatio = {
+    OUTPUT_IMAGE_CROP_ASPECT_RATIO_3X4: 0,
+    OUTPUT_IMAGE_CROP_ASPECT_RATIO_4X5: 1,
+    OUTPUT_IMAGE_CROP_ASPECT_RATIO_2X3: 2,
+    OUTPUT_IMAGE_CROP_ASPECT_RATIO_1X1: 3,
+    OUTPUT_IMAGE_CROP_ASPECT_RATIO_7X9: 4,
+}
+
+export const LivenessSkipStep = {
+    NONE: 0,
+    START_STEP: 1,
+    DONE_STEP: 2,
+}
+
+export const ImageQualityResultStatus = {
+    IMAGE_QUALITY_RESULT_STATUS_FALSE: 0,
+    IMAGE_QUALITY_RESULT_STATUS_TRUE: 1,
+    IMAGE_QUALITY_RESULT_STATUS_UNDETERMINED: 2,
 }
 
 export const ImageType = {
@@ -263,35 +625,77 @@ export const ImageType = {
     LIVE: 3,
     DOCUMENT_WITH_LIVE: 4,
     EXTERNAL: 5,
+    GHOST_PORTRAIT: 6,
 }
 
 export const FaceCaptureErrorCode = {
-    CANCEL: 1,
-    CAMERA_NOT_AVAILABLE: 2,
-    CAMERA_NO_PERMISSION: 3,
-    IN_PROGRESS_ALREADY: 4,
-    CONTEXT_IS_NULL: 5,
+    CANCEL: "CANCEL",
+    CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
+    CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
+    IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
+    CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
+    TIMEOUT: "TIMEOUT",
+    NOT_INITIALIZED: "NOT_INITIALIZED",
 }
 
-export const MatchFacesErrorCodes = {
-    IMAGE_EMPTY: 1,
-    FACE_NOT_DETECTED: 2,
-    LANDMARKS_NOT_DETECTED: 3,
-    FACE_ALIGNER_FAILED: 4,
-    DESCRIPTOR_EXTRACTOR_ERROR: 5,
-    NO_LICENSE: 6,
-    IMAGES_COUNT_LIMIT_EXCEEDED: 7,
-    API_CALL_FAILED: 8,
-    PROCESSING_FAILED: 9,
+export const LivenessBackendErrorCode = {
+    UNDEFINED: -1,
+    NO_LICENSE: 200,
+    LOW_QUALITY: 231,
+    HIGH_ASYMMETRY: 232,
+    TRACK_BREAK: 246,
+    CLOSED_EYES_DETECTED: 230,
+    FACE_OVER_EMOTIONAL: 233,
+    SUNGLASSES_DETECTED: 234,
+    SMALL_AGE: 235,
+    HEADDRESS_DETECTED: 236,
+    MEDICINE_MASK_DETECTED: 239,
+    OCCLUSION_DETECTED: 240,
+    FOREHEAD_GLASSES_DETECTED: 242,
+    MOUTH_OPENED: 243,
+    ART_MASK_DETECTED: 244,
+    NOT_MATCHED: 237,
+    IMAGES_COUNT_LIMIT_EXCEEDED: 238,
+    ELECTRONIC_DEVICE_DETECTED: 245,
+    WRONG_GEO: 247,
+    WRONG_OF: 248,
+    WRONG_VIEW: 249,
+}
+
+export const DetectFacesAttribute = {
+    AGE: "Age",
+    EYE_RIGHT: "EyeRight",
+    EYE_LEFT: "EyeLeft",
+    EMOTION: "Emotion",
+    SMILE: "Smile",
+    GLASSES: "Glasses",
+    HEAD_COVERING: "HeadCovering",
+    FOREHEAD_COVERING: "ForeheadCovering",
+    MOUTH: "Mouth",
+    MEDICAL_MASK: "MedicalMask",
+    OCCLUSION: "Occlusion",
+    STRONG_MAKEUP: "StrongMakeup",
+    HEADPHONES: "Headphones",
 }
 
 export const Enum = {
-   CameraPosition,
+   ImageQualityGroupName,
+   DetectFacesErrorCode,
+   InitErrorCode,
    LivenessStatus,
+   CameraErrorCode,
    LivenessErrorCode,
+   DetectFacesBackendErrorCode,
+   MatchFacesErrorCode,
+   ImageQualityCharacteristicName,
+   DetectFacesScenario,
+   OutputImageCropAspectRatio,
+   LivenessSkipStep,
+   ImageQualityResultStatus,
    ImageType,
    FaceCaptureErrorCode,
-   MatchFacesErrorCodes,
+   LivenessBackendErrorCode,
+   DetectFacesAttribute,
 }
 
 const FaceSDK = {}
@@ -301,11 +705,16 @@ FaceSDK.startLiveness = (successCallback, errorCallback) => RNFaceApi.exec("Face
 FaceSDK.getFaceSdkVersion = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getFaceSdkVersion", [], successCallback, errorCallback)
 FaceSDK.presentFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivity", [], successCallback, errorCallback)
 FaceSDK.stopFaceCaptureActivity = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopFaceCaptureActivity", [], successCallback, errorCallback)
+FaceSDK.init = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "init", [], successCallback, errorCallback)
+FaceSDK.deinit = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "deinit", [], successCallback, errorCallback)
+FaceSDK.isInitialized = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "isInitialized", [], successCallback, errorCallback)
 FaceSDK.stopLivenessProcessing = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "stopLivenessProcessing", [], successCallback, errorCallback)
+FaceSDK.setRequestHeaders = (headers, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setRequestHeaders", [headers], successCallback, errorCallback)
 FaceSDK.presentFaceCaptureActivityWithConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "presentFaceCaptureActivityWithConfig", [config], successCallback, errorCallback)
 FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "startLivenessWithConfig", [config], successCallback, errorCallback)
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
+FaceSDK.detectFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "detectFaces", [request], successCallback, errorCallback)
 FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
 FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)

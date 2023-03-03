@@ -1,5 +1,7 @@
 package com.reactlibrary;
 
+import static com.regula.facesdk.FaceSDK.Instance;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -10,9 +12,11 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.regula.facesdk.configuration.FaceCaptureConfiguration;
 import com.regula.facesdk.configuration.LivenessConfiguration;
 import com.regula.facesdk.configuration.MatchFaceConfiguration;
+import com.regula.facesdk.exception.InitException;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFacesPair;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit;
 
@@ -20,13 +24,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.regula.facesdk.FaceSDK.Instance;
-
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings({"unused", "RedundantSuppression"})
+@SuppressWarnings({"unused", "RedundantSuppression", "ConstantConditions", "SameParameterValue"})
 public class RNFaceApiModule extends ReactContextBaseJavaModule {
+    private final static String videoEncoderCompletionEvent = "videoEncoderCompletionEvent";
+
     JSONArray data;
     private final ReactContext reactContext;
 
@@ -49,9 +54,27 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         return getCurrentActivity();
     }
 
-    private <T> T args(@SuppressWarnings("SameParameterValue") int index) throws JSONException {
+    @SuppressWarnings({"WrapperTypeMayBePrimitive", "unchecked"})
+    private <T> T args(int index) throws JSONException {
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Rewrite it according to react native documentation!!!
+        // the is no int or double in js so all ints are sent as double by default
+        Object value = data.get(index);
+        if (value instanceof Double)
+            if ((Double) value % 1 == 0) {
+                Integer intValue = ((Double) value).intValue();
+                return (T) intValue;
+            }
         //noinspection unchecked
         return (T) data.get(index);
+    }
+
+    private void send(String event, String data) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(event, data);
+    }
+
+    private void sendVideoEncoderCompletion(String transactionId, boolean success) {
+        send(videoEncoderCompletionEvent, JSONConstructor.generateVideoEncoderCompletion(transactionId, success).toString());
     }
 
     private interface Callback {
@@ -83,6 +106,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 errorCallback.invoke(s);
             }
         };
+
         try {
             switch (action) {
                 case "getServiceUrl":
@@ -100,8 +124,20 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "stopFaceCaptureActivity":
                     stopFaceCaptureActivity(callback);
                     break;
+                case "init":
+                    init(callback);
+                    break;
+                case "deinit":
+                    deinit(callback);
+                    break;
+                case "isInitialized":
+                    isInitialized(callback);
+                    break;
                 case "stopLivenessProcessing":
                     stopLivenessProcessing(callback);
+                    break;
+                case "setRequestHeaders":
+                    setRequestHeaders(callback, args(0));
                     break;
                 case "presentFaceCaptureActivityWithConfig":
                     presentFaceCaptureActivityWithConfig(callback, args(0));
@@ -115,6 +151,9 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "matchFaces":
                     matchFaces(callback, args(0));
                     break;
+                case "detectFaces":
+                    detectFaces(callback, args(0));
+                    break;
                 case "matchFacesWithConfig":
                     matchFacesWithConfig(callback, args(0), args(1));
                     break;
@@ -125,7 +164,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                     matchFacesSimilarityThresholdSplit(callback, args(0), args(1));
                     break;
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -133,8 +173,28 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         callback.success(Instance().getServiceUrl());
     }
 
+    private void setRequestHeaders(Callback callback, JSONObject headers) {
+        Instance().setNetworkInterceptorListener(requestBuilder -> {
+            try {
+                Iterator<String> keys = headers.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    String value = (String) headers.get(key);
+                    requestBuilder.header(key, value);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+        callback.success();
+    }
+
     private void startLiveness(Callback callback) {
         Instance().startLiveness(getContext(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
+    }
+
+    private void detectFaces(Callback callback, String request) throws JSONException {
+        Instance().detectFaces(JSONConstructor.DetectFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateDetectFacesResponse(response).toString()));
     }
 
     private void getFaceSdkVersion(Callback callback) {
@@ -157,8 +217,6 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void presentFaceCaptureActivityWithConfig(Callback callback, JSONObject config) throws JSONException {
         FaceCaptureConfiguration.Builder builder = new FaceCaptureConfiguration.Builder();
-        if (config.has("forceToUseHuaweiVision"))
-            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
         if (config.has("cameraId"))
             builder.setCameraId(config.getInt("cameraId"));
         if (config.has("cameraSwitchEnabled"))
@@ -169,27 +227,25 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
             builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
         if (config.has("torchButtonEnabled"))
             builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
+        if (config.has("timeout"))
+            builder.setTimeout(config.getInt("timeout"));
         Instance().presentFaceCaptureActivity(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
     }
 
     private void startLivenessWithConfig(Callback callback, JSONObject config) throws JSONException {
         LivenessConfiguration.Builder builder = new LivenessConfiguration.Builder();
-        if (config.has("forceToUseHuaweiVision"))
-            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
         if (config.has("attemptsCount"))
             builder.setAttemptsCount(config.getInt("attemptsCount"));
-        if (config.has("cameraId"))
-            builder.setCameraId(config.getInt("cameraId"));
-        if (config.has("cameraSwitchEnabled"))
-            builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
+        if (config.has("sessionId"))
+            builder.setSessionId(config.getString("sessionId"));
+        if (config.has("skipStep"))
+            builder.setSkipStep(JSONConstructor.LivenessSkipStepArrayFromJSON(config.getInt("skipStep")));
         if (config.has("showHelpTextAnimation"))
             builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
         if (config.has("locationTrackingEnabled"))
             builder.setLocationTrackingEnabled(config.getBoolean("locationTrackingEnabled"));
         if (config.has("closeButtonEnabled"))
             builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
-        if (config.has("torchButtonEnabled"))
-            builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
         if (config.has("recordingProcess"))
             builder.setRecordingProcess(config.getBoolean("recordingProcess"));
         Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
@@ -200,24 +256,39 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         callback.success();
     }
 
+    private void init(Callback callback) {
+        Instance().init(getContext(), (boolean success, InitException error) -> {
+            if (success)
+                Instance().setVideoEncoderCompletion(this::sendVideoEncoderCompletion);
+            callback.success(JSONConstructor.generateInitCompletion(success, error).toString());
+        });
+    }
+
+    private void deinit(Callback callback) {
+        Instance().deinit();
+        callback.success();
+    }
+
+    private void isInitialized(Callback callback) {
+        callback.success(Instance().isInitialized());
+    }
+
     private void matchFaces(Callback callback, String request) throws JSONException {
         Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 
-    private void matchFacesWithConfig(Callback callback, String request, JSONObject config) throws JSONException {
+    private void matchFacesWithConfig(Callback callback, String request, @SuppressWarnings("unused") JSONObject config) throws JSONException {
         MatchFaceConfiguration.Builder builder = new MatchFaceConfiguration.Builder();
-        if (config.has("forceToUseHuaweiVision"))
-            builder.setForceToUseHuaweiVision(config.getBoolean("forceToUseHuaweiVision"));
         Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), builder.build(), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 
     private void matchFacesSimilarityThresholdSplit(Callback callback, String array, Double similarity) throws JSONException {
-        List<MatchFacesComparedFacesPair> faces = JSONConstructor.MatchFacesComparedFacesPairListFromJSON(new JSONArray(array));
+        List<MatchFacesComparedFacesPair> faces = JSONConstructor.listFromJSON(new JSONArray(array), JSONConstructor::MatchFacesComparedFacesPairFromJSON);
         MatchFacesSimilarityThresholdSplit split = new MatchFacesSimilarityThresholdSplit(faces, similarity);
         callback.success(JSONConstructor.generateMatchFacesSimilarityThresholdSplit(split).toString());
     }
 
-    private void setLanguage(Callback callback, @SuppressWarnings("unused") String language) {
+    private void setLanguage(Callback callback, String language) {
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Resources resources = getContext().getResources();

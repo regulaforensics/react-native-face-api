@@ -7,6 +7,218 @@
     return [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:input options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
 }
 
++(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"errorCode"] = [NSString stringWithFormat:@"%ld",(long)input.code];
+    result[@"message"] = input.localizedDescription;
+
+    return result;
+}
+
++(NSString*)generateRFSDetectFacesAttribute:(RFSDetectFacesAttribute)value {
+    if(value == RFSDetectFacesAttributeAge)
+        return @"Age";
+    else if(value == RFSDetectFacesAttributeEyeLeft)
+        return @"EyeLeft";
+    else if(value == RFSDetectFacesAttributeEyeRight)
+        return @"EyeRight";
+    else if(value == RFSDetectFacesAttributeEmotion)
+        return @"Emotion";
+    else if(value == RFSDetectFacesAttributeSmile)
+        return @"Smile";
+    else if(value == RFSDetectFacesAttributeGlasses)
+        return @"Glasses";
+    else if(value == RFSDetectFacesAttributeHeadCovering)
+        return @"HeadCovering";
+    else if(value == RFSDetectFacesAttributeForeheadCovering)
+        return @"ForeheadCovering";
+    else if(value == RFSDetectFacesAttributeMouth)
+        return @"Mouth";
+    else if(value == RFSDetectFacesAttributeMedicalMask)
+        return @"MedicalMask";
+    else if(value == RFSDetectFacesAttributeOcclusion)
+        return @"Occlusion";
+    else if(value == RFSDetectFacesAttributeStrongMakeup)
+        return @"StrongMakeup";
+    else if(value == RFSDetectFacesAttributeHeadphones)
+        return @"Headphones";
+    else
+        return @"";
+}
+
++(NSString*)generateRFSLivenessStatus:(RFSLivenessStatus)value {
+    if(value == RFSLivenessStatusPassed)
+        return @"PASSED";
+    else if(value == RFSLivenessStatusUnknown)
+        return @"UNKNOWN";
+    else
+        return @"UNKNOWN";
+}
+
++(NSString*)generateRFSImageQualityCharacteristicName:(RFSImageQualityCharacteristicName)value {
+    if(value == RFSImageQualityCharacteristicNameImageWidth)
+        return @"ImageWidth";
+    else if(value == RFSImageQualityCharacteristicNameImageHeight)
+        return @"ImageHeight";
+    else if(value == RFSImageQualityCharacteristicNameImageWidthToHeight)
+        return @"ImageWidthToHeight";
+    else if(value == RFSImageQualityCharacteristicNameImageChannelsNumber)
+        return @"ImageChannelsNumber";
+    else if(value == RFSImageQualityCharacteristicNamePaddingRatio)
+        return @"PaddingRatio";
+    else if(value == RFSImageQualityCharacteristicNameFaceMidPointHorizontalPosition)
+        return @"FaceMidPointHorizontalPosition";
+    else if(value == RFSImageQualityCharacteristicNameFaceMidPointVerticalPosition)
+        return @"FaceMidPointVerticalPosition";
+    else if(value == RFSImageQualityCharacteristicNameHeadWidthRatio)
+        return @"HeadWidthRatio";
+    else if(value == RFSImageQualityCharacteristicNameHeadHeightRatio)
+        return @"HeadHeightRatio";
+    else if(value == RFSImageQualityCharacteristicNameEyesDistance)
+        return @"EyesDistance";
+    else if(value == RFSImageQualityCharacteristicNameYaw)
+        return @"Yaw";
+    else if(value == RFSImageQualityCharacteristicNamePitch)
+        return @"Pitch";
+    else if(value == RFSImageQualityCharacteristicNameRoll)
+        return @"Roll";
+    else if(value == RFSImageQualityCharacteristicNameBlurLevel)
+        return @"BlurLevel";
+    else if(value == RFSImageQualityCharacteristicNameNoiseLevel)
+        return @"NoiseLevel";
+    else if(value == RFSImageQualityCharacteristicNameUnnaturalSkinTone)
+        return @"UnnaturalSkinTone";
+    else if(value == RFSImageQualityCharacteristicNameFaceDynamicRange)
+        return @"FaceDynamicRange";
+    else if(value == RFSImageQualityCharacteristicNameEyeRightClosed)
+        return @"EyeRightClosed";
+    else if(value == RFSImageQualityCharacteristicNameEyeLeftClosed)
+        return @"EyeLeftClosed";
+    else if(value == RFSImageQualityCharacteristicNameEyeRightOccluded)
+        return @"EyeRightOccluded";
+    else if(value == RFSImageQualityCharacteristicNameEyeLeftOccluded)
+        return @"EyeLeftOccluded";
+    else if(value == RFSImageQualityCharacteristicNameEyesRed)
+        return @"EyesRed";
+    else if(value == RFSImageQualityCharacteristicNameEyeRightCoveredWithHair)
+        return @"EyeRightCoveredWithHair";
+    else if(value == RFSImageQualityCharacteristicNameEyeLeftCoveredWithHair)
+        return @"EyeLeftCoveredWithHair";
+    else if(value == RFSImageQualityCharacteristicNameOffGaze)
+        return @"OffGaze";
+    else if(value == RFSImageQualityCharacteristicNameTooDark)
+        return @"TooDark";
+    else if(value == RFSImageQualityCharacteristicNameTooLight)
+        return @"TooLight";
+    else if(value == RFSImageQualityCharacteristicNameFaceGlare)
+        return @"FaceGlare";
+    else if(value == RFSImageQualityCharacteristicNameShadowsOnFace)
+        return @"ShadowsOnFace";
+    else if(value == RFSImageQualityCharacteristicNameShouldersPose)
+        return @"ShouldersPose";
+    else if(value == RFSImageQualityCharacteristicNameExpressionLevel)
+        return @"ExpressionLevel";
+    else if(value == RFSImageQualityCharacteristicNameMouthOpen)
+        return @"MouthOpen";
+    else if(value == RFSImageQualityCharacteristicNameSmile)
+        return @"Smile";
+    else if(value == RFSImageQualityCharacteristicNameDarkGlasses)
+        return @"DarkGlasses";
+    else if(value == RFSImageQualityCharacteristicNameReflectionOnGlasses)
+        return @"ReflectionOnGlasses";
+    else if(value == RFSImageQualityCharacteristicNameFramesTooHeavy)
+        return @"FramesTooHeavy";
+    else if(value == RFSImageQualityCharacteristicNameFaceOccluded)
+        return @"FaceOccluded";
+    else if(value == RFSImageQualityCharacteristicNameHeadCovering)
+        return @"HeadCovering";
+    else if(value == RFSImageQualityCharacteristicNameForeheadCovering)
+        return @"ForeheadCovering";
+    else if(value == RFSImageQualityCharacteristicNameStrongMakeup)
+        return @"StrongMakeup";
+    else if(value == RFSImageQualityCharacteristicNameHeadphones)
+        return @"Headphones";
+    else if(value == RFSImageQualityCharacteristicNameMedicalMask)
+        return @"MedicalMask";
+    else if(value == RFSImageQualityCharacteristicNameBackgroundUniformity)
+        return @"BackgroundUniformity";
+    else if(value == RFSImageQualityCharacteristicNameShadowsOnBackground)
+        return @"ShadowsOnBackground";
+    else if(value == RFSImageQualityCharacteristicNameOtherFaces)
+        return @"OtherFaces";
+    else if(value == RFSImageQualityCharacteristicNameBackgroundColorMatch)
+        return @"BackgroundColorMatch";
+    else
+        return @"Unknown";
+}
+
++(NSNumber*)generateRFSImageQualityGroup:(RFSImageQualityGroup)value {
+    if(value == RFSImageQualityGroupImageСharacteristics)
+        return @1;
+    else if(value == RFSImageQualityGroupHeadSizeAndPosition)
+        return @2;
+    else if(value == RFSImageQualityGroupFaceQuality)
+        return @3;
+    else if(value == RFSImageQualityGroupEyesCharacteristics)
+        return @4;
+    else if(value == RFSImageQualityGroupShadowsAndLightning)
+        return @5;
+    else if(value == RFSImageQualityGroupPoseAndExpression)
+        return @6;
+    else if(value == RFSImageQualityGroupHeadOcclusion)
+        return @7;
+    else if(value == RFSImageQualityGroupBackground)
+        return @8;
+    else
+        return @9;
+}
+
++(NSNumber*)generateRFSImageQualityResultStatus:(RFSImageQualityResultStatus)value {
+    if(value == RFSImageQualityResultStatusFalse)
+        return @1;
+    else if(value == RFSImageQualityResultStatusTrue)
+        return @2;
+    else if(value == RFSImageQualityResultStatusUndetermined)
+        return @3;
+    else
+        return @3;
+}
+
++(NSNumber*)generateRFSImageType:(RFSImageType)value {
+    if(value == RFSImageTypePrinted)
+        return @1;
+    else if(value == RFSImageTypeRFID)
+        return @2;
+    else if(value == RFSImageTypeLive)
+        return @3;
+    else if(value == RFSImageTypeDocumentWithLive)
+        return @4;
+    else if(value == RFSImageTypeExternal)
+        return @5;
+    else
+        return @0;
+}
+
++(NSMutableDictionary* _Nonnull)generateInitCompletion:(BOOL)success :(NSError* _Nullable)error {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+
+    result[@"success"] = success ? @YES : @NO;
+    result[@"error"] = [self generateNSError:error];
+
+    return result;
+}
+
++(NSMutableDictionary*)generateVideoEncoderCompletion:(NSString * _Nonnull)transactionId :(BOOL)success {
+    NSMutableDictionary* result = [NSMutableDictionary new];
+
+    result[@"transactionId"] = transactionId;
+    result[@"success"] = success ? @YES : @NO;
+
+    return result;
+}
+
 // From JSON
 
 +(RFSMatchFacesRequest*)RFSMatchFacesRequestFromJSON:(NSDictionary*)input {
@@ -17,6 +229,275 @@
     if([input valueForKey:@"metadata"] != nil)
         result.metadata = [NSJSONSerialization JSONObjectWithData: [[[input valueForKey:@"metadata"] stringValue] dataUsingEncoding:NSUTF8StringEncoding] options: 0 error: nil];
 
+    return result;
+}
+
++(RFSDetectFacesRequest*)RFSDetectFacesRequestFromJSON:(NSDictionary*)input {
+    NSString* CROP_CENTRAL_FACE = @"CropCentralFace";
+    NSString* CROP_ALL_FACES = @"CropAllFaces";
+    NSString* THUMBNAIL = @"Thumbnail";
+    NSString* ATTRIBUTES_ALL = @"AttributesAll";
+    NSString* QUALITY_FULL = @"QualityFull";
+    NSString* QUALITY_ICAO = @"QualityICAO";
+    NSString* QUALITY_VISA_SCHENGEN = @"QualityVisaSchengen";
+    NSString* QUALITY_VISA_USA = @"QualityVisaUSA";
+
+    UIImage* image = [RFSWJSONConstructor UIImageFromJSON:[input valueForKey:@"image"]];
+
+    if([input valueForKey:@"scenario"] != nil){
+        NSString* scenario = [input valueForKey:@"scenario"];
+
+        if([scenario isEqualToString:CROP_CENTRAL_FACE])
+            return [RFSDetectFacesRequest cropCentralFaceRequestForImage:image];
+        else if([scenario isEqualToString:CROP_ALL_FACES])
+            return [RFSDetectFacesRequest cropAllFacesRequestForImage:image];
+        else if([scenario isEqualToString:THUMBNAIL])
+            return [RFSDetectFacesRequest thumbnailRequestForImage:image];
+        else if([scenario isEqualToString:ATTRIBUTES_ALL])
+            return [RFSDetectFacesRequest allAttributesRequestForImage:image];
+        else if([scenario isEqualToString:QUALITY_FULL])
+            return [RFSDetectFacesRequest qualityFullRequestForImage:image];
+        else if([scenario isEqualToString:QUALITY_ICAO])
+            return [RFSDetectFacesRequest qualityICAORequestForImage:image];
+        else if([scenario isEqualToString:QUALITY_VISA_SCHENGEN])
+            return [RFSDetectFacesRequest qualityVisaSchengenRequestForImage:image];
+        else if([scenario isEqualToString:QUALITY_VISA_USA])
+            return [RFSDetectFacesRequest qualityVisaUSARequestForImage:image];
+    }
+
+    RFSDetectFacesConfiguration* configuration = [RFSWJSONConstructor RFSDetectFacesConfigurationFromJSON: [input objectForKey:@"configuration"]];
+
+    return [[RFSDetectFacesRequest alloc] initWithImage:image configuration:configuration];
+}
+
++(RFSDetectFacesConfiguration*)RFSDetectFacesConfigurationFromJSON:(NSDictionary*)input {
+    RFSDetectFacesConfiguration* result = [RFSDetectFacesConfiguration new];
+
+    if([input valueForKey:@"attributes"] != nil){
+        NSMutableArray<RFSDetectFacesAttribute>* attributes = [[NSMutableArray alloc] init];
+        for(NSString* item in [input valueForKey:@"attributes"])
+            [attributes addObject:item];
+        result.attributes = attributes;
+    }
+    if([input valueForKey:@"onlyCentralFace"] != nil){
+        result.onlyCentralFace = [input valueForKey:@"onlyCentralFace"];
+    }
+    if([input valueForKey:@"customQuality"] != nil){
+        NSMutableArray<RFSImageQualityCharacteristic*>* customQuality = [[NSMutableArray alloc] init];
+        for(NSDictionary* item in [input objectForKey:@"customQuality"])
+            [customQuality addObject:[RFSWJSONConstructor RFSImageQualityCharacteristicFromJSON:item]];
+        result.customQuality = customQuality;
+    }
+    if([input valueForKey:@"outputImageParams"] != nil){
+        result.outputImageParams = [RFSWJSONConstructor RFSOutputImageParamsFromJSON:[input valueForKey:@"outputImageParams"]];
+    }
+
+    return result;
+}
+
++(RFSOutputImageParams*)RFSOutputImageParamsFromJSON:(NSDictionary*)input {
+    RFSOutputImageParams* result = [RFSOutputImageParams new];
+
+    if([input valueForKey:@"backgroundColor"] != nil){
+        result.backgroundColor = [RFSWJSONConstructor getUIColorObjectFromHexString:[input valueForKey:@"backgroundColor"] alpha:1];
+    }
+    if([input valueForKey:@"crop"] != nil){
+        result.crop = [RFSWJSONConstructor RFSOutputImageCropFromJSON:[input valueForKey:@"crop"]];
+    }
+
+    return result;
+}
+
++(RFSOutputImageCrop*)RFSOutputImageCropFromJSON:(NSDictionary*)input {
+    RFSOutputImageCropAspectRatio type = RFSOutputImageCropAspectRatio3x4;
+    if([input valueForKey:@"type"] != nil){
+        type = [[input valueForKey:@"type"] integerValue];
+    } else return nil;
+    CGSize size = CGSizeMake(0, 0);
+    if([input valueForKey:@"size"] != nil){
+        size = [RFSWJSONConstructor CGSizeFromJSON:[input objectForKey:@"size"]];
+    } else return [[RFSOutputImageCrop alloc] initWithType:type];
+    UIColor* padColor = nil;
+    if([input valueForKey:@"padColor"] != nil){
+        padColor = [RFSWJSONConstructor getUIColorObjectFromHexString:[input valueForKey:@"padColor"] alpha:1];
+    }
+    BOOL returnOriginalRect = FALSE;
+    if([input valueForKey:@"returnOriginalRect"] != nil){
+        returnOriginalRect = [[input valueForKey:@"returnOriginalRect"] boolValue];
+    } else return [[RFSOutputImageCrop alloc] initWithType:type size:size];
+
+    return [[RFSOutputImageCrop alloc] initWithType:type size:size padColor:padColor returnOriginalRect:returnOriginalRect];
+}
+
++(CGSize)CGSizeFromJSON:(NSDictionary*)input {
+    CGFloat width = 0;
+    CGFloat height = 0;
+    if([input valueForKey:@"width"] != nil){
+        width = [[input valueForKey:@"width"] doubleValue];
+    }
+    if([input valueForKey:@"height"] != nil){
+        height = [[input valueForKey:@"height"] doubleValue];
+    }
+
+    return CGSizeMake(width, height);
+}
+
++(UIColor *)getUIColorObjectFromHexString:(NSString *)hexStr alpha:(CGFloat)alpha {
+    unsigned int hexInt = [self intFromHexString:hexStr];
+    UIColor *color =
+    [UIColor colorWithRed:((CGFloat) ((hexInt & 0xFF0000) >> 16))/255
+                    green:((CGFloat) ((hexInt & 0xFF00) >> 8))/255
+                     blue:((CGFloat) (hexInt & 0xFF))/255
+                    alpha:alpha];
+
+    return color;
+}
+
++ (unsigned int)intFromHexString:(NSString *)hexStr {
+    unsigned int hexInt = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexStr];
+    [scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"#"]];
+    [scanner scanHexInt:&hexInt];
+
+    return hexInt;
+}
+
++(RFSImageQualityCharacteristic*)RFSImageQualityCharacteristicFromJSON:(NSDictionary*)input {
+    RFSImageQualityCharacteristic* result = RFSImageCharacteristics.paddingRatio;
+
+    NSMutableArray<NSNumber*>* range = [NSMutableArray new];
+    if([input valueForKey:@"range"] != nil) {
+        NSObject* temp = [input valueForKey:@"range"];
+        if([temp valueForKey:@"min"] != nil)
+            [range addObject:[temp valueForKey:@"min"]];
+        if([temp valueForKey:@"max"] != nil)
+            [range addObject:[temp valueForKey:@"max"]];
+    }
+
+    if([input valueForKey:@"characteristicName"] == nil) return nil;
+    NSString* name = [input valueForKey:@"characteristicName"];
+
+    if([name isEqualToString:@"ImageWidth"]){
+        if([input valueForKey:@"range"] != nil)
+            result = [RFSImageCharacteristics imageWidthWithRange:range];
+        else return nil;
+    } else if([name isEqualToString:@"ImageHeight"]){
+        if([input valueForKey:@"range"] != nil)
+            result = [RFSImageCharacteristics imageHeightWithRange:range];
+        else return nil;
+    } else if([name isEqualToString:@"ImageWidthToHeight"]){
+        if([input valueForKey:@"range"] != nil)
+            result = [RFSImageCharacteristics imageWidthToHeightWithRange:range];
+        else return nil;
+    } else if([name isEqualToString:@"ImageChannelsNumber"]){
+        if([input valueForKey:@"imageChannelsNumber"] != nil)
+            result = [RFSImageCharacteristics imageChannelsNumberWithValue:[input valueForKey:@"imageChannelsNumber"]];
+        else return nil;
+    } else if([name isEqualToString:@"PaddingRatio"])
+        result = RFSImageCharacteristics.paddingRatio;
+
+    else if([name isEqualToString:@"FaceMidPointHorizontalPosition"])
+        result = RFSHeadSizeAndPosition.faceMidPointHorizontalPosition;
+    else if([name isEqualToString:@"FaceMidPointVerticalPosition"])
+        result = RFSHeadSizeAndPosition.faceMidPointVerticalPosition;
+    else if([name isEqualToString:@"HeadWidthRatio"])
+        result = RFSHeadSizeAndPosition.headWidthRatio;
+    else if([name isEqualToString:@"HeadHeightRatio"])
+        result = RFSHeadSizeAndPosition.headHeightRatio;
+    else if([name isEqualToString:@"EyesDistance"])
+        result = RFSHeadSizeAndPosition.eyesDistance;
+    else if([name isEqualToString:@"Yaw"])
+        result = RFSHeadSizeAndPosition.yaw;
+    else if([name isEqualToString:@"Pitch"])
+        result = RFSHeadSizeAndPosition.pitch;
+    else if([name isEqualToString:@"Roll"])
+        result = RFSHeadSizeAndPosition.roll;
+
+    else if([name isEqualToString:@"BlurLevel"])
+        result = RFSFaceImageQuality.blurLevel;
+    else if([name isEqualToString:@"NoiseLevel"])
+        result = RFSFaceImageQuality.noiseLevel;
+    else if([name isEqualToString:@"UnnaturalSkinTone"])
+        result = RFSFaceImageQuality.unnaturalSkinTone;
+    else if([name isEqualToString:@"FaceDynamicRange"])
+        result = RFSFaceImageQuality.faceDynamicRange;
+
+    else if([name isEqualToString:@"EyeRightClosed"])
+        result = RFSEyesCharacteristics.eyeRightClosed;
+    else if([name isEqualToString:@"EyeLeftClosed"])
+        result = RFSEyesCharacteristics.eyeLeftClosed;
+    else if([name isEqualToString:@"EyeRightOccluded"])
+        result = RFSEyesCharacteristics.eyeRightOccluded;
+    else if([name isEqualToString:@"EyeLeftOccluded"])
+        result = RFSEyesCharacteristics.eyeLeftOccluded;
+    else if([name isEqualToString:@"EyesRed"])
+        result = RFSEyesCharacteristics.eyesRed;
+    else if([name isEqualToString:@"EyeRightCoveredWithHair"])
+        result = RFSEyesCharacteristics.eyeRightCoveredWithHair;
+    else if([name isEqualToString:@"EyeLeftCoveredWithHair"])
+        result = RFSEyesCharacteristics.eyeLeftCoveredWithHair;
+    else if([name isEqualToString:@"OffGaze"])
+        result = RFSEyesCharacteristics.offGaze;
+
+    else if([name isEqualToString:@"TooDark"])
+        result = RFSShadowsAndLightning.tooDark;
+    else if([name isEqualToString:@"TooLight"])
+        result = RFSShadowsAndLightning.tooLight;
+    else if([name isEqualToString:@"FaceGlare"])
+        result = RFSShadowsAndLightning.faceGlare;
+    else if([name isEqualToString:@"ShadowsOnFace"])
+        result = RFSShadowsAndLightning.shadowsOnFace;
+
+    else if([name isEqualToString:@"ShouldersPose"])
+        result = RFSPoseAndExpression.shouldersPose;
+    else if([name isEqualToString:@"ExpressionLevel"])
+        result = RFSPoseAndExpression.expressionLevel;
+    else if([name isEqualToString:@"MouthOpen"])
+        result = RFSPoseAndExpression.mouthOpen;
+    else if([name isEqualToString:@"Smile"])
+        result = RFSPoseAndExpression.smile;
+
+    else if([name isEqualToString:@"DarkGlasses"])
+        result = RFSHeadOcclusion.darkGlasses;
+    else if([name isEqualToString:@"ReflectionOnGlasses"])
+        result = RFSHeadOcclusion.reflectionOnGlasses;
+    else if([name isEqualToString:@"FramesTooHeavy"])
+        result = RFSHeadOcclusion.framesTooHeavy;
+    else if([name isEqualToString:@"FaceOccluded"])
+        result = RFSHeadOcclusion.faceOccluded;
+    else if([name isEqualToString:@"HeadCovering"])
+        result = RFSHeadOcclusion.headCovering;
+    else if([name isEqualToString:@"ForeheadCovering"])
+        result = RFSHeadOcclusion.foreheadCovering;
+    else if([name isEqualToString:@"StrongMakeup"])
+        result = RFSHeadOcclusion.strongMakeup;
+    else if([name isEqualToString:@"Headphones"])
+        result = RFSHeadOcclusion.headphones;
+    else if([name isEqualToString:@"MedicalMask"])
+        result = RFSHeadOcclusion.medicalMask;
+
+    else if([name isEqualToString:@"BackgroundUniformity"])
+        result = RFSQualityBackground.backgroundUniformity;
+    else if([name isEqualToString:@"ShadowsOnBackground"])
+        result = RFSQualityBackground.shadowsOnBackground;
+    else if([name isEqualToString:@"OtherFaces"])
+        result = RFSQualityBackground.otherFaces;
+    else if([name isEqualToString:@"BackgroundColorMatch"]){
+        if([input valueForKey:@"color"] != nil)
+            result = [RFSQualityBackground backgroundColorMatchWithColor:[RFSWJSONConstructor getUIColorObjectFromHexString:[input valueForKey:@"color"] alpha:1]];
+        else
+            result = RFSQualityBackground.backgroundColorMatch;
+    }
+
+    if([input valueForKey:@"customRange"] != nil) {
+        NSObject* customRange = [input valueForKey:@"customRange"];
+        if([customRange valueForKey:@"min"] != nil)
+            [range addObject:[customRange valueForKey:@"min"]];
+        if([customRange valueForKey:@"max"] != nil)
+            [range addObject:[customRange valueForKey:@"max"]];
+
+        return [result withCustomRange:range];
+    }
     return result;
 }
 
@@ -156,19 +637,19 @@
 
 +(CGRect)CGRectFromJSON:(NSDictionary*)input {
     CGFloat bottom = 0;
-    if([input valueForKey:@"bottom"] != nil){
+    if([input valueForKey:@"bottom"] != nil && [input valueForKey:@"bottom"] != [NSNull null]){
         bottom = [[input valueForKey:@"bottom"] floatValue];
     }
     CGFloat top = 0;
-    if([input valueForKey:@"top"] != nil){
+    if([input valueForKey:@"top"] != nil && [input valueForKey:@"top"] != [NSNull null]){
         top = [[input valueForKey:@"top"] floatValue];
     }
     CGFloat left = 0;
-    if([input valueForKey:@"left"] != nil){
+    if([input valueForKey:@"left"] != nil && [input valueForKey:@"left"] != [NSNull null]){
         left = [[input valueForKey:@"left"] floatValue];
     }
     CGFloat right = 0;
-    if([input valueForKey:@"right"] != nil){
+    if([input valueForKey:@"right"] != nil && [input valueForKey:@"right"] != [NSNull null]){
         right = [[input valueForKey:@"right"] floatValue];
     }
 
@@ -198,18 +679,6 @@
 
     // To JSON
 
-+(NSMutableDictionary* _Nonnull)generateRFSLivenessResponse:(RFSLivenessResponse* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
-    result[@"liveness"] = @(input.liveness);
-    result[@"exception"] = [self generateNSError:input.error];
-    result[@"guid"] = input.guid;
-
-    return result;
-}
-
 +(NSMutableDictionary* _Nonnull)generateRFSFaceCaptureResponse:(RFSFaceCaptureResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
@@ -220,24 +689,15 @@
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRFSImage:(RFSImage* _Nullable)input {
++(NSMutableDictionary* _Nonnull)generateRFSLivenessResponse:(RFSLivenessResponse* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"imageType"] = @(input.imageType);
     result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
-
-    return result;
-}
-
-+(NSMutableDictionary* _Nonnull)generateRFSMatchFacesImage:(RFSMatchFacesImage* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"imageType"] = @(input.imageType);
-    result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
-    result[@"detectAll"] = @(input.detectAll);
-    result[@"identifier"] = input.identifier;
+    result[@"liveness"] = [self generateRFSLivenessStatus:input.liveness];
+    result[@"exception"] = [self generateNSError:input.error];
+    result[@"sessionId"] = input.sessionId;
+    result[@"transactionId"] = input.transactionId;
 
     return result;
 }
@@ -261,6 +721,28 @@
                 [array addObject:[self generateRFSMatchFacesDetection:item]];
         result[@"detections"] = array;
     }
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSImage:(RFSImage* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"imageType"] = [self generateRFSImageType:input.imageType];
+    result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSMatchFacesImage:(RFSMatchFacesImage* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"imageType"] = [self generateRFSImageType:input.imageType];
+    result[@"bitmap"] = [UIImageJPEGRepresentation(input.image, 1.0) base64EncodedStringWithOptions:0];
+    result[@"detectAll"] = @(input.detectAll);
+    result[@"identifier"] = input.identifier;
 
     return result;
 }
@@ -309,26 +791,6 @@
     return result;
 }
 
-+(NSMutableDictionary* _Nonnull)generateRFSPoint:(RFSPoint* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"x"] = @(input.x);
-    result[@"y"] = @(input.y);
-
-    return result;
-}
-
-+(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    if(input == nil) return result;
-
-    result[@"errorCode"] = @(input.code);
-    result[@"message"] = input.localizedDescription;
-
-    return result;
-}
-
 +(NSMutableDictionary* _Nonnull)generateRFSMatchFacesDetection:(RFSMatchFacesDetection* _Nullable)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
@@ -343,6 +805,16 @@
         result[@"faces"] = array;
     }
     result[@"exception"] = [self generateNSError:input.error];
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSPoint:(RFSPoint* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"x"] = @(input.x);
+    result[@"y"] = @(input.y);
 
     return result;
 }
@@ -365,6 +837,92 @@
                 [array addObject:[self generateRFSMatchFacesComparedFacesPair:item]];
         result[@"unmatchedFaces"] = array;
     }
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSImageQualityRange:(RFSImageQualityRange* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"min"] = input.min;
+    result[@"max"] = input.max;
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSDetectFacesResponse:(RFSDetectFacesResponse* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"detection"] = [self generateRFSDetectFaceResult:input.detection];
+    result[@"scenario"] = input.scenario;
+    result[@"error"] = [self generateNSError:input.error];
+    if(input.allDetections != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSDetectFaceResult* item in input.allDetections)
+            if(item != nil)
+                [array addObject:[self generateRFSDetectFaceResult:item]];
+        result[@"allDetections"] = array;
+    }
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSDetectFaceResult:(RFSDetectFaceResult* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    if(input.quality != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSImageQualityResult* item in input.quality)
+            if(item != nil)
+                [array addObject:[self generateRFSImageQualityResult:item]];
+        result[@"quality"] = array;
+    }
+    if(input.attributes != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSDetectFacesAttributeResult* item in input.attributes)
+            if(item != nil)
+                [array addObject:[self generateRFSDetectFacesAttributeResult:item]];
+        result[@"attributes"] = array;
+    }
+    if(input.landmarks != nil){
+        NSMutableArray *array = [NSMutableArray new];
+        for(RFSPoint* item in input.landmarks)
+            if(item != nil)
+                [array addObject:[self generateRFSPoint:item]];
+        result[@"landmarks"] = array;
+    }
+    result[@"crop"] = [UIImageJPEGRepresentation(input.crop, 1.0) base64EncodedStringWithOptions:0];
+    result[@"faceRect"] = [self generateCGRect:input.faceRect];
+    result[@"originalRect"] = [self generateCGRect:input.originalRect];
+    result[@"isQualityCompliant"] = @(input.isQualityCompliant);
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSImageQualityResult:(RFSImageQualityResult* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"name"] = [self generateRFSImageQualityCharacteristicName:input.name];
+    result[@"group"] = [self generateRFSImageQualityGroup:input.group];
+    result[@"status"] = [self generateRFSImageQualityResultStatus:input.status];
+    result[@"range"] = [self generateRFSImageQualityRange:input.range];
+    result[@"value"] = input.value;
+
+    return result;
+}
+
++(NSMutableDictionary* _Nonnull)generateRFSDetectFacesAttributeResult:(RFSDetectFacesAttributeResult* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"attribute"] = [self generateRFSDetectFacesAttribute:input.attribute];
+    result[@"value"] = input.value;
+    result[@"range"] = [self generateRFSImageQualityRange:input.range];
+    result[@"confidence"] = input.confidence;
 
     return result;
 }
