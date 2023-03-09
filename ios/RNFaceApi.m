@@ -128,6 +128,8 @@ NSDictionary* headers;
 
 - (void) presentFaceCaptureActivityWithConfig:(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
     RFSFaceCaptureConfiguration *configuration = [RFSFaceCaptureConfiguration configurationWithBuilder:^(RFSFaceCaptureConfigurationBuilder  * _Nonnull builder) {
+        if([config valueForKey:@"copyright"] != nil)
+            [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
             [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)
@@ -146,6 +148,8 @@ NSDictionary* headers;
 
 - (void) startLivenessWithConfig:(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
     RFSLivenessConfiguration *configuration = [RFSLivenessConfiguration configurationWithBuilder:^(RFSLivenessConfigurationBuilder  * _Nonnull builder) {
+        if([config valueForKey:@"copyright"] != nil)
+            [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
         if([config valueForKey:@"attemptsCount"] != nil)
             [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
         if([config valueForKey:@"locationTrackingEnabled"] != nil)
