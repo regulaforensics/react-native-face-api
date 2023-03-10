@@ -217,6 +217,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void presentFaceCaptureActivityWithConfig(Callback callback, JSONObject config) throws JSONException {
         FaceCaptureConfiguration.Builder builder = new FaceCaptureConfiguration.Builder();
+        if (config.has("copyright"))
+            builder.setCopyright(config.getBoolean("copyright"));
         if (config.has("cameraId"))
             builder.setCameraId(config.getInt("cameraId"));
         if (config.has("cameraSwitchEnabled"))
@@ -234,6 +236,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void startLivenessWithConfig(Callback callback, JSONObject config) throws JSONException {
         LivenessConfiguration.Builder builder = new LivenessConfiguration.Builder();
+        if (config.has("copyright"))
+            builder.setCopyright(config.getBoolean("copyright"));
         if (config.has("attemptsCount"))
             builder.setAttemptsCount(config.getInt("attemptsCount"));
         if (config.has("sessionId"))
