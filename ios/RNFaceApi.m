@@ -6,7 +6,7 @@ RCT_EXPORT_MODULE();
 
 NSString* videoEncoderCompletionEvent = @"videoEncoderCompletionEvent";
 
-RNFaceApi* plugin;
+RNFaceApi* faceApiPlugin;
 
 - (NSArray<NSString*>*)supportedEvents {
     return @[videoEncoderCompletionEvent];
@@ -20,11 +20,11 @@ typedef void (^Callback)(NSString* response);
 
 typedef void (^VideoEncoderCompletion)(NSString * _Nonnull transactionId, BOOL success);
 VideoEncoderCompletion sendVideoEncoderCompletion = ^(NSString * _Nonnull transactionId, BOOL success) {
-    [plugin sendEventWithName:videoEncoderCompletionEvent body:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateVideoEncoderCompletion:transactionId :success]]];
+    [faceApiPlugin sendEventWithName:videoEncoderCompletionEvent body:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateVideoEncoderCompletion:transactionId :success]]];
 };
 
 RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(RCTResponseSenderBlock)sCallback:(RCTResponseSenderBlock)eCallback) {
-    plugin = self;
+    faceApiPlugin = self;
     Callback successCallback = ^(NSString* response){
         sCallback(@[response]);
     };
