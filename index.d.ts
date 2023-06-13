@@ -96,7 +96,7 @@ export class FaceCaptureResponse {
 export class LivenessResponse {
     bitmap?: string
     liveness?: string
-    sessionId?: string
+    tag?: string
     transactionId?: string
     exception?: LivenessErrorException
 
@@ -106,7 +106,7 @@ export class LivenessResponse {
 
         result.bitmap = jsonObject["bitmap"]
         result.liveness = jsonObject["liveness"]
-        result.sessionId = jsonObject["sessionId"]
+        result.tag = jsonObject["tag"]
         result.transactionId = jsonObject["transactionId"]
         result.exception = LivenessErrorException.fromJson(jsonObject["exception"])
 
@@ -115,6 +115,7 @@ export class LivenessResponse {
 }
 
 export class MatchFacesResponse {
+    tag?: string
     exception?: MatchFacesException
     detections?: MatchFacesDetection[]
     results?: MatchFacesComparedFacesPair[]
@@ -123,6 +124,7 @@ export class MatchFacesResponse {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new MatchFacesResponse
 
+        result.tag = jsonObject["tag"]
         result.exception = MatchFacesException.fromJson(jsonObject["exception"])
         result.detections = []
         if (jsonObject["detections"] != null) {
@@ -149,7 +151,7 @@ export class Image {
     imageType?: number
     bitmap?: string
     tag?: string
-    imageData?: any[]
+    imageData?: string
 
     static fromJson(jsonObject?: any): Image | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -158,12 +160,7 @@ export class Image {
         result.imageType = jsonObject["imageType"]
         result.bitmap = jsonObject["bitmap"]
         result.tag = jsonObject["tag"]
-        result.imageData = []
-        if (jsonObject["imageData"] != null) {
-            for (const i in jsonObject["imageData"]) {
-                result.imageData.push(jsonObject["imageData"][i])
-            }
-        }
+        result.imageData = jsonObject["imageData"]
 
         return result
     }
@@ -173,6 +170,7 @@ export class MatchFacesRequest {
     images?: MatchFacesImage[]
     customMetadata?: any
     thumbnails?: boolean
+    tag?: string
 
     static fromJson(jsonObject?: any): MatchFacesRequest | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -188,6 +186,7 @@ export class MatchFacesRequest {
         }
         result.customMetadata = jsonObject["customMetadata"]
         result.thumbnails = jsonObject["thumbnails"]
+        result.tag = jsonObject["tag"]
 
         return result
     }
@@ -370,6 +369,7 @@ export class MatchFacesSimilarityThresholdSplit {
 }
 
 export class DetectFacesRequest {
+    tag?: string
     scenario?: string
     image?: string
     configuration?: DetectFacesConfiguration
@@ -378,6 +378,7 @@ export class DetectFacesRequest {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new DetectFacesRequest
 
+        result.tag = jsonObject["tag"]
         result.scenario = jsonObject["scenario"]
         result.image = jsonObject["image"]
         result.configuration = DetectFacesConfiguration.fromJson(jsonObject["configuration"])
@@ -644,6 +645,188 @@ export class DetectFacesAttributeResult {
     }
 }
 
+export class Person {
+    name?: string
+    updatedAt?: string
+    id?: number
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): Person | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new Person
+
+        result.name = jsonObject["name"]
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonGroup {
+    name?: string
+    id?: number
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): PersonGroup | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new PersonGroup
+
+        result.name = jsonObject["name"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonImage {
+    path?: string
+    url?: string
+    contentType?: string
+    id?: number
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): PersonImage | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new PersonImage
+
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class ImageUpload {
+    imageData?: string
+
+    static fromJson(jsonObject?: any): ImageUpload | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new ImageUpload
+
+        result.imageData = jsonObject["imageData"]
+
+        return result
+    }
+}
+
+export class EditGroupPersonsRequest {
+    personIdsToAdd?: number[]
+    personIdsToRemove?: number[]
+
+    static fromJson(jsonObject?: any): EditGroupPersonsRequest | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new EditGroupPersonsRequest
+
+        result.personIdsToAdd = []
+        if (jsonObject["personIdsToAdd"] != null) {
+            for (const i in jsonObject["personIdsToAdd"]) {
+                result.personIdsToAdd.push(jsonObject["personIdsToAdd"][i])
+            }
+        }
+        result.personIdsToRemove = []
+        if (jsonObject["personIdsToRemove"] != null) {
+            for (const i in jsonObject["personIdsToRemove"]) {
+                result.personIdsToRemove.push(jsonObject["personIdsToRemove"][i])
+            }
+        }
+
+        return result
+    }
+}
+
+export class SearchPersonRequest {
+    groupIdsForSearch?: number[]
+    threshold?: number
+    limit?: number
+    imageUpload?: ImageUpload
+
+    static fromJson(jsonObject?: any): SearchPersonRequest | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPersonRequest
+
+        result.groupIdsForSearch = []
+        if (jsonObject["groupIdsForSearch"] != null) {
+            for (const i in jsonObject["groupIdsForSearch"]) {
+                result.groupIdsForSearch.push(jsonObject["groupIdsForSearch"][i])
+            }
+        }
+        result.threshold = jsonObject["threshold"]
+        result.limit = jsonObject["limit"]
+        result.imageUpload = ImageUpload.fromJson(jsonObject["imageUpload"])
+
+        return result
+    }
+}
+
+export class SearchPerson {
+    images?: SearchPersonImage[]
+    name?: string
+    updatedAt?: string
+    id?: number
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): SearchPerson | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPerson
+
+        result.images = []
+        if (jsonObject["images"] != null) {
+            for (const i in jsonObject["images"]) {
+                const item = SearchPersonImage.fromJson(jsonObject["images"][i])
+                if (item != undefined)
+                    result.images.push(item)
+            }
+        }
+        result.name = jsonObject["name"]
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class SearchPersonImage {
+    similarity?: number
+    distance?: number
+    path?: string
+    url?: string
+    contentType?: string
+    id?: number
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): SearchPersonImage | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPersonImage
+
+        result.similarity = jsonObject["similarity"]
+        result.distance = jsonObject["distance"]
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
 export const ImageQualityGroupName = {
     IMAGE_CHARACTERISTICS: 1,
     HEAD_SIZE_AND_POSITION: 2,
@@ -769,6 +952,14 @@ export const ImageQualityCharacteristicName = {
     OTHER_FACES: "OtherFaces",
     BACKGROUND_COLOR_MATCH: "BackgroundColorMatch",
     UNKNOWN: "Unknown",
+    IMAGE_CHARACTERISTIC_ALL_RECOMMENDED: "ImageCharacteristic",
+    HEAD_SIZE_AND_POSITION_ALL_RECOMMENDED: "HeadSizeAndPosition",
+    FACE_IMAGE_QUALITY_ALL_RECOMMENDED: "FaceImageQuality",
+    EYES_CHARACTERISTICS_ALL_RECOMMENDED: "EyesCharacteristics",
+    SHADOW_AND_LIGHTING_ALL_RECOMMENDED: "ShadowsAndLightning",
+    POSE_AND_EXPRESSION_ALL_RECOMMENDED: "PoseAndExpression",
+    HEAD_OCCLUSION_ALL_RECOMMENDED: "HeadOcclusion",
+    QUALITY_BACKGROUND_ALL_RECOMMENDED: "QualityBackground",
 }
 
 export const DetectFacesScenario = {
@@ -898,6 +1089,31 @@ export default class FaceSDK {
     static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static detectFaces(request: DetectFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFacesWithConfig(request: MatchFacesRequest, config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setOnCustomButtonTappedListener(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setUiCustomizationLayer(json: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFacesSimilarityThresholdSplit(faces: string, similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersons(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonsForPage(page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPerson(personId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static createPerson(name: string, metadata: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static updatePerson(personId: int, name: string, metadata: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deletePerson(personId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImages(personId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImagesForPage(personId: number, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static addPersonImage(personId: number, image: ImageUpload, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImage(personId: number, imageId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deletePersonImage(personId: number, imageId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroups(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroupsForPage(page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonGroups(personId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonGroupsForPage(personId: number, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static createGroup(name: string, metadata: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroup(groupId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static updateGroup(groupId: int, name: string, metadata: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static editPersonsInGroup(groupId: number, editGroupPersonsRequest: EditGroupPersonsRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonsInGroup(groupId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonsInGroupForPage(groupId: number, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deleteGroup(groupId: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static searchPerson(searchPersonRequest: SearchPersonRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }

@@ -13,6 +13,7 @@ export default class App extends Component {
   constructor(props) {
     super(props)
 
+    eventManager.addListener('onCustomButtonTappedEvent', event => console.log(event))
     eventManager.addListener('videoEncoderCompletionEvent', json => {
       response = JSON.parse(json)
       transactionId = response["transactionId"];

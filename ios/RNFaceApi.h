@@ -4,6 +4,11 @@
 @import UIKit;
 @import FaceSDK;
 
-@interface RNFaceApi : RCTEventEmitter <RCTBridgeModule, RFSURLRequestInterceptingDelegate, RFSVideoUploadingDelegate>
-@property NSDictionary* headers;
+typedef void (^RFSWCallback)(NSString* _Nullable response);
+
+@interface RNFaceApi : RCTEventEmitter <RCTBridgeModule,
+                                        RFSURLRequestInterceptingDelegate,
+                                        RFSVideoUploadingDelegate,
+                                        RFSCustomizationActionDelegate>
+@property NSDictionary* _Nullable headers;
 @end

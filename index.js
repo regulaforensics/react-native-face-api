@@ -83,7 +83,7 @@ export class LivenessResponse {
 
         result.bitmap = jsonObject["bitmap"]
         result.liveness = jsonObject["liveness"]
-        result.sessionId = jsonObject["sessionId"]
+        result.tag = jsonObject["tag"]
         result.transactionId = jsonObject["transactionId"]
         result.exception = LivenessErrorException.fromJson(jsonObject["exception"])
 
@@ -96,6 +96,7 @@ export class MatchFacesResponse {
         if (jsonObject == null) return null
         const result = new MatchFacesResponse()
 
+        result.tag = jsonObject["tag"]
         result.exception = MatchFacesException.fromJson(jsonObject["exception"])
         result.detections = []
         if (jsonObject["detections"] != null)
@@ -118,10 +119,7 @@ export class Image {
         result.imageType = jsonObject["imageType"]
         result.bitmap = jsonObject["bitmap"]
         result.tag = jsonObject["tag"]
-        result.imageData = []
-        if (jsonObject["imageData"] != null)
-            for (const i in jsonObject["imageData"])
-                result.imageData.push(jsonObject["imageData"][i])
+        result.imageData = jsonObject["imageData"]
 
         return result
     }
@@ -138,6 +136,7 @@ export class MatchFacesRequest {
                 result.images.push(MatchFacesImage.fromJson(jsonObject["images"][i]))
         result.customMetadata = jsonObject["customMetadata"]
         result.thumbnails = jsonObject["thumbnails"]
+        result.tag = jsonObject["tag"]
 
         return result
     }
@@ -270,6 +269,7 @@ export class DetectFacesRequest {
         if (jsonObject == null) return null
         const result = new DetectFacesRequest()
 
+        result.tag = jsonObject["tag"]
         result.scenario = jsonObject["scenario"]
         result.image = jsonObject["image"]
         result.configuration = DetectFacesConfiguration.fromJson(jsonObject["configuration"])
@@ -459,6 +459,134 @@ export class DetectFacesAttributeResult {
     }
 }
 
+export class Person {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new Person()
+
+        result.name = jsonObject["name"]
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonGroup {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new PersonGroup()
+
+        result.name = jsonObject["name"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonImage {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new PersonImage()
+
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class ImageUpload {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new ImageUpload()
+
+        result.imageData = jsonObject["imageData"]
+
+        return result
+    }
+}
+
+export class EditGroupPersonsRequest {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new EditGroupPersonsRequest()
+
+        result.personIdsToAdd = []
+        if (jsonObject["personIdsToAdd"] != null)
+            for (const i in jsonObject["personIdsToAdd"])
+                result.personIdsToAdd.push(jsonObject["personIdsToAdd"][i])
+        result.personIdsToRemove = []
+        if (jsonObject["personIdsToRemove"] != null)
+            for (const i in jsonObject["personIdsToRemove"])
+                result.personIdsToRemove.push(jsonObject["personIdsToRemove"][i])
+
+        return result
+    }
+}
+
+export class SearchPersonRequest {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new SearchPersonRequest()
+
+        result.groupIdsForSearch = []
+        if (jsonObject["groupIdsForSearch"] != null)
+            for (const i in jsonObject["groupIdsForSearch"])
+                result.groupIdsForSearch.push(jsonObject["groupIdsForSearch"][i])
+        result.threshold = jsonObject["threshold"]
+        result.limit = jsonObject["limit"]
+        result.imageUpload = ImageUpload.fromJson(jsonObject["imageUpload"])
+
+        return result
+    }
+}
+
+export class SearchPerson {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new SearchPerson()
+
+        result.images = []
+        if (jsonObject["images"] != null)
+            for (const i in jsonObject["images"])
+                result.images.push(SearchPersonImage.fromJson(jsonObject["images"][i]))
+        result.name = jsonObject["name"]
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class SearchPersonImage {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new SearchPersonImage()
+
+        result.similarity = jsonObject["similarity"]
+        result.distance = jsonObject["distance"]
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
 // Enum
 
 export const ImageQualityGroupName = {
@@ -586,6 +714,14 @@ export const ImageQualityCharacteristicName = {
     OTHER_FACES: "OtherFaces",
     BACKGROUND_COLOR_MATCH: "BackgroundColorMatch",
     UNKNOWN: "Unknown",
+    IMAGE_CHARACTERISTIC_ALL_RECOMMENDED: "ImageCharacteristic",
+    HEAD_SIZE_AND_POSITION_ALL_RECOMMENDED: "HeadSizeAndPosition",
+    FACE_IMAGE_QUALITY_ALL_RECOMMENDED: "FaceImageQuality",
+    EYES_CHARACTERISTICS_ALL_RECOMMENDED: "EyesCharacteristics",
+    SHADOW_AND_LIGHTING_ALL_RECOMMENDED: "ShadowsAndLightning",
+    POSE_AND_EXPRESSION_ALL_RECOMMENDED: "PoseAndExpression",
+    HEAD_OCCLUSION_ALL_RECOMMENDED: "HeadOcclusion",
+    QUALITY_BACKGROUND_ALL_RECOMMENDED: "QualityBackground",
 }
 
 export const DetectFacesScenario = {
@@ -716,7 +852,32 @@ FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec(
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 FaceSDK.detectFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "detectFaces", [request], successCallback, errorCallback)
 FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
+FaceSDK.setOnCustomButtonTappedListener = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setOnCustomButtonTappedListener", [], successCallback, errorCallback)
+FaceSDK.setUiCustomizationLayer = (json, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiCustomizationLayer", [json], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
 FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)
+FaceSDK.getPersons = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersons", [], successCallback, errorCallback)
+FaceSDK.getPersonsForPage = (page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsForPage", [page, size], successCallback, errorCallback)
+FaceSDK.getPerson = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPerson", [personId], successCallback, errorCallback)
+FaceSDK.createPerson = (name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createPerson", [name, metadata], successCallback, errorCallback)
+FaceSDK.updatePerson = (personId, name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updatePerson", [personId, name, metadata], successCallback, errorCallback)
+FaceSDK.deletePerson = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "deletePerson", [personId], successCallback, errorCallback)
+FaceSDK.getPersonImages = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonImages", [personId], successCallback, errorCallback)
+FaceSDK.getPersonImagesForPage = (personId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonImagesForPage", [personId, page, size], successCallback, errorCallback)
+FaceSDK.addPersonImage = (personId, image, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "addPersonImage", [personId, image], successCallback, errorCallback)
+FaceSDK.getPersonImage = (personId, imageId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonImage", [personId, imageId], successCallback, errorCallback)
+FaceSDK.deletePersonImage = (personId, imageId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "deletePersonImage", [personId, imageId], successCallback, errorCallback)
+FaceSDK.getGroups = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getGroups", [], successCallback, errorCallback)
+FaceSDK.getGroupsForPage = (page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getGroupsForPage", [page, size], successCallback, errorCallback)
+FaceSDK.getPersonGroups = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonGroups", [personId], successCallback, errorCallback)
+FaceSDK.getPersonGroupsForPage = (personId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonGroupsForPage", [personId, page, size], successCallback, errorCallback)
+FaceSDK.createGroup = (name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createGroup", [name, metadata], successCallback, errorCallback)
+FaceSDK.getGroup = (groupId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getGroup", [groupId], successCallback, errorCallback)
+FaceSDK.updateGroup = (groupId, name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updateGroup", [groupId, name, metadata], successCallback, errorCallback)
+FaceSDK.editPersonsInGroup = (groupId, editGroupPersonsRequest, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "editPersonsInGroup", [groupId, editGroupPersonsRequest], successCallback, errorCallback)
+FaceSDK.getPersonsInGroup = (groupId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsInGroup", [groupId], successCallback, errorCallback)
+FaceSDK.getPersonsInGroupForPage = (groupId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsInGroupForPage", [groupId, page, size], successCallback, errorCallback)
+FaceSDK.deleteGroup = (groupId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "deleteGroup", [groupId], successCallback, errorCallback)
+FaceSDK.searchPerson = (searchPersonRequest, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "searchPerson", [searchPersonRequest], successCallback, errorCallback)
 
 export default FaceSDK
