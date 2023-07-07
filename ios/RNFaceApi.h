@@ -9,6 +9,7 @@ typedef void (^RFSWCallback)(NSString* _Nullable response);
 @interface RNFaceApi : RCTEventEmitter <RCTBridgeModule,
                                         RFSURLRequestInterceptingDelegate,
                                         RFSVideoUploadingDelegate,
-                                        RFSCustomizationActionDelegate>
+                                        RFSCustomizationActionDelegate,
+                                        RFSLivenessProcessStatusDelegate>
 @property NSDictionary* _Nullable headers;
 @end

@@ -1,5 +1,7 @@
 package com.reactlibrary;
 
+import static com.reactlibrary.ConfigKt.*;
+import static com.reactlibrary.UtilsKt.*;
 import static com.regula.facesdk.FaceSDK.Instance;
 
 import android.app.Activity;
@@ -7,22 +9,22 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
 import com.regula.facesdk.callback.PersonDBCallback;
-import com.regula.facesdk.configuration.FaceCaptureConfiguration;
-import com.regula.facesdk.configuration.LivenessConfiguration;
-import com.regula.facesdk.configuration.MatchFaceConfiguration;
 import com.regula.facesdk.exception.InitException;
+import com.regula.facesdk.model.LivenessNotification;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesComparedFacesPair;
 import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit;
-import com.regula.facesdk.model.results.personDb.DbBaseItem;
-import com.regula.facesdk.model.results.personDb.PageableItemList;
+import com.regula.facesdk.model.results.personDb.Person;
+import com.regula.facesdk.model.results.personDb.PersonGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,11 +34,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings({"unused", "RedundantSuppression", "ConstantConditions", "SameParameterValue"})
+@SuppressWarnings({"unused", "RedundantSuppression", "ConstantConditions", "SameParameterValue", "Convert2Diamond"})
 public class RNFaceApiModule extends ReactContextBaseJavaModule {
     private final static String videoEncoderCompletionEvent = "videoEncoderCompletionEvent";
-
     private final static String onCustomButtonTappedEvent = "onCustomButtonTappedEvent";
+    private final static String livenessNotificationEvent = "livenessNotificationEvent";
 
     JSONArray data;
     private final ReactContext reactContext;
@@ -52,6 +54,16 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         return "RNFaceApi";
     }
 
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void addListener(String eventName) {
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void removeListeners(Integer count) {
+    }
+
     private Context getContext() {
         return reactContext.getCurrentActivity();
     }
@@ -64,7 +76,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     private <T> T args(int index) throws JSONException {
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Rewrite it according to react native documentation!!!
-        // the is no int or double in js so all ints are sent as double by default
+        // there is no int or double in js so all ints are sent as double by default
         Object value = data.get(index);
         if (value instanceof Double)
             if ((Double) value % 1 == 0) {
@@ -87,14 +99,8 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         send(onCustomButtonTappedEvent, tag + "");
     }
 
-    private interface Callback {
-        void success(Object o);
-
-        void error(String s);
-
-        default void success() {
-            success("");
-        }
+    void sendLivenessNotification(LivenessNotification notification) {
+        send(livenessNotificationEvent, JSONConstructor.generateLivenessNotification(notification).toString());
     }
 
     @ReactMethod
@@ -164,14 +170,14 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "detectFaces":
                     detectFaces(callback, args(0));
                     break;
-                case "matchFacesWithConfig":
-                    matchFacesWithConfig(callback, args(0), args(1));
-                    break;
                 case "setOnCustomButtonTappedListener":
                     setOnCustomButtonTappedListener(callback);
                     break;
                 case "setUiCustomizationLayer":
                     setUiCustomizationLayer(callback, args(0));
+                    break;
+                case "setUiConfiguration":
+                    setUiConfiguration(callback, args(0));
                     break;
                 case "setLanguage":
                     setLanguage(callback, args(0));
@@ -179,20 +185,14 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 case "matchFacesSimilarityThresholdSplit":
                     matchFacesSimilarityThresholdSplit(callback, args(0), args(1));
                     break;
-                case "getPersons":
-                    getPersons(callback);
-                    break;
-                case "getPersonsForPage":
-                    getPersonsForPage(callback, args(0), args(1));
-                    break;
                 case "getPerson":
                     getPerson(callback, args(0));
                     break;
                 case "createPerson":
-                    createPerson(callback, args(0), args(1));
+                    createPerson(callback, args(0), args(1), args(2));
                     break;
                 case "updatePerson":
-                    updatePerson(callback, args(0), args(1), args(2));
+                    updatePerson(callback, args(0));
                     break;
                 case "deletePerson":
                     deletePerson(callback, args(0));
@@ -231,7 +231,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                     getGroup(callback, args(0));
                     break;
                 case "updateGroup":
-                    updateGroup(callback, args(0), args(1), args(2));
+                    updateGroup(callback, args(0));
                     break;
                 case "editPersonsInGroup":
                     editPersonsInGroup(callback, args(0), args(1));
@@ -271,15 +271,20 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                 e.printStackTrace();
             }
         });
-        callback.success();
+        callback.success(null);
     }
 
     private void startLiveness(Callback callback) {
-        Instance().startLiveness(getContext(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
+        Instance().startLiveness(
+                getContext(),
+                response -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()),
+                this::sendLivenessNotification);
     }
 
     private void detectFaces(Callback callback, String request) throws JSONException {
-        Instance().detectFaces(JSONConstructor.DetectFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateDetectFacesResponse(response).toString()));
+        Instance().detectFaces(
+                JSONConstructor.DetectFacesRequestFromJSON(new JSONObject(request)),
+                (response) -> callback.success(JSONConstructor.generateDetectFacesResponse(response).toString()));
     }
 
     private void getFaceSdkVersion(Callback callback) {
@@ -287,62 +292,39 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     }
 
     private void presentFaceCaptureActivity(Callback callback) {
-        Instance().presentFaceCaptureActivity(getContext(), (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
+        Instance().presentFaceCaptureActivity(
+                getContext(),
+                (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
     }
 
     private void stopFaceCaptureActivity(Callback callback) {
         Instance().stopFaceCaptureActivity(getContext());
-        callback.success();
+        callback.success(null);
     }
 
     private void stopLivenessProcessing(Callback callback) {
         Instance().stopLivenessProcessing(getContext());
-        callback.success();
+        callback.success(null);
     }
 
-    private void presentFaceCaptureActivityWithConfig(Callback callback, JSONObject config) throws JSONException {
-        FaceCaptureConfiguration.Builder builder = new FaceCaptureConfiguration.Builder();
-        if (config.has("copyright"))
-            builder.setCopyright(config.getBoolean("copyright"));
-        if (config.has("cameraId"))
-            builder.setCameraId(config.getInt("cameraId"));
-        if (config.has("cameraSwitchEnabled"))
-            builder.setCameraSwitchEnabled(config.getBoolean("cameraSwitchEnabled"));
-        if (config.has("showHelpTextAnimation"))
-            builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
-        if (config.has("closeButtonEnabled"))
-            builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
-        if (config.has("torchButtonEnabled"))
-            builder.setTorchButtonEnabled(config.getBoolean("torchButtonEnabled"));
-        if (config.has("timeout"))
-            builder.setTimeout(config.getInt("timeout"));
-        Instance().presentFaceCaptureActivity(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
+    private void presentFaceCaptureActivityWithConfig(Callback callback, JSONObject config) {
+        Instance().presentFaceCaptureActivity(
+                getContext(),
+                faceCaptureConfigFromJSON(config),
+                (response) -> callback.success(JSONConstructor.generateFaceCaptureResponse(response).toString()));
     }
 
-    private void startLivenessWithConfig(Callback callback, JSONObject config) throws JSONException {
-        LivenessConfiguration.Builder builder = new LivenessConfiguration.Builder();
-        if (config.has("copyright"))
-            builder.setCopyright(config.getBoolean("copyright"));
-        if (config.has("attemptsCount"))
-            builder.setAttemptsCount(config.getInt("attemptsCount"));
-        if (config.has("sessionId"))
-            builder.setTag(config.getString("tag"));
-        if (config.has("skipStep"))
-            builder.setSkipStep(JSONConstructor.LivenessSkipStepArrayFromJSON(config.getJSONArray("skipStep")));
-        if (config.has("showHelpTextAnimation"))
-            builder.setShowHelpTextAnimation(config.getBoolean("showHelpTextAnimation"));
-        if (config.has("locationTrackingEnabled"))
-            builder.setLocationTrackingEnabled(config.getBoolean("locationTrackingEnabled"));
-        if (config.has("closeButtonEnabled"))
-            builder.setCloseButtonEnabled(config.getBoolean("closeButtonEnabled"));
-        if (config.has("recordingProcess"))
-            builder.setRecordingProcess(config.getBoolean("recordingProcess"));
-        Instance().startLiveness(getContext(), builder.build(), (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()));
+    private void startLivenessWithConfig(Callback callback, JSONObject config) {
+        Instance().startLiveness(
+                getContext(),
+                livenessConfigFromJSON(config),
+                (response) -> callback.success(JSONConstructor.generateLivenessResponse(response).toString()),
+                this::sendLivenessNotification);
     }
 
     private void setServiceUrl(Callback callback, String url) {
         Instance().setServiceUrl(url);
-        callback.success();
+        callback.success(null);
     }
 
     private void init(Callback callback) {
@@ -355,7 +337,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
 
     private void deinit(Callback callback) {
         Instance().deinit();
-        callback.success();
+        callback.success(null);
     }
 
     private void isInitialized(Callback callback) {
@@ -363,28 +345,30 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     }
 
     private void matchFaces(Callback callback, String request) throws JSONException {
-        Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
-    }
-
-    private void matchFacesWithConfig(Callback callback, String request, @SuppressWarnings("unused") JSONObject config) throws JSONException {
-        MatchFaceConfiguration.Builder builder = new MatchFaceConfiguration.Builder();
-        Instance().matchFaces(JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)), builder.build(), (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
+        Instance().matchFaces(
+                JSONConstructor.MatchFacesRequestFromJSON(new JSONObject(request)),
+                (response) -> callback.success(JSONConstructor.generateMatchFacesResponse(response).toString()));
     }
 
     private void matchFacesSimilarityThresholdSplit(Callback callback, String array, Double similarity) throws JSONException {
-        List<MatchFacesComparedFacesPair> faces = JSONConstructor.listFromJSON(new JSONArray(array), JSONConstructor::MatchFacesComparedFacesPairFromJSON);
+        List<MatchFacesComparedFacesPair> faces = listFromJSON(new JSONArray(array), JSONConstructor::MatchFacesComparedFacesPairFromJSON);
         MatchFacesSimilarityThresholdSplit split = new MatchFacesSimilarityThresholdSplit(faces, similarity);
         callback.success(JSONConstructor.generateMatchFacesSimilarityThresholdSplit(split).toString());
     }
 
     private void setOnCustomButtonTappedListener(Callback callback) {
         Instance().setOnClickListener(view -> sendOnCustomButtonTappedEvent((int) view.getTag()));
-        callback.success();
+        callback.success(null);
     }
 
-    private void setUiCustomizationLayer(Callback callback, JSONObject json) {
-        Instance().getCustomization().setUiCustomizationLayer(json);
-        callback.success();
+    private void setUiCustomizationLayer(Callback callback, JSONObject customization) {
+        Instance().getCustomization().setUiCustomizationLayer(customization);
+        callback.success(null);
+    }
+
+    private void setUiConfiguration(Callback callback, JSONObject config) {
+        Instance().getCustomization().setUiConfiguration(uiConfigFromJSON(config, getContext()));
+        callback.success(null);
     }
 
     private void setLanguage(Callback callback, String language) {
@@ -394,106 +378,55 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
-        callback.success();
+        callback.success(null);
     }
 
-    <T> PersonDBCallback<T> createPersonDBCallback(Callback callback, JSONConstructor.JSONObjectGenerator<T> generator) {
-        return new PersonDBCallback<T>() {
-            @Override
-            public void onSuccess(T t) {
-                try {
-                    if (generator == null)
-                        callback.success();
-                    callback.success(generator.generateJSONObject(t).toString());
-                } catch (JSONException e) {
-                    callback.error(e.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(String s) {
-                callback.error(s);
-            }
-        };
-    }
-
-    <T> PersonDBCallback<List<T>> createPersonDBListCallback(Callback callback, JSONConstructor.JSONObjectGenerator<T> generator) {
-        return new PersonDBCallback<List<T>>() {
-            @Override
-            public void onSuccess(List<T> list) {
-                try {
-                    callback.success(JSONConstructor.generateList(list, generator).toString());
-                } catch (JSONException e) {
-                    callback.error(e.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(String s) {
-                callback.error(s);
-            }
-        };
-    }
-
-    <T extends DbBaseItem> PersonDBCallback<PageableItemList<List<T>, T>> createPersonDBPageableListCallback(Callback callback, JSONConstructor.JSONObjectGenerator<T> generator) {
-        return new PersonDBCallback<PageableItemList<List<T>, T>>() {
-            @Override
-            public void onSuccess(PageableItemList<List<T>, T> listTPageableItemList) {
-                try {
-                    callback.success(JSONConstructor.generateList(listTPageableItemList.getItemsList(), generator).toString());
-                } catch (JSONException e) {
-                    callback.error(e.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(String s) {
-                callback.error(s);
-            }
-        };
-    }
-
-    private void getPersons(Callback callback) {
-        Instance().personDatabase().getPersons(createPersonDBPageableListCallback(callback, JSONConstructor::generatePerson));
-    }
-
-    private void getPersonsForPage(Callback callback, int page, int size) {
-        Instance().personDatabase().getPersonsForPage(page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePerson));
-    }
-
-    private void getPerson(Callback callback, int personId) {
+    private void getPerson(Callback callback, String personId) {
         Instance().personDatabase().getPerson(personId, createPersonDBCallback(callback, JSONConstructor::generatePerson));
     }
 
-    private void createPerson(Callback callback, String name, JSONObject metadata) {
-        Instance().personDatabase().createPerson(name, metadata, createPersonDBCallback(callback, JSONConstructor::generatePerson));
+    private void createPerson(Callback callback, String name, JSONArray groupIds, JSONObject metadata) {
+        Instance().personDatabase().createPerson(name, metadata, arrayFromJSON(groupIds), createPersonDBCallback(callback, JSONConstructor::generatePerson));
     }
 
-    private void updatePerson(Callback callback, int personId, String name, JSONObject metadata) {
-        Instance().personDatabase().updatePerson(personId, name, metadata, createPersonDBCallback(callback, null));
+    private void updatePerson(Callback callback, JSONObject personJson) {
+        Instance().personDatabase().getPerson(JSONConstructor.idFromJSON(personJson), new PersonDBCallback<Person>() {
+            @Override
+            public void onSuccess(@Nullable Person person) {
+                if (person != null)
+                    Instance().personDatabase().updatePerson(JSONConstructor.updatePersonFromJSON(person, personJson), createPersonDBCallback(callback, null));
+                else
+                    callback.error("id does not exist");
+            }
+
+            @Override
+            public void onFailure(@NonNull String s) {
+                callback.error(s);
+            }
+        });
     }
 
-    private void deletePerson(Callback callback, int personId) {
+    private void deletePerson(Callback callback, String personId) {
         Instance().personDatabase().deletePerson(personId, createPersonDBCallback(callback, null));
     }
 
-    private void getPersonImages(Callback callback, int personId) {
+    private void getPersonImages(Callback callback, String personId) {
         Instance().personDatabase().getPersonImages(personId, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonImage));
     }
 
-    private void getPersonImagesForPage(Callback callback, int personId, int page, int size) {
-        Instance().personDatabase().getPersonImages(personId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonImage));
+    private void getPersonImagesForPage(Callback callback, String personId, int page, int size) {
+        Instance().personDatabase().getPersonImagesForPage(personId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonImage));
     }
 
-    private void addPersonImage(Callback callback, int personId, JSONObject image) {
+    private void addPersonImage(Callback callback, String personId, JSONObject image) {
         Instance().personDatabase().addPersonImage(personId, JSONConstructor.ImageUploadFromJSON(image), createPersonDBCallback(callback, JSONConstructor::generatePersonImage));
     }
 
-    private void getPersonImage(Callback callback, int personId, int imageId) {
+    private void getPersonImage(Callback callback, String personId, String imageId) {
         Instance().personDatabase().getPersonImageById(personId, imageId, createPersonDBCallback(callback, JSONConstructor::generateByteArrayImage));
     }
 
-    private void deletePersonImage(Callback callback, int personId, int imageId) {
+    private void deletePersonImage(Callback callback, String personId, String imageId) {
         Instance().personDatabase().deletePersonImage(personId, imageId, createPersonDBCallback(callback, null));
     }
 
@@ -505,39 +438,52 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
         Instance().personDatabase().getGroupsForPage(page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonGroup));
     }
 
-    private void getPersonGroups(Callback callback, int personId) {
+    private void getPersonGroups(Callback callback, String personId) {
         Instance().personDatabase().getPersonGroups(personId, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonGroup));
     }
 
-    private void getPersonGroupsForPage(Callback callback, int personId, int page, int size) {
-        Instance().personDatabase().getPersonGroups(personId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonGroup));
+    private void getPersonGroupsForPage(Callback callback, String personId, int page, int size) {
+        Instance().personDatabase().getPersonGroupsForPage(personId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePersonGroup));
     }
 
     private void createGroup(Callback callback, String name, JSONObject metadata) {
         Instance().personDatabase().createGroup(name, metadata, createPersonDBCallback(callback, JSONConstructor::generatePersonGroup));
     }
 
-    private void getGroup(Callback callback, int groupId) {
+    private void getGroup(Callback callback, String groupId) {
         Instance().personDatabase().getGroup(groupId, createPersonDBCallback(callback, JSONConstructor::generatePersonGroup));
     }
 
-    private void updateGroup(Callback callback, int groupId, String name, JSONObject metadata) {
-        Instance().personDatabase().updateGroup(groupId, name, metadata, createPersonDBCallback(callback, null));
+    private void updateGroup(Callback callback, JSONObject groupJson) {
+        Instance().personDatabase().getGroup(JSONConstructor.idFromJSON(groupJson), new PersonDBCallback<PersonGroup>() {
+            @Override
+            public void onSuccess(@Nullable PersonGroup group) {
+                if (group != null)
+                    Instance().personDatabase().updateGroup(JSONConstructor.updatePersonGroupFromJSON(group, groupJson), createPersonDBCallback(callback, null));
+                else
+                    callback.error("id does not exist");
+            }
+
+            @Override
+            public void onFailure(@NonNull String s) {
+                callback.error(s);
+            }
+        });
     }
 
-    private void editPersonsInGroup(Callback callback, int groupId, JSONObject editGroupPersonsRequest) {
+    private void editPersonsInGroup(Callback callback, String groupId, JSONObject editGroupPersonsRequest) {
         Instance().personDatabase().editPersonsInGroup(groupId, JSONConstructor.EditGroupPersonsRequestFromJSON(editGroupPersonsRequest), createPersonDBCallback(callback, null));
     }
 
-    private void getPersonsInGroup(Callback callback, int groupId) {
+    private void getPersonsInGroup(Callback callback, String groupId) {
         Instance().personDatabase().getPersonsInGroup(groupId, createPersonDBPageableListCallback(callback, JSONConstructor::generatePerson));
     }
 
-    private void getPersonsInGroupForPage(Callback callback, int groupId, int page, int size) {
-        Instance().personDatabase().getPersonsInGroup(groupId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePerson));
+    private void getPersonsInGroupForPage(Callback callback, String groupId, int page, int size) {
+        Instance().personDatabase().getPersonsInGroupForPage(groupId, page, size, createPersonDBPageableListCallback(callback, JSONConstructor::generatePerson));
     }
 
-    private void deleteGroup(Callback callback, int groupId) {
+    private void deleteGroup(Callback callback, String groupId) {
         Instance().personDatabase().deleteGroup(groupId, createPersonDBCallback(callback, null));
     }
 

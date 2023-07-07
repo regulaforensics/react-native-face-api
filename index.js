@@ -85,6 +85,7 @@ export class LivenessResponse {
         result.liveness = jsonObject["liveness"]
         result.tag = jsonObject["tag"]
         result.transactionId = jsonObject["transactionId"]
+        result.estimatedAge = jsonObject["estimatedAge"]
         result.exception = LivenessErrorException.fromJson(jsonObject["exception"])
 
         return result
@@ -459,12 +460,29 @@ export class DetectFacesAttributeResult {
     }
 }
 
+export class Font {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new Font()
+
+        result.name = jsonObject["name"]
+        result.style = jsonObject["style"]
+        result.size = jsonObject["size"]
+
+        return result
+    }
+}
+
 export class Person {
     static fromJson(jsonObject) {
         if (jsonObject == null) return null
         const result = new Person()
 
         result.name = jsonObject["name"]
+        result.groups = []
+        if (jsonObject["groups"] != null)
+            for (const i in jsonObject["groups"])
+                result.groups.push(jsonObject["groups"][i])
         result.updatedAt = jsonObject["updatedAt"]
         result.id = jsonObject["id"]
         result.metadata = jsonObject["metadata"]
@@ -538,6 +556,7 @@ export class SearchPersonRequest {
         if (jsonObject == null) return null
         const result = new SearchPersonRequest()
 
+        result.outputImageParams = OutputImageParams.fromJson(jsonObject["outputImageParams"])
         result.groupIdsForSearch = []
         if (jsonObject["groupIdsForSearch"] != null)
             for (const i in jsonObject["groupIdsForSearch"])
@@ -545,6 +564,7 @@ export class SearchPersonRequest {
         result.threshold = jsonObject["threshold"]
         result.limit = jsonObject["limit"]
         result.imageUpload = ImageUpload.fromJson(jsonObject["imageUpload"])
+        result.detectAll = jsonObject["detectAll"]
 
         return result
     }
@@ -555,11 +575,16 @@ export class SearchPerson {
         if (jsonObject == null) return null
         const result = new SearchPerson()
 
+        result.detection = SearchPersonDetection.fromJson(jsonObject["detection"])
         result.images = []
         if (jsonObject["images"] != null)
             for (const i in jsonObject["images"])
                 result.images.push(SearchPersonImage.fromJson(jsonObject["images"][i]))
         result.name = jsonObject["name"]
+        result.groups = []
+        if (jsonObject["groups"] != null)
+            for (const i in jsonObject["groups"])
+                result.groups.push(jsonObject["groups"][i])
         result.updatedAt = jsonObject["updatedAt"]
         result.id = jsonObject["id"]
         result.metadata = jsonObject["metadata"]
@@ -587,7 +612,82 @@ export class SearchPersonImage {
     }
 }
 
+export class SearchPersonDetection {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new SearchPersonDetection()
+
+        result.landmarks = []
+        if (jsonObject["landmarks"] != null)
+            for (const i in jsonObject["landmarks"])
+                result.landmarks.push(Point.fromJson(jsonObject["landmarks"][i]))
+        result.rect = Rect.fromJson(jsonObject["rect"])
+        result.cropImage = jsonObject["cropImage"]
+        result.rotationAngle = jsonObject["rotationAngle"]
+
+        return result
+    }
+}
+
+export class LivenessNotification {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new LivenessNotification()
+
+        result.status = jsonObject["status"]
+        result.response = LivenessResponse.fromJson(jsonObject["response"])
+
+        return result
+    }
+}
+
+export class VideoEncoderCompletion {
+    static fromJson(jsonObject) {
+        if (jsonObject == null) return null
+        const result = new VideoEncoderCompletion()
+
+        result.success = jsonObject["success"]
+        result.transactionId = jsonObject["transactionId"]
+
+        return result
+    }
+}
+
 // Enum
+
+export const FontStyle = {
+    NORMAL: 0,
+    BOLD: 1,
+    ITALIC: 2,
+    BOLD_ITALIC: 3,
+}
+
+export const CustomizationColor = {
+    ONBOARDING_SCREEN_START_BUTTON_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_BACKGROUND",
+    ONBOARDING_SCREEN_START_BUTTON_TITLE: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_TITLE",
+    ONBOARDING_SCREEN_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_BACKGROUND",
+    ONBOARDING_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_TITLE_LABEL_TEXT",
+    ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT",
+    CAMERA_SCREEN_STROKE_NORMAL: "CustomizationColor.CAMERA_SCREEN_STROKE_NORMAL",
+    CAMERA_SCREEN_STROKE_ACTIVE: "CustomizationColor.CAMERA_SCREEN_STROKE_ACTIVE",
+    CAMERA_SCREEN_SECTOR_TARGET: "CustomizationColor.CAMERA_SCREEN_SECTOR_TARGET",
+    CAMERA_SCREEN_SECTOR_ACTIVE: "CustomizationColor.CAMERA_SCREEN_SECTOR_ACTIVE",
+    CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND",
+    CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT",
+    CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND",
+    CAMERA_SCREEN_BACK_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_TEXT",
+    CAMERA_SCREEN_LIGHT_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_LIGHT_TOOLBAR_TINT",
+    CAMERA_SCREEN_DARK_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_DARK_TOOLBAR_TINT",
+    RETRY_SCREEN_BACKGROUND: "CustomizationColor.RETRY_SCREEN_BACKGROUND",
+    RETRY_SCREEN_RETRY_BUTTON_BACKGROUND: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_BACKGROUND",
+    RETRY_SCREEN_RETRY_BUTTON_TITLE: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_TITLE",
+    RETRY_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_TITLE_LABEL_TEXT",
+    RETRY_SCREEN_HINT_LABELS_TEXT: "CustomizationColor.RETRY_SCREEN_HINT_LABELS_TEXT",
+    PROCESSING_SCREEN_BACKGROUND: "CustomizationColor.PROCESSING_SCREEN_BACKGROUND",
+    PROCESSING_SCREEN_PROGRESS: "CustomizationColor.PROCESSING_SCREEN_PROGRESS",
+    PROCESSING_SCREEN_TITLE: "CustomizationColor.PROCESSING_SCREEN_TITLE",
+    SUCCESS_SCREEN_BACKGROUND: "CustomizationColor.SUCCESS_SCREEN_BACKGROUND",
+}
 
 export const ImageQualityGroupName = {
     IMAGE_CHARACTERISTICS: 1,
@@ -643,6 +743,7 @@ export const LivenessErrorCode = {
     CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
     CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
     PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const DetectFacesBackendErrorCode = {
@@ -671,6 +772,7 @@ export const ImageQualityCharacteristicName = {
     IMAGE_HEIGHT: "ImageHeight",
     IMAGE_WIDTH_TO_HEIGHT: "ImageWidthToHeight",
     IMAGE_CHANNELS_NUMBER: "ImageChannelsNumber",
+    ART_FACE: "ArtFace",
     PADDING_RATIO: "PaddingRatio",
     FACE_MID_POINT_HORIZONTAL_POSITION: "FaceMidPointHorizontalPosition",
     FACE_MID_POINT_VERTICAL_POSITION: "FaceMidPointVerticalPosition",
@@ -724,6 +826,23 @@ export const ImageQualityCharacteristicName = {
     QUALITY_BACKGROUND_ALL_RECOMMENDED: "QualityBackground",
 }
 
+export const ButtonTag = {
+    CLOSE: 1001,
+    TORCH: 1002,
+    CAMERA_SWITCH: 1003,
+}
+
+export const CustomizationFont = {
+    ONBOARDING_SCREEN_START_BUTTON: "CustomizationFont.ONBOARDING_SCREEN_START_BUTTON",
+    ONBOARDING_SCREEN_TITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_TITLE_LABEL",
+    ONBOARDING_SCREEN_MESSAGE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABEL",
+    CAMERA_SCREEN_HINT_LABEL: "CustomizationFont.CAMERA_SCREEN_HINT_LABEL",
+    RETRY_SCREEN_RETRY_BUTTON: "CustomizationFont.RETRY_SCREEN_RETRY_BUTTON",
+    RETRY_SCREEN_TITLE_LABEL: "CustomizationFont.RETRY_SCREEN_TITLE_LABEL",
+    RETRY_SCREEN_HINT_LABELS: "CustomizationFont.RETRY_SCREEN_HINT_LABELS",
+    PROCESSING_SCREEN: "CustomizationFont.PROCESSING_SCREEN",
+}
+
 export const DetectFacesScenario = {
     CROP_CENTRAL_FACE: "CropCentralFace",
     CROP_ALL_FACES: "CropAllFaces",
@@ -735,6 +854,24 @@ export const DetectFacesScenario = {
     QUALITY_VISA_USA: "QualityVisaUSA",
 }
 
+export const LivenessProcessStatus = {
+    START: "START",
+    PREPARING: "PREPARING",
+    NEW_SESSION: "NEW_SESSION",
+    NEXT_STAGE: "NEXT_STAGE",
+    SECTOR_CHANGED: "SECTOR_CHANGED",
+    PROGRESS: "PROGRESS",
+    LOW_BRIGHTNESS: "LOW_BRIGHTNESS",
+    FIT_FACE: "FIT_FACE",
+    MOVE_AWAY: "MOVE_AWAY",
+    MOVE_CLOSER: "MOVE_CLOSER",
+    TURN_HEAD: "TURN_HEAD",
+    PROCESSING: "PROCESSING",
+    FAILED: "FAILED",
+    RETRY: "RETRY",
+    SUCCESS: "SUCCESS",
+}
+
 export const OutputImageCropAspectRatio = {
     OUTPUT_IMAGE_CROP_ASPECT_RATIO_3X4: 0,
     OUTPUT_IMAGE_CROP_ASPECT_RATIO_4X5: 1,
@@ -744,9 +881,8 @@ export const OutputImageCropAspectRatio = {
 }
 
 export const LivenessSkipStep = {
-    NONE: 0,
-    START_STEP: 1,
-    DONE_STEP: 2,
+    ONBOARDING_STEP: 1,
+    SUCCESS_STEP: 2,
 }
 
 export const ImageQualityResultStatus = {
@@ -772,6 +908,7 @@ export const FaceCaptureErrorCode = {
     CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
     TIMEOUT: "TIMEOUT",
     NOT_INITIALIZED: "NOT_INITIALIZED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const LivenessBackendErrorCode = {
@@ -798,6 +935,22 @@ export const LivenessBackendErrorCode = {
     WRONG_VIEW: 249,
 }
 
+export const CustomizationImage = {
+    ONBOARDING_SCREEN_CLOSE_BUTTON: "CustomizationImage.ONBOARDING_SCREEN_CLOSE_BUTTON",
+    ONBOARDING_SCREEN_ILLUMINATION: "CustomizationImage.ONBOARDING_SCREEN_ILLUMINATION",
+    ONBOARDING_SCREEN_ACCESSORIES: "CustomizationImage.ONBOARDING_SCREEN_ACCESSORIES",
+    ONBOARDING_SCREEN_CAMERA_LEVEL: "CustomizationImage.ONBOARDING_SCREEN_CAMERA_LEVEL",
+    CAMERA_SCREEN_CLOSE_BUTTON: "CustomizationImage.CAMERA_SCREEN_CLOSE_BUTTON",
+    CAMERA_SCREEN_LIGHT_ON_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_ON_BUTTON",
+    CAMERA_SCREEN_LIGHT_OFF_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_OFF_BUTTON",
+    CAMERA_SCREEN_SWITCH_BUTTON: "CustomizationImage.CAMERA_SCREEN_SWITCH_BUTTON",
+    RETRY_SCREEN_CLOSE_BUTTON: "CustomizationImage.RETRY_SCREEN_CLOSE_BUTTON",
+    RETRY_SCREEN_HINT_ENVIRONMENT: "CustomizationImage.RETRY_SCREEN_HINT_ENVIRONMENT",
+    RETRY_SCREEN_HINT_SUBJECT: "CustomizationImage.RETRY_SCREEN_HINT_SUBJECT",
+    PROCESSING_SCREEN_CLOSE_BUTTON: "CustomizationImage.PROCESSING_SCREEN_CLOSE_BUTTON",
+    SUCCESS_SCREEN_IMAGE: "CustomizationImage.SUCCESS_SCREEN_IMAGE",
+}
+
 export const DetectFacesAttribute = {
     AGE: "Age",
     EYE_RIGHT: "EyeRight",
@@ -815,6 +968,8 @@ export const DetectFacesAttribute = {
 }
 
 export const Enum = {
+   FontStyle,
+   CustomizationColor,
    ImageQualityGroupName,
    DetectFacesErrorCode,
    InitErrorCode,
@@ -824,13 +979,17 @@ export const Enum = {
    DetectFacesBackendErrorCode,
    MatchFacesErrorCode,
    ImageQualityCharacteristicName,
+   ButtonTag,
+   CustomizationFont,
    DetectFacesScenario,
+   LivenessProcessStatus,
    OutputImageCropAspectRatio,
    LivenessSkipStep,
    ImageQualityResultStatus,
    ImageType,
    FaceCaptureErrorCode,
    LivenessBackendErrorCode,
+   CustomizationImage,
    DetectFacesAttribute,
 }
 
@@ -851,16 +1010,14 @@ FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RN
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 FaceSDK.detectFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "detectFaces", [request], successCallback, errorCallback)
-FaceSDK.matchFacesWithConfig = (request, config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesWithConfig", [request, config], successCallback, errorCallback)
 FaceSDK.setOnCustomButtonTappedListener = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setOnCustomButtonTappedListener", [], successCallback, errorCallback)
 FaceSDK.setUiCustomizationLayer = (json, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiCustomizationLayer", [json], successCallback, errorCallback)
+FaceSDK.setUiConfiguration = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiConfiguration", [config], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
 FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)
-FaceSDK.getPersons = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersons", [], successCallback, errorCallback)
-FaceSDK.getPersonsForPage = (page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsForPage", [page, size], successCallback, errorCallback)
 FaceSDK.getPerson = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPerson", [personId], successCallback, errorCallback)
-FaceSDK.createPerson = (name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createPerson", [name, metadata], successCallback, errorCallback)
-FaceSDK.updatePerson = (personId, name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updatePerson", [personId, name, metadata], successCallback, errorCallback)
+FaceSDK.createPerson = (name, groupIds, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createPerson", [name, groupIds, metadata], successCallback, errorCallback)
+FaceSDK.updatePerson = (person, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updatePerson", [person], successCallback, errorCallback)
 FaceSDK.deletePerson = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "deletePerson", [personId], successCallback, errorCallback)
 FaceSDK.getPersonImages = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonImages", [personId], successCallback, errorCallback)
 FaceSDK.getPersonImagesForPage = (personId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonImagesForPage", [personId, page, size], successCallback, errorCallback)
@@ -873,7 +1030,7 @@ FaceSDK.getPersonGroups = (personId, successCallback, errorCallback) => RNFaceAp
 FaceSDK.getPersonGroupsForPage = (personId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonGroupsForPage", [personId, page, size], successCallback, errorCallback)
 FaceSDK.createGroup = (name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createGroup", [name, metadata], successCallback, errorCallback)
 FaceSDK.getGroup = (groupId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getGroup", [groupId], successCallback, errorCallback)
-FaceSDK.updateGroup = (groupId, name, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updateGroup", [groupId, name, metadata], successCallback, errorCallback)
+FaceSDK.updateGroup = (group, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "updateGroup", [group], successCallback, errorCallback)
 FaceSDK.editPersonsInGroup = (groupId, editGroupPersonsRequest, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "editPersonsInGroup", [groupId, editGroupPersonsRequest], successCallback, errorCallback)
 FaceSDK.getPersonsInGroup = (groupId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsInGroup", [groupId], successCallback, errorCallback)
 FaceSDK.getPersonsInGroupForPage = (groupId, page, size, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPersonsInGroupForPage", [groupId, page, size], successCallback, errorCallback)
