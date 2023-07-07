@@ -64,8 +64,10 @@ export default class App extends React.Component<IProps, IState> {
       },
       {
         text: "Use camera",
-        onPress: () => FaceSDK.presentFaceCaptureActivity(result => {
-          this.setImage(first, FaceCaptureResponse.fromJson(JSON.parse(result))!.image!.bitmap!, Enum.ImageType.LIVE)
+        onPress: () => FaceSDK.presentFaceCaptureActivity(json => {
+          var response = FaceCaptureResponse.fromJson(JSON.parse(json))!
+          if (response.image != null && response.image.bitmap != null)
+            this.setImage(first, response.image.bitmap, Enum.ImageType.LIVE)
         }, _e => { })
       }], { cancelable: true })
   }
