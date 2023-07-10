@@ -85,7 +85,7 @@ export default class App extends Component {
     if (image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
       return
     this.setState({ similarity: "Processing..." })
-    request = new MatchFacesRequest()
+    const request = new MatchFacesRequest()
     request.images = [image1, image2]
     FaceSDK.matchFaces(JSON.stringify(request), response => {
       response = MatchFacesResponse.fromJson(JSON.parse(response))
