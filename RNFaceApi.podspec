@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
   s.source       = { http: "file:#{source}" }
   s.ios.deployment_target = '11.0'
   s.source_files = 'ios/**/*.{h,m}'
-  s.dependency 'FaceSDKBeta', '6.1.1059'
+  s.dependency 'FaceSDKBeta', '5.1.1566'
   s.dependency 'React'
 end
