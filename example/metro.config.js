@@ -2,7 +2,6 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
 const path = require('path');
 const folders = [
-    path.resolve(path.join(__dirname, '../core')), // local core
     path.resolve(path.join(__dirname, './node_modules'))
 ];
 
