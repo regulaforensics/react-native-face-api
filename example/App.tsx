@@ -176,8 +176,8 @@ export default class App extends React.Component<IProps, IState> {
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={{ marginLeft: -20 }}>Similarity: {this.state.similarity}</Text>
-          <Text style={{ marginLeft: 20 }}>Liveness: {this.state.liveness}</Text>
+          <Text style={{ marginLeft: -20, color: "black" }}>Similarity: {this.state.similarity}</Text>
+          <Text style={{ marginLeft: 20, color: "black" }}>Liveness: {this.state.liveness}</Text>
         </View>
       </SafeAreaView>
     )
