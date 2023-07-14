@@ -1010,7 +1010,6 @@ FaceSDK.startLivenessWithConfig = (config, successCallback, errorCallback) => RN
 FaceSDK.setServiceUrl = (url, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setServiceUrl", [url], successCallback, errorCallback)
 FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFaces", [request], successCallback, errorCallback)
 FaceSDK.detectFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "detectFaces", [request], successCallback, errorCallback)
-FaceSDK.setOnCustomButtonTappedListener = (successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setOnCustomButtonTappedListener", [], successCallback, errorCallback)
 FaceSDK.setUiCustomizationLayer = (json, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiCustomizationLayer", [json], successCallback, errorCallback)
 FaceSDK.setUiConfiguration = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiConfiguration", [config], successCallback, errorCallback)
 FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)

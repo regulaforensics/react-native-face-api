@@ -1276,7 +1276,6 @@ export default class FaceSDK {
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static detectFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static setOnCustomButtonTappedListener(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setUiCustomizationLayer(json: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setUiConfiguration(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void

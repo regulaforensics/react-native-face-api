@@ -141,12 +141,12 @@ fun <T : DbBaseItem?> createPersonDBPageableListCallback(
 }
 
 fun generateByteArray(input: ByteArray?): String? =
-    input?.let { Base64.encodeToString(it, Base64.DEFAULT) }
+    input?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
 
 fun ByteArrayFromJSON(input: String?): ByteArray? = input?.let {
     Base64.decode(
         if (it.startsWith("data:")) it.substringAfter(',') else it,
-        Base64.DEFAULT
+        Base64.NO_WRAP
     )
 }
 

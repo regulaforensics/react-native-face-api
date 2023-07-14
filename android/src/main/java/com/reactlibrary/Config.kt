@@ -18,8 +18,10 @@ fun faceCaptureConfigFromJSON(config: JSONObject): FaceCaptureConfiguration {
             "cameraSwitchEnabled" -> builder.setCameraSwitchEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
             "torchButtonEnabled" -> builder.setTorchButtonEnabled(value as Boolean)
-            "cameraId" -> builder.setCameraId(value as Int)
-            "timeout" -> builder.setTimeout(value as Int)
+            // it is Int, but in react it is initially received as Double
+            "cameraId" -> builder.setCameraId(if (value is Double) value.toInt() else (value as Int))
+            // it is Int, but in react it is initially received as Double
+            "timeout" -> builder.setTimeout(if (value is Double) value.toInt() else (value as Int))
         }
     }
     return builder.build()
@@ -33,7 +35,8 @@ fun livenessConfigFromJSON(config: JSONObject): LivenessConfiguration {
             "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
             "recordingProcess" -> builder.setRecordingProcess(value as Boolean)
-            "attemptsCount" -> builder.setAttemptsCount(value as Int)
+            // it is Int, but in react it is initially received as Double
+            "attemptsCount" -> builder.setAttemptsCount(if (value is Double) value.toInt() else (value as Int))
             "tag" -> builder.setTag(value as String)
             "skipStep" -> builder.setSkipStep(*JSONConstructor.LivenessSkipStepArrayFromJSON(value as JSONArray))
         }
