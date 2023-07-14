@@ -96,8 +96,9 @@ export class FaceCaptureResponse {
 export class LivenessResponse {
     bitmap?: string
     liveness?: string
-    sessionId?: string
+    tag?: string
     transactionId?: string
+    estimatedAge?: number
     exception?: LivenessErrorException
 
     static fromJson(jsonObject?: any): LivenessResponse | undefined {
@@ -106,8 +107,9 @@ export class LivenessResponse {
 
         result.bitmap = jsonObject["bitmap"]
         result.liveness = jsonObject["liveness"]
-        result.sessionId = jsonObject["sessionId"]
+        result.tag = jsonObject["tag"]
         result.transactionId = jsonObject["transactionId"]
+        result.estimatedAge = jsonObject["estimatedAge"]
         result.exception = LivenessErrorException.fromJson(jsonObject["exception"])
 
         return result
@@ -115,6 +117,7 @@ export class LivenessResponse {
 }
 
 export class MatchFacesResponse {
+    tag?: string
     exception?: MatchFacesException
     detections?: MatchFacesDetection[]
     results?: MatchFacesComparedFacesPair[]
@@ -123,6 +126,7 @@ export class MatchFacesResponse {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new MatchFacesResponse
 
+        result.tag = jsonObject["tag"]
         result.exception = MatchFacesException.fromJson(jsonObject["exception"])
         result.detections = []
         if (jsonObject["detections"] != null) {
@@ -149,7 +153,7 @@ export class Image {
     imageType?: number
     bitmap?: string
     tag?: string
-    imageData?: any[]
+    imageData?: string
 
     static fromJson(jsonObject?: any): Image | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -158,12 +162,7 @@ export class Image {
         result.imageType = jsonObject["imageType"]
         result.bitmap = jsonObject["bitmap"]
         result.tag = jsonObject["tag"]
-        result.imageData = []
-        if (jsonObject["imageData"] != null) {
-            for (const i in jsonObject["imageData"]) {
-                result.imageData.push(jsonObject["imageData"][i])
-            }
-        }
+        result.imageData = jsonObject["imageData"]
 
         return result
     }
@@ -173,6 +172,7 @@ export class MatchFacesRequest {
     images?: MatchFacesImage[]
     customMetadata?: any
     thumbnails?: boolean
+    tag?: string
 
     static fromJson(jsonObject?: any): MatchFacesRequest | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -188,6 +188,7 @@ export class MatchFacesRequest {
         }
         result.customMetadata = jsonObject["customMetadata"]
         result.thumbnails = jsonObject["thumbnails"]
+        result.tag = jsonObject["tag"]
 
         return result
     }
@@ -370,6 +371,7 @@ export class MatchFacesSimilarityThresholdSplit {
 }
 
 export class DetectFacesRequest {
+    tag?: string
     scenario?: string
     image?: string
     configuration?: DetectFacesConfiguration
@@ -378,6 +380,7 @@ export class DetectFacesRequest {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new DetectFacesRequest
 
+        result.tag = jsonObject["tag"]
         result.scenario = jsonObject["scenario"]
         result.image = jsonObject["image"]
         result.configuration = DetectFacesConfiguration.fromJson(jsonObject["configuration"])
@@ -644,6 +647,315 @@ export class DetectFacesAttributeResult {
     }
 }
 
+export class Font {
+    name?: string
+    style?: number
+    size?: number
+
+    static fromJson(jsonObject?: any): Font | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new Font
+
+        result.name = jsonObject["name"]
+        result.style = jsonObject["style"]
+        result.size = jsonObject["size"]
+
+        return result
+    }
+}
+
+export class Person {
+    name?: string
+    groups?: string[]
+    updatedAt?: string
+    id?: string
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): Person | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new Person
+
+        result.name = jsonObject["name"]
+        result.groups = []
+        if (jsonObject["groups"] != null) {
+            for (const i in jsonObject["groups"]) {
+                result.groups.push(jsonObject["groups"][i])
+            }
+        }
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonGroup {
+    name?: string
+    id?: string
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): PersonGroup | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new PersonGroup
+
+        result.name = jsonObject["name"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class PersonImage {
+    path?: string
+    url?: string
+    contentType?: string
+    id?: string
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): PersonImage | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new PersonImage
+
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class ImageUpload {
+    imageData?: string
+
+    static fromJson(jsonObject?: any): ImageUpload | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new ImageUpload
+
+        result.imageData = jsonObject["imageData"]
+
+        return result
+    }
+}
+
+export class EditGroupPersonsRequest {
+    personIdsToAdd?: string[]
+    personIdsToRemove?: string[]
+
+    static fromJson(jsonObject?: any): EditGroupPersonsRequest | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new EditGroupPersonsRequest
+
+        result.personIdsToAdd = []
+        if (jsonObject["personIdsToAdd"] != null) {
+            for (const i in jsonObject["personIdsToAdd"]) {
+                result.personIdsToAdd.push(jsonObject["personIdsToAdd"][i])
+            }
+        }
+        result.personIdsToRemove = []
+        if (jsonObject["personIdsToRemove"] != null) {
+            for (const i in jsonObject["personIdsToRemove"]) {
+                result.personIdsToRemove.push(jsonObject["personIdsToRemove"][i])
+            }
+        }
+
+        return result
+    }
+}
+
+export class SearchPersonRequest {
+    outputImageParams?: OutputImageParams
+    groupIdsForSearch?: string[]
+    threshold?: number
+    limit?: number
+    imageUpload?: ImageUpload
+    detectAll?: boolean
+
+    static fromJson(jsonObject?: any): SearchPersonRequest | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPersonRequest
+
+        result.outputImageParams = OutputImageParams.fromJson(jsonObject["outputImageParams"])
+        result.groupIdsForSearch = []
+        if (jsonObject["groupIdsForSearch"] != null) {
+            for (const i in jsonObject["groupIdsForSearch"]) {
+                result.groupIdsForSearch.push(jsonObject["groupIdsForSearch"][i])
+            }
+        }
+        result.threshold = jsonObject["threshold"]
+        result.limit = jsonObject["limit"]
+        result.imageUpload = ImageUpload.fromJson(jsonObject["imageUpload"])
+        result.detectAll = jsonObject["detectAll"]
+
+        return result
+    }
+}
+
+export class SearchPerson {
+    detection?: SearchPersonDetection
+    images?: SearchPersonImage[]
+    name?: string
+    groups?: string[]
+    updatedAt?: string
+    id?: string
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): SearchPerson | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPerson
+
+        result.detection = SearchPersonDetection.fromJson(jsonObject["detection"])
+        result.images = []
+        if (jsonObject["images"] != null) {
+            for (const i in jsonObject["images"]) {
+                const item = SearchPersonImage.fromJson(jsonObject["images"][i])
+                if (item != undefined)
+                    result.images.push(item)
+            }
+        }
+        result.name = jsonObject["name"]
+        result.groups = []
+        if (jsonObject["groups"] != null) {
+            for (const i in jsonObject["groups"]) {
+                result.groups.push(jsonObject["groups"][i])
+            }
+        }
+        result.updatedAt = jsonObject["updatedAt"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class SearchPersonImage {
+    similarity?: number
+    distance?: number
+    path?: string
+    url?: string
+    contentType?: string
+    id?: string
+    metadata?: any
+    createdAt?: string
+
+    static fromJson(jsonObject?: any): SearchPersonImage | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPersonImage
+
+        result.similarity = jsonObject["similarity"]
+        result.distance = jsonObject["distance"]
+        result.path = jsonObject["path"]
+        result.url = jsonObject["url"]
+        result.contentType = jsonObject["contentType"]
+        result.id = jsonObject["id"]
+        result.metadata = jsonObject["metadata"]
+        result.createdAt = jsonObject["createdAt"]
+
+        return result
+    }
+}
+
+export class SearchPersonDetection {
+    landmarks?: Point[]
+    rect?: Rect
+    cropImage?: string
+    rotationAngle?: number
+
+    static fromJson(jsonObject?: any): SearchPersonDetection | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new SearchPersonDetection
+
+        result.landmarks = []
+        if (jsonObject["landmarks"] != null) {
+            for (const i in jsonObject["landmarks"]) {
+                const item = Point.fromJson(jsonObject["landmarks"][i])
+                if (item != undefined)
+                    result.landmarks.push(item)
+            }
+        }
+        result.rect = Rect.fromJson(jsonObject["rect"])
+        result.cropImage = jsonObject["cropImage"]
+        result.rotationAngle = jsonObject["rotationAngle"]
+
+        return result
+    }
+}
+
+export class LivenessNotification {
+    status?: string
+    response?: LivenessResponse
+
+    static fromJson(jsonObject?: any): LivenessNotification | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new LivenessNotification
+
+        result.status = jsonObject["status"]
+        result.response = LivenessResponse.fromJson(jsonObject["response"])
+
+        return result
+    }
+}
+
+export class VideoEncoderCompletion {
+    success?: boolean
+    transactionId?: string
+
+    static fromJson(jsonObject?: any): VideoEncoderCompletion | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new VideoEncoderCompletion
+
+        result.success = jsonObject["success"]
+        result.transactionId = jsonObject["transactionId"]
+
+        return result
+    }
+}
+
+export const FontStyle = {
+    NORMAL: 0,
+    BOLD: 1,
+    ITALIC: 2,
+    BOLD_ITALIC: 3,
+}
+
+export const CustomizationColor = {
+    ONBOARDING_SCREEN_START_BUTTON_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_BACKGROUND",
+    ONBOARDING_SCREEN_START_BUTTON_TITLE: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_TITLE",
+    ONBOARDING_SCREEN_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_BACKGROUND",
+    ONBOARDING_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_TITLE_LABEL_TEXT",
+    ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT",
+    CAMERA_SCREEN_STROKE_NORMAL: "CustomizationColor.CAMERA_SCREEN_STROKE_NORMAL",
+    CAMERA_SCREEN_STROKE_ACTIVE: "CustomizationColor.CAMERA_SCREEN_STROKE_ACTIVE",
+    CAMERA_SCREEN_SECTOR_TARGET: "CustomizationColor.CAMERA_SCREEN_SECTOR_TARGET",
+    CAMERA_SCREEN_SECTOR_ACTIVE: "CustomizationColor.CAMERA_SCREEN_SECTOR_ACTIVE",
+    CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND",
+    CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT",
+    CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND",
+    CAMERA_SCREEN_BACK_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_TEXT",
+    CAMERA_SCREEN_LIGHT_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_LIGHT_TOOLBAR_TINT",
+    CAMERA_SCREEN_DARK_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_DARK_TOOLBAR_TINT",
+    RETRY_SCREEN_BACKGROUND: "CustomizationColor.RETRY_SCREEN_BACKGROUND",
+    RETRY_SCREEN_RETRY_BUTTON_BACKGROUND: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_BACKGROUND",
+    RETRY_SCREEN_RETRY_BUTTON_TITLE: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_TITLE",
+    RETRY_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_TITLE_LABEL_TEXT",
+    RETRY_SCREEN_HINT_LABELS_TEXT: "CustomizationColor.RETRY_SCREEN_HINT_LABELS_TEXT",
+    PROCESSING_SCREEN_BACKGROUND: "CustomizationColor.PROCESSING_SCREEN_BACKGROUND",
+    PROCESSING_SCREEN_PROGRESS: "CustomizationColor.PROCESSING_SCREEN_PROGRESS",
+    PROCESSING_SCREEN_TITLE: "CustomizationColor.PROCESSING_SCREEN_TITLE",
+    SUCCESS_SCREEN_BACKGROUND: "CustomizationColor.SUCCESS_SCREEN_BACKGROUND",
+}
+
 export const ImageQualityGroupName = {
     IMAGE_CHARACTERISTICS: 1,
     HEAD_SIZE_AND_POSITION: 2,
@@ -698,6 +1010,7 @@ export const LivenessErrorCode = {
     CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
     CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
     PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const DetectFacesBackendErrorCode = {
@@ -726,6 +1039,7 @@ export const ImageQualityCharacteristicName = {
     IMAGE_HEIGHT: "ImageHeight",
     IMAGE_WIDTH_TO_HEIGHT: "ImageWidthToHeight",
     IMAGE_CHANNELS_NUMBER: "ImageChannelsNumber",
+    ART_FACE: "ArtFace",
     PADDING_RATIO: "PaddingRatio",
     FACE_MID_POINT_HORIZONTAL_POSITION: "FaceMidPointHorizontalPosition",
     FACE_MID_POINT_VERTICAL_POSITION: "FaceMidPointVerticalPosition",
@@ -769,6 +1083,31 @@ export const ImageQualityCharacteristicName = {
     OTHER_FACES: "OtherFaces",
     BACKGROUND_COLOR_MATCH: "BackgroundColorMatch",
     UNKNOWN: "Unknown",
+    IMAGE_CHARACTERISTIC_ALL_RECOMMENDED: "ImageCharacteristic",
+    HEAD_SIZE_AND_POSITION_ALL_RECOMMENDED: "HeadSizeAndPosition",
+    FACE_IMAGE_QUALITY_ALL_RECOMMENDED: "FaceImageQuality",
+    EYES_CHARACTERISTICS_ALL_RECOMMENDED: "EyesCharacteristics",
+    SHADOW_AND_LIGHTING_ALL_RECOMMENDED: "ShadowsAndLightning",
+    POSE_AND_EXPRESSION_ALL_RECOMMENDED: "PoseAndExpression",
+    HEAD_OCCLUSION_ALL_RECOMMENDED: "HeadOcclusion",
+    QUALITY_BACKGROUND_ALL_RECOMMENDED: "QualityBackground",
+}
+
+export const ButtonTag = {
+    CLOSE: 1001,
+    TORCH: 1002,
+    CAMERA_SWITCH: 1003,
+}
+
+export const CustomizationFont = {
+    ONBOARDING_SCREEN_START_BUTTON: "CustomizationFont.ONBOARDING_SCREEN_START_BUTTON",
+    ONBOARDING_SCREEN_TITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_TITLE_LABEL",
+    ONBOARDING_SCREEN_MESSAGE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABEL",
+    CAMERA_SCREEN_HINT_LABEL: "CustomizationFont.CAMERA_SCREEN_HINT_LABEL",
+    RETRY_SCREEN_RETRY_BUTTON: "CustomizationFont.RETRY_SCREEN_RETRY_BUTTON",
+    RETRY_SCREEN_TITLE_LABEL: "CustomizationFont.RETRY_SCREEN_TITLE_LABEL",
+    RETRY_SCREEN_HINT_LABELS: "CustomizationFont.RETRY_SCREEN_HINT_LABELS",
+    PROCESSING_SCREEN: "CustomizationFont.PROCESSING_SCREEN",
 }
 
 export const DetectFacesScenario = {
@@ -782,6 +1121,24 @@ export const DetectFacesScenario = {
     QUALITY_VISA_USA: "QualityVisaUSA",
 }
 
+export const LivenessProcessStatus = {
+    START: "START",
+    PREPARING: "PREPARING",
+    NEW_SESSION: "NEW_SESSION",
+    NEXT_STAGE: "NEXT_STAGE",
+    SECTOR_CHANGED: "SECTOR_CHANGED",
+    PROGRESS: "PROGRESS",
+    LOW_BRIGHTNESS: "LOW_BRIGHTNESS",
+    FIT_FACE: "FIT_FACE",
+    MOVE_AWAY: "MOVE_AWAY",
+    MOVE_CLOSER: "MOVE_CLOSER",
+    TURN_HEAD: "TURN_HEAD",
+    PROCESSING: "PROCESSING",
+    FAILED: "FAILED",
+    RETRY: "RETRY",
+    SUCCESS: "SUCCESS",
+}
+
 export const OutputImageCropAspectRatio = {
     OUTPUT_IMAGE_CROP_ASPECT_RATIO_3X4: 0,
     OUTPUT_IMAGE_CROP_ASPECT_RATIO_4X5: 1,
@@ -791,9 +1148,8 @@ export const OutputImageCropAspectRatio = {
 }
 
 export const LivenessSkipStep = {
-    NONE: 0,
-    START_STEP: 1,
-    DONE_STEP: 2,
+    ONBOARDING_STEP: 1,
+    SUCCESS_STEP: 2,
 }
 
 export const ImageQualityResultStatus = {
@@ -819,6 +1175,7 @@ export const FaceCaptureErrorCode = {
     CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
     TIMEOUT: "TIMEOUT",
     NOT_INITIALIZED: "NOT_INITIALIZED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const LivenessBackendErrorCode = {
@@ -845,6 +1202,22 @@ export const LivenessBackendErrorCode = {
     WRONG_VIEW: 249,
 }
 
+export const CustomizationImage = {
+    ONBOARDING_SCREEN_CLOSE_BUTTON: "CustomizationImage.ONBOARDING_SCREEN_CLOSE_BUTTON",
+    ONBOARDING_SCREEN_ILLUMINATION: "CustomizationImage.ONBOARDING_SCREEN_ILLUMINATION",
+    ONBOARDING_SCREEN_ACCESSORIES: "CustomizationImage.ONBOARDING_SCREEN_ACCESSORIES",
+    ONBOARDING_SCREEN_CAMERA_LEVEL: "CustomizationImage.ONBOARDING_SCREEN_CAMERA_LEVEL",
+    CAMERA_SCREEN_CLOSE_BUTTON: "CustomizationImage.CAMERA_SCREEN_CLOSE_BUTTON",
+    CAMERA_SCREEN_LIGHT_ON_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_ON_BUTTON",
+    CAMERA_SCREEN_LIGHT_OFF_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_OFF_BUTTON",
+    CAMERA_SCREEN_SWITCH_BUTTON: "CustomizationImage.CAMERA_SCREEN_SWITCH_BUTTON",
+    RETRY_SCREEN_CLOSE_BUTTON: "CustomizationImage.RETRY_SCREEN_CLOSE_BUTTON",
+    RETRY_SCREEN_HINT_ENVIRONMENT: "CustomizationImage.RETRY_SCREEN_HINT_ENVIRONMENT",
+    RETRY_SCREEN_HINT_SUBJECT: "CustomizationImage.RETRY_SCREEN_HINT_SUBJECT",
+    PROCESSING_SCREEN_CLOSE_BUTTON: "CustomizationImage.PROCESSING_SCREEN_CLOSE_BUTTON",
+    SUCCESS_SCREEN_IMAGE: "CustomizationImage.SUCCESS_SCREEN_IMAGE",
+}
+
 export const DetectFacesAttribute = {
     AGE: "Age",
     EYE_RIGHT: "EyeRight",
@@ -862,6 +1235,8 @@ export const DetectFacesAttribute = {
 }
 
 export const Enum = {
+   FontStyle,
+   CustomizationColor,
    ImageQualityGroupName,
    DetectFacesErrorCode,
    InitErrorCode,
@@ -871,13 +1246,17 @@ export const Enum = {
    DetectFacesBackendErrorCode,
    MatchFacesErrorCode,
    ImageQualityCharacteristicName,
+   ButtonTag,
+   CustomizationFont,
    DetectFacesScenario,
+   LivenessProcessStatus,
    OutputImageCropAspectRatio,
    LivenessSkipStep,
    ImageQualityResultStatus,
    ImageType,
    FaceCaptureErrorCode,
    LivenessBackendErrorCode,
+   CustomizationImage,
    DetectFacesAttribute,
 }
 
@@ -891,13 +1270,35 @@ export default class FaceSDK {
     static deinit(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static isInitialized(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopLivenessProcessing(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static setRequestHeaders(headers: map, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static presentFaceCaptureActivityWithConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static startLivenessWithConfig(config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setRequestHeaders(headers: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static presentFaceCaptureActivityWithConfig(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static startLivenessWithConfig(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static matchFaces(request: MatchFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static detectFaces(request: DetectFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static matchFacesWithConfig(request: MatchFacesRequest, config: object, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static matchFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static detectFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setUiCustomizationLayer(json: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setUiConfiguration(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFacesSimilarityThresholdSplit(faces: string, similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPerson(personId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static createPerson(name: string, groupIds: string, metadata: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static updatePerson(person: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deletePerson(personId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImages(personId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImagesForPage(personId: string, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static addPersonImage(personId: string, image: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonImage(personId: string, imageId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deletePersonImage(personId: string, imageId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroups(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroupsForPage(page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonGroups(personId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonGroupsForPage(personId: string, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static createGroup(name: string, metadata: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getGroup(groupId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static updateGroup(group: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static editPersonsInGroup(groupId: string, editGroupPersonsRequest: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonsInGroup(groupId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getPersonsInGroupForPage(groupId: string, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deleteGroup(groupId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static searchPerson(searchPersonRequest: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }

@@ -1,4 +1,22 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.8.22'
+        gradleVersion = '8.0.2'
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:${project.ext.gradleVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinVersion}"
+    }
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 33
@@ -23,7 +41,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
     //noinspection GradleDependency
-    implementation('com.regula.face:api:5.1.2371'){
+    implementation('com.regula.face:api:5.2.2715'){
         transitive = true
     }
 }

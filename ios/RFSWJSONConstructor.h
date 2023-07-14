@@ -7,11 +7,25 @@
 @interface RFSWJSONConstructor : NSObject
 
 +(NSString* _Nonnull)dictToString:(NSMutableDictionary* _Nonnull)input;
++(NSString* _Nonnull)arrayToString:(NSMutableArray* _Nonnull)input;
++(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateInitCompletion:(BOOL)success :(NSError* _Nullable)error;
 +(NSMutableDictionary* _Nonnull)generateVideoEncoderCompletion:(NSString * _Nonnull)transactionId :(BOOL)success;
 +(RFSMatchFacesRequest* _Nonnull)RFSMatchFacesRequestFromJSON:(NSDictionary* _Nonnull)input;
++(NSMutableDictionary* _Nonnull)generateLivenessNotification:(RFSLivenessProcessStatus)status result:(RFSLivenessResponse*_Nullable)response;
 +(NSMutableArray<RFSMatchFacesComparedFacesPair*>*_Nonnull)NSArrayRFSMatchFacesComparedFacesPairFromJSON:(NSArray* _Nonnull)input;
 +(RFSDetectFacesRequest* _Nonnull)RFSDetectFacesRequestFromJSON:(NSDictionary* _Nonnull)input;
++(NSMutableDictionary* _Nonnull)generateNSDataImage:(NSData*_Nullable)input;
++(NSString*_Nonnull)idFromJSON:(NSDictionary*_Nonnull)input;
++(RFSPerson*_Nonnull)updatePersonFromJSON:(RFSPerson*_Nonnull)person :(NSDictionary*_Nonnull)json;
++(RFSPersonGroup*_Nonnull)updatePersonGroupFromJSON:(RFSPersonGroup*_Nonnull)group :(NSDictionary*_Nonnull)json;
++(RFSEditGroupPersonsRequest* _Nonnull)RFSEditGroupPersonsRequestFromJSON:(NSDictionary* _Nullable)input;
++(RFSSearchPersonRequest* _Nonnull)RFSSearchPersonRequestFromJSON:(NSDictionary* _Nullable)input;
++(RFSImageUpload* _Nonnull)RFSImageUploadFromJSON:(NSDictionary* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPagePersonResponse:(RFSPageResponse<RFSPerson *>* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPagePersonImageResponse:(RFSPageResponse<RFSPersonImage *>* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPagePersonGroupResponse:(RFSPageResponse<RFSPersonGroup *>* _Nullable)input;
++(RFSUIConfiguration* _Nonnull)RFSUIConfigurationFromJSON:(NSDictionary* _Nonnull)input;
 +(NSMutableDictionary* _Nonnull)generateRFSFaceCaptureResponse:(RFSFaceCaptureResponse* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRFSLivenessResponse:(RFSLivenessResponse* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRFSMatchFacesResponse:(RFSMatchFacesResponse* _Nullable)input;
@@ -28,6 +42,12 @@
 +(NSMutableDictionary* _Nonnull)generateRFSDetectFaceResult:(RFSDetectFaceResult* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRFSImageQualityResult:(RFSImageQualityResult* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRFSDetectFacesAttributeResult:(RFSDetectFacesAttributeResult* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPerson:(RFSPerson* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPersonImage:(RFSPersonImage* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSPersonGroup:(RFSPersonGroup* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSSearchPerson:(RFSSearchPerson* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSSearchPersonImage:(RFSSearchPersonImage* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRFSSearchPersonDetection:(RFSSearchPersonDetection* _Nullable)input;
 
 @end
 #endif
