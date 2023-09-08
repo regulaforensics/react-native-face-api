@@ -5,9 +5,12 @@ import static com.reactlibrary.UtilsKt.*;
 import static com.regula.facesdk.FaceSDK.Instance;
 
 import android.app.Activity;
+import android.app.LocaleManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -367,12 +370,17 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
     }
 
     private void setLanguage(Callback callback, String language) {
-        Locale locale = new Locale(language);
-        Locale.setDefault(locale);
-        Resources resources = getContext().getResources();
-        Configuration config = resources.getConfiguration();
-        config.setLocale(locale);
-        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            LocaleManager localeManager = (LocaleManager) getContext().getSystemService(Context.LOCALE_SERVICE);
+            localeManager.setApplicationLocales(new LocaleList(Locale.forLanguageTag(language)));
+        } else {
+            Locale locale = new Locale(language);
+            Locale.setDefault(locale);
+            Resources resources = getContext().getResources();
+            Configuration config = resources.getConfiguration();
+            config.setLocale(locale);
+            resources.updateConfiguration(config, resources.getDisplayMetrics());
+        }
         callback.success(null);
     }
 
