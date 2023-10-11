@@ -10,29 +10,29 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "~18.2.0",
-    "react-native": "~0.72.1",
-    "@regulaforensics/react-native-face-api-beta": "0.0.85",
+    "react": "^18.2.0",
+    "react-native": "^0.72.5",
+    "@regulaforensics/react-native-face-api-beta": "0.0.86",
     "@regulaforensics/react-native-face-core": "5.2.0",
-    "react-native-image-picker": "^5.6.0"
+    "react-native-image-picker": "^7.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
-    "@react-native/eslint-config": "^0.72.2",
-    "@react-native/metro-config": "^0.72.7",
-    "@tsconfig/react-native": "^3.0.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/runtime": "^7.23.1",
+    "@react-native/eslint-config": "^0.73.1",
+    "@react-native/metro-config": "^0.73.1",
+    "@tsconfig/react-native": "^3.0.2",
     "@types/metro-config": "^0.76.3",
-    "@types/react": "^18.0.24",
-    "@types/react-test-renderer": "^18.0.0",
-    "babel-jest": "^29.2.1",
-    "eslint": "^8.19.0",
-    "jest": "^29.2.1",
-    "metro-react-native-babel-preset": "~0.76.5",
-    "prettier": "^2.4.1",
-    "react-test-renderer": "~18.2.0",
-    "typescript": "~4.8.4"
+    "@types/react": "^18.2.24",
+    "@types/react-test-renderer": "^18.0.3",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "prettier": "^3.0.3",
+    "react-test-renderer": "^18.2.0",
+    "typescript": "^5.2.2"
   },
   "engines": {
     "node": ">=16"
