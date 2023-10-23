@@ -1,5 +1,5 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, NativeEventEmitter, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Button, Text, Image, TouchableHighlight, Alert, NativeEventEmitter } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker';
 import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit, RNFaceApi, LivenessNotification, VideoEncoderCompletion } from '@regulaforensics/react-native-face-api-beta'
 
@@ -124,32 +124,60 @@ export default class App extends React.Component<IProps, IState> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-
-        <View style={{ padding: 15 }}>
-          <TouchableOpacity onPress={() => this.pickImage(true)} style={{ alignItems: "center" }}>
-            <Image source={this.state.img1} resizeMode="contain" style={{ height: 150, width: 150 }} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.pickImage(false)} style={{ alignItems: "center" }}>
-            <Image source={this.state.img2} resizeMode="contain" style={{ height: 150, width: 200 }} />
-          </TouchableOpacity>
+        <View style={{ flexDirection: "column", padding: 5 }}>
+          <View style={{ flexDirection: "column", alignItems: "center" }}>
+            <TouchableHighlight onPress={() => this.pickImage(true)}>
+              <Image
+                style={{
+                  height: 150,
+                  width: 150,
+                }}
+                source={this.state.img1}
+                resizeMode="contain" />
+            </TouchableHighlight>
+          </View>
+          <View style={{ flexDirection: "column", alignItems: "center", padding: 5 }}>
+            <TouchableHighlight onPress={() => this.pickImage(false)}>
+              <Image
+                style={{
+                  height: 150,
+                  width: 200,
+                }}
+                source={this.state.img2}
+                resizeMode="contain" />
+            </TouchableHighlight>
+          </View>
         </View>
 
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <View style={{ padding: 3, width: "60%" }}>
-            <Button title="Match" color="#4285F4" onPress={() => { this.matchFaces() }} />
+        <View style={{ flexDirection: 'column', width: "100%", alignItems: "center" }}>
+          <View style={{ padding: 3, width: "75%" }}>
+            <Button color="#4285F4"
+              onPress={() => {
+                this.matchFaces()
+              }}
+              title="     Match     "
+            />
           </View>
-          <View style={{ padding: 3, width: "60%" }}>
-            <Button title="Liveness" color="#4285F4" onPress={() => { this.liveness() }} />
+          <View style={{ padding: 3, width: "75%" }}>
+            <Button color="#4285F4"
+              onPress={() => {
+                this.liveness()
+              }}
+              title="     Liveness     "
+            />
           </View>
-          <View style={{ padding: 3, width: "60%" }}>
-            <Button title="Clear" color="#4285F4" onPress={() => { this.clearResults() }} />
+          <View style={{ padding: 3, width: "75%" }}>
+            <Button color="#4285F4"
+              onPress={() => {
+                this.clearResults()
+              }}
+              title="Clear"
+            />
           </View>
         </View>
-
-        <View style={{ flexDirection: 'row', padding: 10 }}>
-          <Text>Similarity: {this.state.similarity}</Text>
-          <View style={{ padding: 10 }}/>
-          <Text>Liveness: {this.state.liveness}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ marginLeft: -20, color: "black" }}>Similarity: {this.state.similarity}</Text>
+          <Text style={{ marginLeft: 20, color: "black" }}>Liveness: {this.state.liveness}</Text>
         </View>
       </SafeAreaView>
     )
