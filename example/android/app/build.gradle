@@ -71,13 +71,13 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.regula.face.api"
     defaultConfig {
         applicationId "com.regula.face.api"
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
