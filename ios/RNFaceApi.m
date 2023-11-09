@@ -77,8 +77,8 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self setUiCustomizationLayer :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"setUiConfiguration"])
         [self setUiConfiguration :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setLanguage"])
-        [self setLanguage :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setLocalizationDictionary"])
+        [self setLocalizationDictionary :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"matchFacesSimilarityThresholdSplit"])
         [self matchFacesSimilarityThresholdSplit :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else if([action isEqualToString:@"getPerson"])
@@ -260,11 +260,10 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSMatchFacesSimilarityThresholdSplit:split]] :successCallback];
 }
 
-- (void) setLanguage:(NSString*)language :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+- (void) setLocalizationDictionary:(NSDictionary*)dictionary :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     RFSFaceSDK.service.localizationHandler = ^NSString * _Nullable(NSString * _Nonnull localizationKey) {
-        NSString *result = NSLocalizedStringFromTable(localizationKey, language, @"");
-        if (![result isEqualToString:localizationKey])
-            return result;
+        if(dictionary != nil && ![dictionary isEqual:[NSNull null]] && [dictionary valueForKey:localizationKey] != nil)
+            return [dictionary valueForKey:localizationKey];
         return nil;
     };
     [self result:@"" :successCallback];
@@ -311,15 +310,12 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     bool done = CFArrayContainsValue((__bridge CFArrayRef)input, CFRangeMake(0, input.count), (CFNumberRef)@2);
 
     if(start && !done){
-        NSLog(@"START");
         return RFSLivenessStepSkipOnboarding;
     }
     if(done && !start){
-        NSLog(@"DONE");
         return RFSLivenessStepSkipSuccess;
     }
     if(start && done){
-        NSLog(@"BOTH");
         return RFSLivenessStepSkipOnboarding | RFSLivenessStepSkipSuccess;
     }
     return RFSLivenessStepSkipNone;

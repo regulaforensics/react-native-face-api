@@ -483,7 +483,7 @@ class JSONConstructor {
             if (input.has("exception") && !input.isNull("exception")) {
                 exception = MatchFacesExceptionFromJSON(input.getJSONObject("exception"));
             }
-            MatchFacesComparedFacesPair result = (new com.regula.facesdk.model.results.matchfaces.b()).a(first, second, exception, similarity, score).a();
+            MatchFacesComparedFacesPair result = (new MatchFacesComparedFacesPair.a()).a(first, second, exception, similarity, score).a();
             return result;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -497,7 +497,7 @@ class JSONConstructor {
             if (input.has("faceIndex") && !input.isNull("faceIndex")) {
                 faceIndex = input.getInt("faceIndex");
             }
-            ArrayList<Point> landmarks = new ArrayList<>();
+            List<Point> landmarks = new ArrayList<>();
             if (input.has("landmarks") && !input.isNull("landmarks")) {
                 JSONArray jsonArray_landmarks = input.getJSONArray("landmarks");
                 for (int i = 0; i < jsonArray_landmarks.length(); i++)
@@ -511,7 +511,7 @@ class JSONConstructor {
             if (input.has("rotationAngle") && !input.isNull("rotationAngle")) {
                 rotationAngle = input.getDouble("rotationAngle");
             }
-            MatchFacesDetectionFace result = (new com.regula.facesdk.model.results.matchfaces.d()).a(faceIndex, rotationAngle, landmarks, faceRect).a();
+            MatchFacesDetectionFace result = (new MatchFacesDetectionFace.a()).a(faceIndex, rotationAngle, landmarks, faceRect).a();
             return result;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -537,7 +537,7 @@ class JSONConstructor {
             if (input.has("imageIndex") && !input.isNull("imageIndex")) {
                 imageIndex = input.getInt("imageIndex");
             }
-            MatchFacesComparedFace result = (new com.regula.facesdk.model.results.matchfaces.a()).a(imageIndex, image, faceIndex, face).a();
+            MatchFacesComparedFace result = (new MatchFacesComparedFace.a()).a(imageIndex, image, faceIndex, face).a();
             return result;
         } catch (JSONException e) {
             e.printStackTrace();

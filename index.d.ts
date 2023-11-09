@@ -1278,7 +1278,7 @@ export default class FaceSDK {
     static detectFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setUiCustomizationLayer(json: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setUiConfiguration(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static setLanguage(language: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setLocalizationDictionary(dictionary: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFacesSimilarityThresholdSplit(faces: string, similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static getPerson(personId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static createPerson(name: string, groupIds: string, metadata: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
