@@ -20,8 +20,8 @@ fun faceCaptureConfigFromJSON(config: JSONObject): FaceCaptureConfiguration {
             "torchButtonEnabled" -> builder.setTorchButtonEnabled(value as Boolean)
             // it is Int, but in react it is initially received as Double
             "cameraId" -> builder.setCameraId(if (value is Double) value.toInt() else (value as Int))
-            // it is Int, but in react it is initially received as Double
-            "timeout" -> builder.setTimeout(if (value is Double) value.toInt() else (value as Int))
+            "timeout" -> builder.setTimeout(if (value is Double) value.toFloat() else (value as Float))
+            "holdStillDuration" -> builder.setHoldStillDuration(if (value is Double) value.toFloat() else (value as Float))
         }
     }
     return builder.build()

@@ -207,6 +207,8 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
         if([config valueForKey:@"closeButtonEnabled"] != nil)
             [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+        if([config valueForKey:@"holdStillDuration"] != nil)
+            [builder setHoldStillDuration:[config valueForKey:@"holdStillDuration"]];
     }];
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
