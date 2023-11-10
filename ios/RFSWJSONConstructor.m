@@ -648,7 +648,7 @@
             if([key isEqual: @"CustomizationColor.ONBOARDING_SCREEN_TITLE_LABEL_TEXT"])
                 [builder setColor:[self colorWithInt:[input valueForKey:key]] forItem:OnboardingScreenTitleLabelText];
             if([key isEqual: @"CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT"])
-                [builder setColor:[self colorWithInt:[input valueForKey:key]] forItem:OnboardingScreenMessageLabelText];
+                [builder setColor:[self colorWithInt:[input valueForKey:key]] forItem:OnboardingScreenMessageLabelsText];
             if([key isEqual: @"CustomizationColor.CAMERA_SCREEN_STROKE_NORMAL"])
                 [builder setColor:[self colorWithInt:[input valueForKey:key]] forItem:CameraScreenStrokeNormal];
             if([key isEqual: @"CustomizationColor.CAMERA_SCREEN_STROKE_ACTIVE"])
@@ -720,7 +720,7 @@
             if([key isEqual: @"CustomizationFont.ONBOARDING_SCREEN_TITLE_LABEL"])
                 [builder setFont:[self UIFontFromJSON:[input objectForKey:key]] forItem:OnboardingScreenTitleLabel];
             if([key isEqual: @"CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABEL"])
-                [builder setFont:[self UIFontFromJSON:[input objectForKey:key]] forItem:OnboardingScreenMessageLabel];
+                [builder setFont:[self UIFontFromJSON:[input objectForKey:key]] forItem:OnboardingScreenMessageLabels];
             if([key isEqual: @"CustomizationFont.CAMERA_SCREEN_HINT_LABEL"])
                 [builder setFont:[self UIFontFromJSON:[input objectForKey:key]] forItem:CameraScreenHintLabel];
             if([key isEqual: @"CustomizationFont.RETRY_SCREEN_RETRY_BUTTON"])
