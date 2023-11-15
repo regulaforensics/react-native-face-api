@@ -18,10 +18,9 @@ fun faceCaptureConfigFromJSON(config: JSONObject): FaceCaptureConfiguration {
             "cameraSwitchEnabled" -> builder.setCameraSwitchEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
             "torchButtonEnabled" -> builder.setTorchButtonEnabled(value as Boolean)
-            // it is Int, but in react it is initially received as Double
-            "cameraId" -> builder.setCameraId(if (value is Double) value.toInt() else (value as Int))
-            "timeout" -> builder.setTimeout(if (value is Double) value.toFloat() else (value as Float))
-            "holdStillDuration" -> builder.setHoldStillDuration(if (value is Double) value.toFloat() else (value as Float))
+            "cameraId" -> builder.setCameraId(value.toInt())
+            "timeout" -> builder.setTimeout(value.toFloat())
+            "holdStillDuration" -> builder.setHoldStillDuration(value.toFloat())
         }
     }
     return builder.build()
@@ -35,8 +34,7 @@ fun livenessConfigFromJSON(config: JSONObject): LivenessConfiguration {
             "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
             "recordingProcess" -> builder.setRecordingProcess(value as Boolean)
-            // it is Int, but in react it is initially received as Double
-            "attemptsCount" -> builder.setAttemptsCount(if (value is Double) value.toInt() else (value as Int))
+            "attemptsCount" -> builder.setAttemptsCount(value.toInt())
             "tag" -> builder.setTag(value as String)
             "skipStep" -> builder.setSkipStep(*JSONConstructor.LivenessSkipStepArrayFromJSON(value as JSONArray))
         }
@@ -50,8 +48,7 @@ fun uiConfigFromJSON(config: JSONObject, context: Context): UiConfiguration {
         when (key.substringBefore('.')) {
             "CustomizationColor" -> builder.setColor(
                 CustomizationColor.valueOf(key.substringAfter('.')),
-                // it is Long, but in react it is initially received as Double
-                (if (value is Double) value.toLong() else (value as Long)).toInt()
+                value.toLong()
             )
 
             "CustomizationImage" -> builder.setImage(
@@ -66,4 +63,22 @@ fun uiConfigFromJSON(config: JSONObject, context: Context): UiConfiguration {
         }
     }
     return builder.build()
+}
+
+fun Any?.toFloat(): Float {
+    if (this is Double) return this.toFloat()
+    if (this is Int) return this.toFloat()
+    return this as Float
+}
+
+fun Any?.toInt(): Int {
+    if (this is Double) return this.toInt()
+    return this as Int
+}
+
+fun Any?.toLong(): Int {
+    val result =
+        if (this is Double) this.toLong()
+        else this as Long
+    return result.toInt()
 }
