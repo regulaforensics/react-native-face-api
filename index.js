@@ -1012,7 +1012,7 @@ FaceSDK.matchFaces = (request, successCallback, errorCallback) => RNFaceApi.exec
 FaceSDK.detectFaces = (request, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "detectFaces", [request], successCallback, errorCallback)
 FaceSDK.setUiCustomizationLayer = (json, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiCustomizationLayer", [json], successCallback, errorCallback)
 FaceSDK.setUiConfiguration = (config, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setUiConfiguration", [config], successCallback, errorCallback)
-FaceSDK.setLanguage = (language, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLanguage", [language], successCallback, errorCallback)
+FaceSDK.setLocalizationDictionary = (dictionary, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "setLocalizationDictionary", [dictionary], successCallback, errorCallback)
 FaceSDK.matchFacesSimilarityThresholdSplit = (faces, similarity, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "matchFacesSimilarityThresholdSplit", [faces, similarity], successCallback, errorCallback)
 FaceSDK.getPerson = (personId, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "getPerson", [personId], successCallback, errorCallback)
 FaceSDK.createPerson = (name, groupIds, metadata, successCallback, errorCallback) => RNFaceApi.exec("FaceApi", "createPerson", [name, groupIds, metadata], successCallback, errorCallback)
