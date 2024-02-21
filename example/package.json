@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-native": "^0.72.7",
-    "@regulaforensics/react-native-face-api-beta": "5.2.12",
+    "@regulaforensics/react-native-face-api-beta": "5.2.13",
     "@regulaforensics/react-native-face-core-beta": "0.0.7",
     "react-native-image-picker": "^7.0.2"
   },
