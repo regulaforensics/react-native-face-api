@@ -21,25 +21,27 @@ export default class App extends React.Component<IProps, IState> {
     super(props)
 
     const eventManager = new NativeEventEmitter(RNFaceApi)
-    eventManager.addListener('onCustomButtonTappedEvent', event => console.log(event))
-    eventManager.addListener('videoEncoderCompletionEvent', json => {
+    eventManager.addListener('onCustomButtonTappedEvent', (event: string) => console.log(event))
+    eventManager.addListener('videoEncoderCompletionEvent', (json: string) => {
       var completion = VideoEncoderCompletion.fromJson(JSON.parse(json))!
       console.log("VideoEncoderCompletion:");
       console.log("    success: " + completion.success);
       console.log("    transactionId: " + completion.transactionId);
     })
-    eventManager.addListener('livenessNotificationEvent', json => {
+    eventManager.addListener('livenessNotificationEvent', (json: string) => {
       var notification = LivenessNotification.fromJson(JSON.parse(json))!
       console.log("LivenessProcessStatus: " + notification.status);
     })
 
-    FaceSDK.init(json => {
+    FaceSDK.initialize((json: string) => {
       var response = JSON.parse(json)
       if (!response["success"]) {
         console.log("Init failed: ");
         console.log(json);
+      } else {
+        console.log("Init complete")
       }
-    }, _e => { })
+    }, (_e: any) => { })
 
     this.state = {
       img1: require('./images/portrait.png'),
@@ -57,14 +59,14 @@ export default class App extends React.Component<IProps, IState> {
           mediaType: 'photo',
           selectionLimit: 1,
           includeBase64: true
-        }, response => {
+        }, (response: any) => {
           if (response.assets == undefined) return
           this.setImage(first, response.assets[0].base64!, Enum.ImageType.PRINTED)
         })
       },
       {
         text: "Use camera",
-        onPress: () => FaceSDK.presentFaceCaptureActivity(json => {
+        onPress: () => FaceSDK.presentFaceCaptureActivity((json: string) => {
           var response = FaceCaptureResponse.fromJson(JSON.parse(json))!
           if (response.image != null && response.image.bitmap != null)
             this.setImage(first, response.image.bitmap, Enum.ImageType.LIVE)
@@ -102,7 +104,7 @@ export default class App extends React.Component<IProps, IState> {
     this.setState({ similarity: "Processing..." })
     var request = new MatchFacesRequest()
     request.images = [image1, image2]
-    FaceSDK.matchFaces(JSON.stringify(request), json => {
+    FaceSDK.matchFaces(JSON.stringify(request), (json: string) => {
       var response = MatchFacesResponse.fromJson(JSON.parse(json))
       FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response!.results), 0.75, str => {
         var split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))!
@@ -112,7 +114,7 @@ export default class App extends React.Component<IProps, IState> {
   }
 
   liveness() {
-    FaceSDK.startLiveness(json => {
+    FaceSDK.startLiveness((json: string) => {
       var response = LivenessResponse.fromJson(JSON.parse(json))!
       if (response.bitmap != null) {
         this.setImage(true, response.bitmap, Enum.ImageType.LIVE)

@@ -8,6 +8,9 @@
 
 +(NSString* _Nonnull)dictToString:(NSMutableDictionary* _Nonnull)input;
 +(NSString* _Nonnull)arrayToString:(NSMutableArray* _Nonnull)input;
++(RFSInitializationConfiguration* _Nonnull)RFSInitializationConfigurationFromJSON:(NSDictionary* _Nonnull)input;
++(RFSRecordingProcess)RFSRecordingProcessWithString:(NSString*_Nonnull)value;
++(RFSLivenessType)RFSLivenessTypeWithString:(NSString*_Nonnull)value;
 +(NSMutableDictionary* _Nonnull)generateNSError:(NSError* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateInitCompletion:(BOOL)success :(NSError* _Nullable)error;
 +(NSMutableDictionary* _Nonnull)generateVideoEncoderCompletion:(NSString * _Nonnull)transactionId :(BOOL)success;
