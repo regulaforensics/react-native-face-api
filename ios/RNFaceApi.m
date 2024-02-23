@@ -55,8 +55,14 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self stopFaceCaptureActivity :successCallback :errorCallback];
     else if([action isEqualToString:@"init"])
         [self init :successCallback :errorCallback];
+    else if([action isEqualToString:@"initialize"])
+        [self initialize :successCallback :errorCallback];
+    else if([action isEqualToString:@"initializeWithConfig"])
+        [self initializeWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"deinit"])
         [self deinit :successCallback :errorCallback];
+    else if([action isEqualToString:@"deinitialize"])
+        [self deinitialize :successCallback :errorCallback];
     else if([action isEqualToString:@"isInitialized"])
         [self isInitialized :successCallback :errorCallback];
     else if([action isEqualToString:@"stopLivenessProcessing"])
@@ -65,10 +71,18 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         [self setRequestHeaders :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"presentFaceCaptureActivityWithConfig"])
         [self presentFaceCaptureActivityWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"matchFacesWithConfig"])
+        [self matchFacesWithConfig :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else if([action isEqualToString:@"startLivenessWithConfig"])
         [self startLivenessWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"setServiceUrl"])
         [self setServiceUrl :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setLogs"])
+        [self setLogs :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setSaveLogs"])
+        [self setSaveLogs :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setLogsFolder"])
+        [self setLogsFolder :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"matchFaces"])
         [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"detectFaces"])
@@ -126,6 +140,7 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
 }
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 - (void) getServiceUrl:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     [self result:[RFSFaceSDK.service serviceURL] :successCallback];
@@ -148,17 +163,23 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
 }
 
 - (void) init:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service initializeWithCompletion:^(BOOL success, NSError * _Nullable error) {
-        if(success){
-            [RFSFaceSDK.service setVideoUploadingDelegate:self];
-            [RFSFaceSDK.service setProcessStatusDelegate:self];
-            RFSFaceSDK.service.customization.actionDelegate = self;
-        }
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateInitCompletion:success :error]] :successCallback];
-    }];
+    [RFSFaceSDK.service initializeWithCompletion:[self getInitCompletion:successCallback :errorCallback]];
+}
+
+- (void) initialize:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+    [RFSFaceSDK.service initializeWithCompletion:[self getInitCompletion:successCallback :errorCallback]];
+}
+
+- (void) initializeWithConfig:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+    [RFSFaceSDK.service initializeWithConfiguration:[RFSWJSONConstructor RFSInitializationConfigurationFromJSON:config] completion:[self getInitCompletion:successCallback :errorCallback]];
 }
 
 - (void) deinit:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+    [RFSFaceSDK.service deinitialize];
+    [self result:@"" :successCallback];
+}
+
+- (void) deinitialize:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     [RFSFaceSDK.service deinitialize];
     [self result:@"" :successCallback];
 }
@@ -199,14 +220,14 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
             [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)
             [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
         if([config valueForKey:@"timeout"] != nil)
             [builder setTimeoutInterval:[config valueForKey:@"timeout"]];
-        if([config valueForKey:@"torchButtonEnabled"] != nil)
-            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
         if([config valueForKey:@"holdStillDuration"] != nil)
             [builder setHoldStillDuration:[config valueForKey:@"holdStillDuration"]];
     }];
@@ -215,18 +236,34 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     });
 }
 
+- (void) matchFacesWithConfig:(NSString*)requestString :(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+    RFSMatchFacesConfiguration *configuration = [RFSMatchFacesConfiguration configurationWithBuilder:^(RFSMatchFacesConfigurationBuilder  * _Nonnull builder) {
+        if([config valueForKey:@"processingMode"] != nil)
+            [builder setProcessingMode:[self RFSProcessingModeWithString:[config valueForKey:@"processingMode"]]];
+    }];
+    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] configuration:configuration completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
+}
+
 - (void) startLivenessWithConfig:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     RFSLivenessConfiguration *configuration = [RFSLivenessConfiguration configurationWithBuilder:^(RFSLivenessConfigurationBuilder  * _Nonnull builder) {
         if([config valueForKey:@"copyright"] != nil)
             [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
+        if([config valueForKey:@"cameraSwitchEnabled"] != nil)
+            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
+        if([config valueForKey:@"cameraPositionIOS"] != nil)
+            [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
         if([config valueForKey:@"attemptsCount"] != nil)
             [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
         if([config valueForKey:@"locationTrackingEnabled"] != nil)
             [builder setLocationTrackingEnabled:[[config valueForKey:@"locationTrackingEnabled"] boolValue]];
         if([config valueForKey:@"recordingProcess"] != nil)
-            [builder setRecordingProcessEnabled:[[config valueForKey:@"recordingProcess"] boolValue]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+            [builder setRecordingProcess:[RFSWJSONConstructor RFSRecordingProcessWithString:[config valueForKey:@"recordingProcess"]]];
+        if([config valueForKey:@"livenessType"] != nil)
+            [builder setLivenessType:[RFSWJSONConstructor RFSLivenessTypeWithString:[config valueForKey:@"livenessType"]]];
         if([config valueForKey:@"tag"] != nil)
             [builder setTag:[config valueForKey:@"tag"]];
         if([config valueForKey:@"skipStep"] != nil) {
@@ -243,16 +280,27 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     [self result:@"" :successCallback];
 }
 
+- (void) setLogs:(BOOL)isEnable :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+//    [RFSFaceSDK.service setLogs:isEnable];
+    [self result:@"Currently unavailable on iOS" :errorCallback];
+}
+
+- (void) setSaveLogs:(BOOL)isSaveLogs :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+//    [RFSFaceSDK.service setSaveLogs: isSaveLogs];
+    [self result:@"Currently unavailable on iOS" :errorCallback];
+}
+
+- (void) setLogsFolder:(NSString*)path :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+//    [RFSFaceSDK.service setLogsFolder: path];
+    [self result:@"Currently unavailable on iOS" :errorCallback];
+}
+
 - (void) matchFaces:(NSString*)requestString :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
 - (void) detectFaces:(NSString*)requestString :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     [RFSFaceSDK.service detectFacesByRequest:[RFSWJSONConstructor RFSDetectFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getDetectFacesCompletion:successCallback :errorCallback]];
-}
-
-- (void) matchFacesWithConfig:(NSString*)requestString :(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
 }
 
 - (void) matchFacesSimilarityThresholdSplit:(NSString*)str :(NSNumber*)similarity :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
@@ -304,6 +352,15 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         default:
             return RFSCameraPositionBack;
     }
+}
+
+-(RFSProcessingMode)RFSProcessingModeWithString:(NSString*)value {
+    if([value  isEqual: @"ONLINE"])
+        return RFSProcessingModeOnline;
+    else if([value  isEqual: @"OFFLINE"])
+        return RFSProcessingModeOffline;
+    else
+        return RFSProcessingModeOnline;
 }
 
 -(RFSLivenessStepSkip)RFSLivenessStepSkipsWithIntegerArray:(NSArray<NSNumber*>*)input {
@@ -539,6 +596,17 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
         } else
             [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
     }];
+}
+
+-(RFSFaceInitializationCompletion)getInitCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
+    return ^(BOOL success, NSError * _Nullable error) {
+        if(success){
+            [RFSFaceSDK.service setVideoUploadingDelegate:self];
+            [RFSFaceSDK.service setProcessStatusDelegate:self];
+            RFSFaceSDK.service.customization.actionDelegate = self;
+        }
+        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateInitCompletion:success :error]] :successCallback];
+    };
 }
 
 @end

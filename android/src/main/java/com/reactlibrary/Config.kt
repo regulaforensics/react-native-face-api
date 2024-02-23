@@ -3,10 +3,14 @@ package com.reactlibrary
 import android.content.Context
 import com.regula.facesdk.configuration.FaceCaptureConfiguration
 import com.regula.facesdk.configuration.LivenessConfiguration
+import com.regula.facesdk.configuration.MatchFacesConfiguration
 import com.regula.facesdk.configuration.UiConfiguration
 import com.regula.facesdk.enums.CustomizationColor
 import com.regula.facesdk.enums.CustomizationFont
 import com.regula.facesdk.enums.CustomizationImage
+import com.regula.facesdk.enums.LivenessType
+import com.regula.facesdk.enums.ProcessingMode
+import com.regula.facesdk.enums.RecordingProcess
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -21,6 +25,7 @@ fun faceCaptureConfigFromJSON(config: JSONObject): FaceCaptureConfiguration {
             "cameraId" -> builder.setCameraId(value.toInt())
             "timeout" -> builder.setTimeout(value.toFloat())
             "holdStillDuration" -> builder.setHoldStillDuration(value.toFloat())
+            "screenOrientation" -> builder.setScreenOrientation(*JSONConstructor.ScreenOrientationArrayFromJSON(value as JSONArray))
         }
     }
     return builder.build()
@@ -31,12 +36,27 @@ fun livenessConfigFromJSON(config: JSONObject): LivenessConfiguration {
     config.forEach { key, value ->
         when (key) {
             "copyright" -> builder.setCopyright(value as Boolean)
-            "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
+            "cameraSwitchEnabled" -> builder.setCameraSwitchEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
-            "recordingProcess" -> builder.setRecordingProcess(value as Boolean)
+            "torchButtonEnabled" -> builder.setTorchButtonEnabled(value as Boolean)
+            "cameraId" -> builder.setCameraId(value.toInt())
             "attemptsCount" -> builder.setAttemptsCount(value.toInt())
+            "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
+            "recordingProcess" -> builder.setRecordingProcess(RecordingProcess.valueOf(value as String))
+            "livenessType" -> builder.setType(LivenessType.valueOf(value as String))
             "tag" -> builder.setTag(value as String)
             "skipStep" -> builder.setSkipStep(*JSONConstructor.LivenessSkipStepArrayFromJSON(value as JSONArray))
+            "screenOrientation" -> builder.setScreenOrientation(*JSONConstructor.ScreenOrientationArrayFromJSON(value as JSONArray))
+        }
+    }
+    return builder.build()
+}
+
+fun matchFacesConfigFromJSON(config: JSONObject): MatchFacesConfiguration {
+    val builder = MatchFacesConfiguration.Builder()
+    config.forEach { key, value ->
+        when (key) {
+            "processingMode" -> builder.setProcessingMode(ProcessingMode.valueOf(value as String))
         }
     }
     return builder.build()
@@ -56,10 +76,12 @@ fun uiConfigFromJSON(config: JSONObject, context: Context): UiConfiguration {
                 drawableFromJSON(value as String, context)
             )
 
-            "CustomizationFont" -> builder.setFont(
-                CustomizationFont.valueOf(key.substringAfter('.')),
-                JSONConstructor.typeFaceFromJSON(value as JSONObject)
-            )
+            "CustomizationFont" -> {
+                val font = JSONConstructor.typeFaceFromJSON(value as JSONObject)
+                val name = CustomizationFont.valueOf(key.substringAfter('.'))
+                builder.setFont(name, font.first)
+                builder.setFontSize(name, font.second)
+            }
         }
     }
     return builder.build()

@@ -12,9 +12,10 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-native": "^0.72.7",
-    "@regulaforensics/react-native-face-api": "5.2.4",
-    "@regulaforensics/react-native-face-core": "5.2.0",
-    "react-native-image-picker": "^7.0.2"
+    "@regulaforensics/react-native-face-api": "6.1.0",
+    "@regulaforensics/react-native-face-core-basic": "",
+    "react-native-image-picker": "^7.0.2",
+    "react-native-fs": "^2.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",

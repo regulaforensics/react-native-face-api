@@ -18,11 +18,28 @@ export class FaceCaptureException {
 
 export class InitException {
     errorCode?: string
+    underlyingException?: LicenseException
     message?: string
 
     static fromJson(jsonObject?: any): InitException | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new InitException
+
+        result.errorCode = jsonObject["errorCode"]
+        result.underlyingException = LicenseException.fromJson(jsonObject["underlyingException"])
+        result.message = jsonObject["message"]
+
+        return result
+    }
+}
+
+export class LicenseException {
+    errorCode?: number
+    message?: string
+
+    static fromJson(jsonObject?: any): LicenseException | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new LicenseException
 
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
@@ -66,6 +83,7 @@ export class LivenessBackendException {
 export class MatchFacesException {
     errorCode?: string
     message?: string
+    detailedErrorMessage?: string
 
     static fromJson(jsonObject?: any): MatchFacesException | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -73,6 +91,7 @@ export class MatchFacesException {
 
         result.errorCode = jsonObject["errorCode"]
         result.message = jsonObject["message"]
+        result.detailedErrorMessage = jsonObject["detailedErrorMessage"]
 
         return result
     }
@@ -171,8 +190,8 @@ export class Image {
 export class MatchFacesRequest {
     images?: MatchFacesImage[]
     customMetadata?: any
-    thumbnails?: boolean
     tag?: string
+    outputImageParams?: OutputImageParams
 
     static fromJson(jsonObject?: any): MatchFacesRequest | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -187,8 +206,8 @@ export class MatchFacesRequest {
             }
         }
         result.customMetadata = jsonObject["customMetadata"]
-        result.thumbnails = jsonObject["thumbnails"]
         result.tag = jsonObject["tag"]
+        result.outputImageParams = OutputImageParams.fromJson(jsonObject["outputImageParams"])
 
         return result
     }
@@ -255,16 +274,18 @@ export class MatchFacesComparedFace {
 
 export class MatchFacesDetectionFace {
     faceIndex?: number
+    rotationAngle?: number
     landmarks?: Point[]
     faceRect?: Rect
-    rotationAngle?: number
-    thumbnail?: string
+    originalRect?: Rect
+    crop?: string
 
     static fromJson(jsonObject?: any): MatchFacesDetectionFace | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new MatchFacesDetectionFace
 
         result.faceIndex = jsonObject["faceIndex"]
+        result.rotationAngle = jsonObject["rotationAngle"]
         result.landmarks = []
         if (jsonObject["landmarks"] != null) {
             for (const i in jsonObject["landmarks"]) {
@@ -274,8 +295,8 @@ export class MatchFacesDetectionFace {
             }
         }
         result.faceRect = Rect.fromJson(jsonObject["faceRect"])
-        result.rotationAngle = jsonObject["rotationAngle"]
-        result.thumbnail = jsonObject["thumbnail"]
+        result.originalRect = Rect.fromJson(jsonObject["originalRect"])
+        result.crop = jsonObject["crop"]
 
         return result
     }
@@ -736,12 +757,14 @@ export class PersonImage {
 
 export class ImageUpload {
     imageData?: string
+    imageUrl?: string
 
     static fromJson(jsonObject?: any): ImageUpload | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new ImageUpload
 
         result.imageData = jsonObject["imageData"]
+        result.imageUrl = jsonObject["imageUrl"]
 
         return result
     }
@@ -922,6 +945,36 @@ export class VideoEncoderCompletion {
     }
 }
 
+export class InitializationConfiguration {
+    license?: string
+    licenseUpdate?: boolean
+
+    static fromJson(jsonObject?: any): InitializationConfiguration | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new InitializationConfiguration
+
+        result.license = jsonObject["license"]
+        result.licenseUpdate = jsonObject["licenseUpdate"]
+
+        return result
+    }
+}
+
+export class InitResponse {
+    success?: boolean
+    error?: InitException
+
+    static fromJson(jsonObject?: any): InitResponse | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new InitResponse
+
+        result.success = jsonObject["success"]
+        result.error = InitException.fromJson(jsonObject["error"])
+
+        return result
+    }
+}
+
 export const FontStyle = {
     NORMAL: 0,
     BOLD: 1,
@@ -934,7 +987,8 @@ export const CustomizationColor = {
     ONBOARDING_SCREEN_START_BUTTON_TITLE: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_TITLE",
     ONBOARDING_SCREEN_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_BACKGROUND",
     ONBOARDING_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_TITLE_LABEL_TEXT",
-    ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABEL_TEXT",
+    ONBOARDING_SCREEN_SUBTITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_SUBTITLE_LABEL_TEXT",
+    ONBOARDING_SCREEN_MESSAGE_LABELS_TEXT: "CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABELS_TEXT",
     CAMERA_SCREEN_STROKE_NORMAL: "CustomizationColor.CAMERA_SCREEN_STROKE_NORMAL",
     CAMERA_SCREEN_STROKE_ACTIVE: "CustomizationColor.CAMERA_SCREEN_STROKE_ACTIVE",
     CAMERA_SCREEN_SECTOR_TARGET: "CustomizationColor.CAMERA_SCREEN_SECTOR_TARGET",
@@ -949,6 +1003,7 @@ export const CustomizationColor = {
     RETRY_SCREEN_RETRY_BUTTON_BACKGROUND: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_BACKGROUND",
     RETRY_SCREEN_RETRY_BUTTON_TITLE: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_TITLE",
     RETRY_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_TITLE_LABEL_TEXT",
+    RETRY_SCREEN_SUBTITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_SUBTITLE_LABEL_TEXT",
     RETRY_SCREEN_HINT_LABELS_TEXT: "CustomizationColor.RETRY_SCREEN_HINT_LABELS_TEXT",
     PROCESSING_SCREEN_BACKGROUND: "CustomizationColor.PROCESSING_SCREEN_BACKGROUND",
     PROCESSING_SCREEN_PROGRESS: "CustomizationColor.PROCESSING_SCREEN_PROGRESS",
@@ -968,6 +1023,21 @@ export const ImageQualityGroupName = {
     UNKNOWN: 9,
 }
 
+export const LicensingResultCode = {
+    OK: "OK",
+    LICENSE_CORRUPTED: "LICENSE_CORRUPTED",
+    INVALID_DATE: "INVALID_DATE",
+    INVALID_VERSION: "INVALID_VERSION",
+    INVALID_DEVICE_ID: "INVALID_DEVICE_ID",
+    INVALID_SYSTEM_OR_APP_ID: "INVALID_SYSTEM_OR_APP_ID",
+    NO_CAPABILITIES: "NO_CAPABILITIES",
+    NO_AUTHENTICITY: "NO_AUTHENTICITY",
+    LICENSE_ABSENT: "LICENSE_ABSENT",
+    NO_INTERNET: "NO_INTERNET",
+    NO_DATABASE: "NO_DATABASE",
+    DATABASE_INCORRECT: "DATABASE_INCORRECT",
+}
+
 export const DetectFacesErrorCode = {
     IMAGE_EMPTY: "IMAGE_EMPTY",
     FR_FACE_NOT_DETECTED: "FR_FACE_NOT_DETECTED",
@@ -981,10 +1051,14 @@ export const DetectFacesErrorCode = {
 }
 
 export const InitErrorCode = {
-    IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
-    CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
-    MISSING_CORE: "MISSING_CORE",
-    INTERNAL_CORE_ERROR: "INTERNAL_CORE_ERROR",
+    IN_PROGRESS_ALREADY: 0,
+    MISSING_CORE: 1,
+    INTERNAL_CORE_ERROR: 2,
+    BAD_LICENSE: 3,
+    UNAVAILABLE: 4,
+    CONTEXT_IS_NULL: 100,
+    RESOURCE_DAT_ABSENT: 101,
+    LICENSE_IS_NULL: 102,
 }
 
 export const LivenessStatus = {
@@ -998,19 +1072,26 @@ export const CameraErrorCode = {
 }
 
 export const LivenessErrorCode = {
+    NOT_INITIALIZED: "NOT_INITIALIZED",
+    NO_LICENSE: "NO_LICENSE",
+    API_CALL_FAILED: "API_CALL_FAILED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
+    CANCELLED: "CANCELLED",
+    PROCESSING_TIMEOUT: "PROCESSING_TIMEOUT",
+    PROCESSING_FAILED: "PROCESSING_FAILED",
+    PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
+    APPLICATION_INACTIVE: "APPLICATION_INACTIVE",
     CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
     IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
     ZOOM_NOT_SUPPORTED: "ZOOM_NOT_SUPPORTED",
-    NO_LICENSE: "NO_LICENSE",
-    CANCELLED: "CANCELLED",
-    PROCESSING_TIMEOUT: "PROCESSING_TIMEOUT",
-    API_CALL_FAILED: "API_CALL_FAILED",
-    PROCESSING_FAILED: "PROCESSING_FAILED",
-    NOT_INITIALIZED: "NOT_INITIALIZED",
     CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
     CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
-    PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
-    SESSION_START_FAILED: "SESSION_START_FAILED",
+}
+
+export const RecordingProcess = {
+    ASYNCHRONOUS_UPLOAD: "ASYNCHRONOUS_UPLOAD",
+    SYNCHRONOUS_UPLOAD: "SYNCHRONOUS_UPLOAD",
+    NOT_UPLOAD: "NOT_UPLOAD",
 }
 
 export const DetectFacesBackendErrorCode = {
@@ -1028,10 +1109,10 @@ export const MatchFacesErrorCode = {
     LANDMARKS_NOT_DETECTED: "LANDMARKS_NOT_DETECTED",
     FACE_ALIGNER_FAILED: "FACE_ALIGNER_FAILED",
     DESCRIPTOR_EXTRACTOR_ERROR: "DESCRIPTOR_EXTRACTOR_ERROR",
-    NO_LICENSE: "NO_LICENSE",
     IMAGES_COUNT_LIMIT_EXCEEDED: "IMAGES_COUNT_LIMIT_EXCEEDED",
     API_CALL_FAILED: "API_CALL_FAILED",
     PROCESSING_FAILED: "PROCESSING_FAILED",
+    NO_LICENSE: "NO_LICENSE",
 }
 
 export const ImageQualityCharacteristicName = {
@@ -1093,6 +1174,11 @@ export const ImageQualityCharacteristicName = {
     QUALITY_BACKGROUND_ALL_RECOMMENDED: "QualityBackground",
 }
 
+export const ScreenOrientation = {
+    PORTRAIT: 1,
+    LANDSCAPE: 2,
+}
+
 export const ButtonTag = {
     CLOSE: 1001,
     TORCH: 1002,
@@ -1102,10 +1188,12 @@ export const ButtonTag = {
 export const CustomizationFont = {
     ONBOARDING_SCREEN_START_BUTTON: "CustomizationFont.ONBOARDING_SCREEN_START_BUTTON",
     ONBOARDING_SCREEN_TITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_TITLE_LABEL",
-    ONBOARDING_SCREEN_MESSAGE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABEL",
+    ONBOARDING_SCREEN_SUBTITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_SUBTITLE_LABEL",
+    ONBOARDING_SCREEN_MESSAGE_LABELS: "CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABELS",
     CAMERA_SCREEN_HINT_LABEL: "CustomizationFont.CAMERA_SCREEN_HINT_LABEL",
     RETRY_SCREEN_RETRY_BUTTON: "CustomizationFont.RETRY_SCREEN_RETRY_BUTTON",
     RETRY_SCREEN_TITLE_LABEL: "CustomizationFont.RETRY_SCREEN_TITLE_LABEL",
+    RETRY_SCREEN_SUBTITLE_LABEL: "CustomizationFont.RETRY_SCREEN_SUBTITLE_LABEL",
     RETRY_SCREEN_HINT_LABELS: "CustomizationFont.RETRY_SCREEN_HINT_LABELS",
     PROCESSING_SCREEN: "CustomizationFont.PROCESSING_SCREEN",
 }
@@ -1147,6 +1235,11 @@ export const OutputImageCropAspectRatio = {
     OUTPUT_IMAGE_CROP_ASPECT_RATIO_7X9: 4,
 }
 
+export const LivenessType = {
+    ACTIVE: "ACTIVE",
+    PASSIVE: "PASSIVE",
+}
+
 export const LivenessSkipStep = {
     ONBOARDING_STEP: 1,
     SUCCESS_STEP: 2,
@@ -1165,26 +1258,27 @@ export const ImageType = {
     DOCUMENT_WITH_LIVE: 4,
     EXTERNAL: 5,
     GHOST_PORTRAIT: 6,
+    BARCODE: 7,
 }
 
 export const FaceCaptureErrorCode = {
     CANCEL: "CANCEL",
+    TIMEOUT: "TIMEOUT",
+    NOT_INITIALIZED: "NOT_INITIALIZED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
     CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
     CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
     IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
     CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
-    TIMEOUT: "TIMEOUT",
-    NOT_INITIALIZED: "NOT_INITIALIZED",
-    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const LivenessBackendErrorCode = {
     UNDEFINED: -1,
     NO_LICENSE: 200,
     LOW_QUALITY: 231,
-    HIGH_ASYMMETRY: 232,
     TRACK_BREAK: 246,
     CLOSED_EYES_DETECTED: 230,
+    HIGH_ASYMMETRY: 232,
     FACE_OVER_EMOTIONAL: 233,
     SUNGLASSES_DETECTED: 234,
     SMALL_AGE: 235,
@@ -1200,6 +1294,11 @@ export const LivenessBackendErrorCode = {
     WRONG_GEO: 247,
     WRONG_OF: 248,
     WRONG_VIEW: 249,
+}
+
+export const ProcessingMode = {
+    ONLINE: "ONLINE",
+    OFFLINE: "OFFLINE",
 }
 
 export const CustomizationImage = {
@@ -1238,24 +1337,29 @@ export const Enum = {
    FontStyle,
    CustomizationColor,
    ImageQualityGroupName,
+   LicensingResultCode,
    DetectFacesErrorCode,
    InitErrorCode,
    LivenessStatus,
    CameraErrorCode,
    LivenessErrorCode,
+   RecordingProcess,
    DetectFacesBackendErrorCode,
    MatchFacesErrorCode,
    ImageQualityCharacteristicName,
+   ScreenOrientation,
    ButtonTag,
    CustomizationFont,
    DetectFacesScenario,
    LivenessProcessStatus,
    OutputImageCropAspectRatio,
+   LivenessType,
    LivenessSkipStep,
    ImageQualityResultStatus,
    ImageType,
    FaceCaptureErrorCode,
    LivenessBackendErrorCode,
+   ProcessingMode,
    CustomizationImage,
    DetectFacesAttribute,
 }
@@ -1266,14 +1370,27 @@ export default class FaceSDK {
     static getFaceSdkVersion(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static presentFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopFaceCaptureActivity(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    /**
+     * @deprecated
+     */
     static init(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static initialize(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static initializeWithConfig(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    /**
+     * @deprecated
+     */
     static deinit(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static deinitialize(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static isInitialized(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopLivenessProcessing(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setRequestHeaders(headers: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static presentFaceCaptureActivityWithConfig(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static matchFacesWithConfig(request: string, config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static startLivenessWithConfig(config: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setLogs(isEnable: boolean, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setSaveLogs(isSaveLog: boolean, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static setLogsFolder(path: boolean, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static detectFaces(request: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setUiCustomizationLayer(json: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
