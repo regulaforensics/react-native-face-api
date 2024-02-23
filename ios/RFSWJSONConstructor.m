@@ -246,6 +246,10 @@
         return @4;
     else if(value == RFSImageTypeExternal)
         return @5;
+    else if(value == RFSImageTypeGhostPortrait)
+        return @6;
+    else if(value == RFSImageTypeBarcode)
+        return @7;
     else
         return @0;
 }
