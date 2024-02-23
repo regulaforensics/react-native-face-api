@@ -36,11 +36,14 @@ fun livenessConfigFromJSON(config: JSONObject): LivenessConfiguration {
     config.forEach { key, value ->
         when (key) {
             "copyright" -> builder.setCopyright(value as Boolean)
-            "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
+            "cameraSwitchEnabled" -> builder.setCameraSwitchEnabled(value as Boolean)
             "closeButtonEnabled" -> builder.setCloseButtonEnabled(value as Boolean)
+            "torchButtonEnabled" -> builder.setTorchButtonEnabled(value as Boolean)
+            "cameraId" -> builder.setCameraId(value.toInt())
+            "attemptsCount" -> builder.setAttemptsCount(value.toInt())
+            "locationTrackingEnabled" -> builder.setLocationTrackingEnabled(value as Boolean)
             "recordingProcess" -> builder.setRecordingProcess(RecordingProcess.valueOf(value as String))
             "livenessType" -> builder.setType(LivenessType.valueOf(value as String))
-            "attemptsCount" -> builder.setAttemptsCount(value.toInt())
             "tag" -> builder.setTag(value as String)
             "skipStep" -> builder.setSkipStep(*JSONConstructor.LivenessSkipStepArrayFromJSON(value as JSONArray))
             "screenOrientation" -> builder.setScreenOrientation(*JSONConstructor.ScreenOrientationArrayFromJSON(value as JSONArray))

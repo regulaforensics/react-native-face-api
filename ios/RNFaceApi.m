@@ -140,6 +140,7 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
 }
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 - (void) getServiceUrl:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
     [self result:[RFSFaceSDK.service serviceURL] :successCallback];
@@ -219,14 +220,14 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
         if([config valueForKey:@"cameraSwitchEnabled"] != nil)
             [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
         if([config valueForKey:@"cameraPositionIOS"] != nil)
             [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
         if([config valueForKey:@"timeout"] != nil)
             [builder setTimeoutInterval:[config valueForKey:@"timeout"]];
-        if([config valueForKey:@"torchButtonEnabled"] != nil)
-            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
         if([config valueForKey:@"holdStillDuration"] != nil)
             [builder setHoldStillDuration:[config valueForKey:@"holdStillDuration"]];
     }];
@@ -247,6 +248,14 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
     RFSLivenessConfiguration *configuration = [RFSLivenessConfiguration configurationWithBuilder:^(RFSLivenessConfigurationBuilder  * _Nonnull builder) {
         if([config valueForKey:@"copyright"] != nil)
             [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
+        if([config valueForKey:@"cameraSwitchEnabled"] != nil)
+            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
+        if([config valueForKey:@"closeButtonEnabled"] != nil)
+            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
+        if([config valueForKey:@"torchButtonEnabled"] != nil)
+            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
+        if([config valueForKey:@"cameraPositionIOS"] != nil)
+            [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
         if([config valueForKey:@"attemptsCount"] != nil)
             [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
         if([config valueForKey:@"locationTrackingEnabled"] != nil)
@@ -255,8 +264,6 @@ RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(R
             [builder setRecordingProcess:[RFSWJSONConstructor RFSRecordingProcessWithString:[config valueForKey:@"recordingProcess"]]];
         if([config valueForKey:@"livenessType"] != nil)
             [builder setLivenessType:[RFSWJSONConstructor RFSLivenessTypeWithString:[config valueForKey:@"livenessType"]]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
         if([config valueForKey:@"tag"] != nil)
             [builder setTag:[config valueForKey:@"tag"]];
         if([config valueForKey:@"skipStep"] != nil) {

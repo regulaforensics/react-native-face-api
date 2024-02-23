@@ -945,6 +945,36 @@ export class VideoEncoderCompletion {
     }
 }
 
+export class InitializationConfiguration {
+    license?: string
+    licenseUpdate?: boolean
+
+    static fromJson(jsonObject?: any): InitializationConfiguration | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new InitializationConfiguration
+
+        result.license = jsonObject["license"]
+        result.licenseUpdate = jsonObject["licenseUpdate"]
+
+        return result
+    }
+}
+
+export class InitResponse {
+    success?: boolean
+    error?: InitException
+
+    static fromJson(jsonObject?: any): InitResponse | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new InitResponse
+
+        result.success = jsonObject["success"]
+        result.error = InitException.fromJson(jsonObject["error"])
+
+        return result
+    }
+}
+
 export const FontStyle = {
     NORMAL: 0,
     BOLD: 1,
@@ -1042,19 +1072,20 @@ export const CameraErrorCode = {
 }
 
 export const LivenessErrorCode = {
+    NOT_INITIALIZED: "NOT_INITIALIZED",
+    NO_LICENSE: "NO_LICENSE",
+    API_CALL_FAILED: "API_CALL_FAILED",
+    SESSION_START_FAILED: "SESSION_START_FAILED",
+    CANCELLED: "CANCELLED",
+    PROCESSING_TIMEOUT: "PROCESSING_TIMEOUT",
+    PROCESSING_FAILED: "PROCESSING_FAILED",
+    PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
+    APPLICATION_INACTIVE: "APPLICATION_INACTIVE",
     CONTEXT_IS_NULL: "CONTEXT_IS_NULL",
     IN_PROGRESS_ALREADY: "IN_PROGRESS_ALREADY",
     ZOOM_NOT_SUPPORTED: "ZOOM_NOT_SUPPORTED",
-    NO_LICENSE: "NO_LICENSE",
-    CANCELLED: "CANCELLED",
-    PROCESSING_TIMEOUT: "PROCESSING_TIMEOUT",
-    API_CALL_FAILED: "API_CALL_FAILED",
-    PROCESSING_FAILED: "PROCESSING_FAILED",
-    NOT_INITIALIZED: "NOT_INITIALIZED",
     CAMERA_NO_PERMISSION: "CAMERA_NO_PERMISSION",
     CAMERA_NOT_AVAILABLE: "CAMERA_NOT_AVAILABLE",
-    PROCESSING_FRAME_FAILED: "PROCESSING_FRAME_FAILED",
-    SESSION_START_FAILED: "SESSION_START_FAILED",
 }
 
 export const RecordingProcess = {
@@ -1245,9 +1276,9 @@ export const LivenessBackendErrorCode = {
     UNDEFINED: -1,
     NO_LICENSE: 200,
     LOW_QUALITY: 231,
-    HIGH_ASYMMETRY: 232,
     TRACK_BREAK: 246,
     CLOSED_EYES_DETECTED: 230,
+    HIGH_ASYMMETRY: 232,
     FACE_OVER_EMOTIONAL: 233,
     SUNGLASSES_DETECTED: 234,
     SMALL_AGE: 235,

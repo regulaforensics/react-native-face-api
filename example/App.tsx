@@ -1,7 +1,8 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, NativeEventEmitter, TouchableOpacity } from 'react-native'
-import { launchImageLibrary } from 'react-native-image-picker';
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit, RNFaceApi, LivenessNotification, VideoEncoderCompletion } from '@regulaforensics/react-native-face-api-beta'
+import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, NativeEventEmitter, TouchableOpacity, Platform } from 'react-native'
+import { launchImageLibrary } from 'react-native-image-picker'
+import * as RNFS from 'react-native-fs'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit, RNFaceApi, LivenessNotification, VideoEncoderCompletion, InitializationConfiguration } from '@regulaforensics/react-native-face-api-beta'
 
 interface IProps {
 }
@@ -33,7 +34,7 @@ export default class App extends React.Component<IProps, IState> {
       console.log("LivenessProcessStatus: " + notification.status);
     })
 
-    FaceSDK.initialize((json: string) => {
+    var onInit = (json: string) => {
       var response = JSON.parse(json)
       if (!response["success"]) {
         console.log("Init failed: ");
@@ -41,7 +42,17 @@ export default class App extends React.Component<IProps, IState> {
       } else {
         console.log("Init complete")
       }
-    }, (_e: any) => { })
+    };
+
+    var licPath = Platform.OS === 'ios' ? (RNFS.MainBundlePath + "/license/regula.license") : "regula.license"
+    var readFile = Platform.OS === 'ios' ? RNFS.readFile : RNFS.readFileAssets
+    readFile(licPath, 'base64').then((license) => {
+      var config = new InitializationConfiguration();
+      config.license = license
+      FaceSDK.initializeWithConfig(config, onInit, (_e: any) => { })
+    }).catch(e => {
+      FaceSDK.initialize(onInit, (_e: any) => { })
+    })
 
     this.state = {
       img1: require('./images/portrait.png'),
@@ -150,7 +161,7 @@ export default class App extends React.Component<IProps, IState> {
 
         <View style={{ flexDirection: 'row', padding: 10 }}>
           <Text>Similarity: {this.state.similarity}</Text>
-          <View style={{ padding: 10 }}/>
+          <View style={{ padding: 10 }} />
           <Text>Liveness: {this.state.liveness}</Text>
         </View>
       </SafeAreaView>
