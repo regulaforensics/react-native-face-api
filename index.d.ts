@@ -1417,5 +1417,5 @@ export default class FaceSDK {
     static getPersonsInGroup(groupId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static getPersonsInGroupForPage(groupId: string, page: number, size: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static deleteGroup(groupId: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static searchPerson(searchPersonRequest: string, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static searchPerson(searchPersonRequest: any, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
 }
