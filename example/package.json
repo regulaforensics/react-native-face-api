@@ -12,8 +12,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-native": "^0.72.7",
-    "@regulaforensics/react-native-face-api": "6.1.3",
-    "@regulaforensics/react-native-face-core-basic": "6.1.0",
+    "@regulaforensics/react-native-face-api": "6.1.324-nightly",
+    "@regulaforensics/react-native-face-core-basic": "6.1.45-nightly",
     "react-native-image-picker": "^7.0.2",
     "react-native-fs": "^2.20.0",
     "ip": "^2.0.1"

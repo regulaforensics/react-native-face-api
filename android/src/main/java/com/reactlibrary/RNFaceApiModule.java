@@ -7,6 +7,7 @@ import static com.regula.facesdk.FaceSDK.Instance;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -269,7 +270,7 @@ public class RNFaceApiModule extends ReactContextBaseJavaModule {
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, e.toString());
         }
     }
 
