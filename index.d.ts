@@ -215,6 +215,7 @@ export class FaceCaptureConfig {
     cameraSwitchEnabled?: boolean
     closeButtonEnabled?: boolean
     torchButtonEnabled?: boolean
+    vibrateOnSteps?: boolean
     cameraPositionAndroid?: number
     cameraPositionIOS?: number
     screenOrientation?: number[]
@@ -229,6 +230,7 @@ export class FaceCaptureConfig {
         result.cameraSwitchEnabled = jsonObject["cameraSwitchEnabled"]
         result.closeButtonEnabled = jsonObject["closeButtonEnabled"]
         result.torchButtonEnabled = jsonObject["torchButtonEnabled"]
+        result.vibrateOnSteps = jsonObject["vibrateOnSteps"]
         result.cameraPositionAndroid = jsonObject["cameraPositionAndroid"]
         result.cameraPositionIOS = jsonObject["cameraPositionIOS"]
         result.screenOrientation = []
@@ -429,6 +431,23 @@ export class ImageQualityResult {
     }
 }
 
+export class FaceSDKVersion {
+    api?: string
+    core?: string
+    coreMode?: string
+
+    static fromJson(jsonObject?: any): FaceSDKVersion | undefined {
+        if (jsonObject == null || jsonObject == undefined) return undefined
+        const result = new FaceSDKVersion
+
+        result.api = jsonObject["api"]
+        result.core = jsonObject["core"]
+        result.coreMode = jsonObject["coreMode"]
+
+        return result
+    }
+}
+
 export class InitConfig {
     license?: string
     licenseUpdate?: boolean
@@ -466,6 +485,7 @@ export class LivenessConfig {
     cameraSwitchEnabled?: boolean
     closeButtonEnabled?: boolean
     torchButtonEnabled?: boolean
+    vibrateOnSteps?: boolean
     cameraPositionAndroid?: number
     cameraPositionIOS?: number
     screenOrientation?: number[]
@@ -475,6 +495,7 @@ export class LivenessConfig {
     livenessType?: number
     tag?: string
     skipStep?: number[]
+    metadata?: any
 
     static fromJson(jsonObject?: any): LivenessConfig | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -484,6 +505,7 @@ export class LivenessConfig {
         result.cameraSwitchEnabled = jsonObject["cameraSwitchEnabled"]
         result.closeButtonEnabled = jsonObject["closeButtonEnabled"]
         result.torchButtonEnabled = jsonObject["torchButtonEnabled"]
+        result.vibrateOnSteps = jsonObject["vibrateOnSteps"]
         result.cameraPositionAndroid = jsonObject["cameraPositionAndroid"]
         result.cameraPositionIOS = jsonObject["cameraPositionIOS"]
         result.screenOrientation = []
@@ -503,6 +525,7 @@ export class LivenessConfig {
                 result.skipStep.push(jsonObject["skipStep"][i])
             }
         }
+        result.metadata = jsonObject["metadata"]
 
         return result
     }
@@ -526,7 +549,7 @@ export class LivenessException {
 }
 
 export class LivenessNotification {
-    status?: string
+    status?: number
     response?: LivenessResponse
 
     static fromJson(jsonObject?: any): LivenessNotification | undefined {
@@ -741,7 +764,7 @@ export class MatchFacesRequest {
     images?: MatchFacesImage[]
     outputImageParams?: OutputImageParams
     tag?: string
-    metadata?: Record<string, any>
+    metadata?: any
 
     static fromJson(jsonObject?: any): MatchFacesRequest | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -863,7 +886,7 @@ export class Person {
     updatedAt?: string
     groups?: string[]
     id?: string
-    metadata?: Record<string, any>
+    metadata?: any
     createdAt?: string
 
     static fromJson(jsonObject?: any): Person | undefined {
@@ -889,7 +912,7 @@ export class Person {
 export class PersonGroup {
     name?: string
     id?: string
-    metadata?: Record<string, any>
+    metadata?: any
     createdAt?: string
 
     static fromJson(jsonObject?: any): PersonGroup | undefined {
@@ -910,7 +933,7 @@ export class PersonImage {
     url?: string
     contentType?: string
     id?: string
-    metadata?: Record<string, any>
+    metadata?: any
     createdAt?: string
 
     static fromJson(jsonObject?: any): PersonImage | undefined {
@@ -935,7 +958,7 @@ export class SearchPerson {
     updatedAt?: string
     groups?: string[]
     id?: string
-    metadata?: Record<string, any>
+    metadata?: any
     createdAt?: string
 
     static fromJson(jsonObject?: any): SearchPerson | undefined {
@@ -1000,7 +1023,7 @@ export class SearchPersonImage {
     url?: string
     contentType?: string
     id?: string
-    metadata?: Record<string, any>
+    metadata?: any
     createdAt?: string
 
     static fromJson(jsonObject?: any): SearchPersonImage | undefined {
@@ -1101,32 +1124,32 @@ export const FontStyle = {
 }
 
 export const CustomizationColor = {
-    ONBOARDING_SCREEN_START_BUTTON_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_BACKGROUND",
-    ONBOARDING_SCREEN_START_BUTTON_TITLE: "CustomizationColor.ONBOARDING_SCREEN_START_BUTTON_TITLE",
-    ONBOARDING_SCREEN_BACKGROUND: "CustomizationColor.ONBOARDING_SCREEN_BACKGROUND",
-    ONBOARDING_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_TITLE_LABEL_TEXT",
-    ONBOARDING_SCREEN_SUBTITLE_LABEL_TEXT: "CustomizationColor.ONBOARDING_SCREEN_SUBTITLE_LABEL_TEXT",
-    ONBOARDING_SCREEN_MESSAGE_LABELS_TEXT: "CustomizationColor.ONBOARDING_SCREEN_MESSAGE_LABELS_TEXT",
-    CAMERA_SCREEN_STROKE_NORMAL: "CustomizationColor.CAMERA_SCREEN_STROKE_NORMAL",
-    CAMERA_SCREEN_STROKE_ACTIVE: "CustomizationColor.CAMERA_SCREEN_STROKE_ACTIVE",
-    CAMERA_SCREEN_SECTOR_TARGET: "CustomizationColor.CAMERA_SCREEN_SECTOR_TARGET",
-    CAMERA_SCREEN_SECTOR_ACTIVE: "CustomizationColor.CAMERA_SCREEN_SECTOR_ACTIVE",
-    CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND",
-    CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT",
-    CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND",
-    CAMERA_SCREEN_BACK_HINT_LABEL_TEXT: "CustomizationColor.CAMERA_SCREEN_BACK_HINT_LABEL_TEXT",
-    CAMERA_SCREEN_LIGHT_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_LIGHT_TOOLBAR_TINT",
-    CAMERA_SCREEN_DARK_TOOLBAR_TINT: "CustomizationColor.CAMERA_SCREEN_DARK_TOOLBAR_TINT",
-    RETRY_SCREEN_BACKGROUND: "CustomizationColor.RETRY_SCREEN_BACKGROUND",
-    RETRY_SCREEN_RETRY_BUTTON_BACKGROUND: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_BACKGROUND",
-    RETRY_SCREEN_RETRY_BUTTON_TITLE: "CustomizationColor.RETRY_SCREEN_RETRY_BUTTON_TITLE",
-    RETRY_SCREEN_TITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_TITLE_LABEL_TEXT",
-    RETRY_SCREEN_SUBTITLE_LABEL_TEXT: "CustomizationColor.RETRY_SCREEN_SUBTITLE_LABEL_TEXT",
-    RETRY_SCREEN_HINT_LABELS_TEXT: "CustomizationColor.RETRY_SCREEN_HINT_LABELS_TEXT",
-    PROCESSING_SCREEN_BACKGROUND: "CustomizationColor.PROCESSING_SCREEN_BACKGROUND",
-    PROCESSING_SCREEN_PROGRESS: "CustomizationColor.PROCESSING_SCREEN_PROGRESS",
-    PROCESSING_SCREEN_TITLE: "CustomizationColor.PROCESSING_SCREEN_TITLE",
-    SUCCESS_SCREEN_BACKGROUND: "CustomizationColor.SUCCESS_SCREEN_BACKGROUND",
+    ONBOARDING_SCREEN_START_BUTTON_BACKGROUND: 100,
+    ONBOARDING_SCREEN_START_BUTTON_TITLE: 101,
+    ONBOARDING_SCREEN_BACKGROUND: 102,
+    ONBOARDING_SCREEN_TITLE_LABEL_TEXT: 103,
+    ONBOARDING_SCREEN_SUBTITLE_LABEL_TEXT: 104,
+    ONBOARDING_SCREEN_MESSAGE_LABELS_TEXT: 105,
+    CAMERA_SCREEN_STROKE_NORMAL: 200,
+    CAMERA_SCREEN_STROKE_ACTIVE: 201,
+    CAMERA_SCREEN_SECTOR_TARGET: 202,
+    CAMERA_SCREEN_SECTOR_ACTIVE: 203,
+    CAMERA_SCREEN_FRONT_HINT_LABEL_BACKGROUND: 204,
+    CAMERA_SCREEN_FRONT_HINT_LABEL_TEXT: 205,
+    CAMERA_SCREEN_BACK_HINT_LABEL_BACKGROUND: 206,
+    CAMERA_SCREEN_BACK_HINT_LABEL_TEXT: 207,
+    CAMERA_SCREEN_LIGHT_TOOLBAR_TINT: 208,
+    CAMERA_SCREEN_DARK_TOOLBAR_TINT: 209,
+    RETRY_SCREEN_BACKGROUND: 300,
+    RETRY_SCREEN_RETRY_BUTTON_BACKGROUND: 301,
+    RETRY_SCREEN_RETRY_BUTTON_TITLE: 302,
+    RETRY_SCREEN_TITLE_LABEL_TEXT: 303,
+    RETRY_SCREEN_SUBTITLE_LABEL_TEXT: 304,
+    RETRY_SCREEN_HINT_LABELS_TEXT: 305,
+    PROCESSING_SCREEN_BACKGROUND: 400,
+    PROCESSING_SCREEN_PROGRESS: 401,
+    PROCESSING_SCREEN_TITLE: 402,
+    SUCCESS_SCREEN_BACKGROUND: 500,
 }
 
 export const ImageQualityGroupName = {
@@ -1207,9 +1230,9 @@ export const LivenessErrorCode = {
 }
 
 export const RecordingProcess = {
-    ASYNCHRONOUS_UPLOAD: "ASYNCHRONOUS_UPLOAD",
-    SYNCHRONOUS_UPLOAD: "SYNCHRONOUS_UPLOAD",
-    NOT_UPLOAD: "NOT_UPLOAD",
+    ASYNCHRONOUS_UPLOAD: 0,
+    SYNCHRONOUS_UPLOAD: 1,
+    NOT_UPLOAD: 2,
 }
 
 export const DetectFacesBackendErrorCode = {
@@ -1298,16 +1321,16 @@ export const ScreenOrientation = {
 }
 
 export const CustomizationFont = {
-    ONBOARDING_SCREEN_START_BUTTON: "CustomizationFont.ONBOARDING_SCREEN_START_BUTTON",
-    ONBOARDING_SCREEN_TITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_TITLE_LABEL",
-    ONBOARDING_SCREEN_SUBTITLE_LABEL: "CustomizationFont.ONBOARDING_SCREEN_SUBTITLE_LABEL",
-    ONBOARDING_SCREEN_MESSAGE_LABELS: "CustomizationFont.ONBOARDING_SCREEN_MESSAGE_LABELS",
-    CAMERA_SCREEN_HINT_LABEL: "CustomizationFont.CAMERA_SCREEN_HINT_LABEL",
-    RETRY_SCREEN_RETRY_BUTTON: "CustomizationFont.RETRY_SCREEN_RETRY_BUTTON",
-    RETRY_SCREEN_TITLE_LABEL: "CustomizationFont.RETRY_SCREEN_TITLE_LABEL",
-    RETRY_SCREEN_SUBTITLE_LABEL: "CustomizationFont.RETRY_SCREEN_SUBTITLE_LABEL",
-    RETRY_SCREEN_HINT_LABELS: "CustomizationFont.RETRY_SCREEN_HINT_LABELS",
-    PROCESSING_SCREEN: "CustomizationFont.PROCESSING_SCREEN",
+    ONBOARDING_SCREEN_START_BUTTON: 100,
+    ONBOARDING_SCREEN_TITLE_LABEL: 101,
+    ONBOARDING_SCREEN_SUBTITLE_LABEL: 102,
+    ONBOARDING_SCREEN_MESSAGE_LABELS: 103,
+    CAMERA_SCREEN_HINT_LABEL: 200,
+    RETRY_SCREEN_RETRY_BUTTON: 300,
+    RETRY_SCREEN_TITLE_LABEL: 301,
+    RETRY_SCREEN_SUBTITLE_LABEL: 302,
+    RETRY_SCREEN_HINT_LABELS: 303,
+    PROCESSING_SCREEN: 400,
 }
 
 export const DetectFacesScenario = {
@@ -1322,21 +1345,21 @@ export const DetectFacesScenario = {
 }
 
 export const LivenessProcessStatus = {
-    START: "START",
-    PREPARING: "PREPARING",
-    NEW_SESSION: "NEW_SESSION",
-    NEXT_STAGE: "NEXT_STAGE",
-    SECTOR_CHANGED: "SECTOR_CHANGED",
-    PROGRESS: "PROGRESS",
-    LOW_BRIGHTNESS: "LOW_BRIGHTNESS",
-    FIT_FACE: "FIT_FACE",
-    MOVE_AWAY: "MOVE_AWAY",
-    MOVE_CLOSER: "MOVE_CLOSER",
-    TURN_HEAD: "TURN_HEAD",
-    PROCESSING: "PROCESSING",
-    FAILED: "FAILED",
-    RETRY: "RETRY",
-    SUCCESS: "SUCCESS",
+    START: 0,
+    PREPARING: 1,
+    NEW_SESSION: 2,
+    NEXT_STAGE: 3,
+    SECTOR_CHANGED: 4,
+    PROGRESS: 5,
+    LOW_BRIGHTNESS: 6,
+    FIT_FACE: 7,
+    MOVE_AWAY: 8,
+    MOVE_CLOSER: 9,
+    TURN_HEAD: 10,
+    PROCESSING: 11,
+    FAILED: 12,
+    RETRY: 13,
+    SUCCESS: 14,
 }
 
 export const OutputImageCropAspectRatio = {
@@ -1348,13 +1371,13 @@ export const OutputImageCropAspectRatio = {
 }
 
 export const LivenessType = {
-    ACTIVE: "ACTIVE",
-    PASSIVE: "PASSIVE",
+    ACTIVE: 0,
+    PASSIVE: 1,
 }
 
 export const LivenessSkipStep = {
-    ONBOARDING_STEP: 1,
-    SUCCESS_STEP: 2,
+    ONBOARDING_STEP: 0,
+    SUCCESS_STEP: 1,
 }
 
 export const ImageQualityResultStatus = {
@@ -1409,24 +1432,24 @@ export const LivenessBackendErrorCode = {
 }
 
 export const ProcessingMode = {
-    ONLINE: "ONLINE",
-    OFFLINE: "OFFLINE",
+    ONLINE: 0,
+    OFFLINE: 1,
 }
 
 export const CustomizationImage = {
-    ONBOARDING_SCREEN_CLOSE_BUTTON: "CustomizationImage.ONBOARDING_SCREEN_CLOSE_BUTTON",
-    ONBOARDING_SCREEN_ILLUMINATION: "CustomizationImage.ONBOARDING_SCREEN_ILLUMINATION",
-    ONBOARDING_SCREEN_ACCESSORIES: "CustomizationImage.ONBOARDING_SCREEN_ACCESSORIES",
-    ONBOARDING_SCREEN_CAMERA_LEVEL: "CustomizationImage.ONBOARDING_SCREEN_CAMERA_LEVEL",
-    CAMERA_SCREEN_CLOSE_BUTTON: "CustomizationImage.CAMERA_SCREEN_CLOSE_BUTTON",
-    CAMERA_SCREEN_LIGHT_ON_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_ON_BUTTON",
-    CAMERA_SCREEN_LIGHT_OFF_BUTTON: "CustomizationImage.CAMERA_SCREEN_LIGHT_OFF_BUTTON",
-    CAMERA_SCREEN_SWITCH_BUTTON: "CustomizationImage.CAMERA_SCREEN_SWITCH_BUTTON",
-    RETRY_SCREEN_CLOSE_BUTTON: "CustomizationImage.RETRY_SCREEN_CLOSE_BUTTON",
-    RETRY_SCREEN_HINT_ENVIRONMENT: "CustomizationImage.RETRY_SCREEN_HINT_ENVIRONMENT",
-    RETRY_SCREEN_HINT_SUBJECT: "CustomizationImage.RETRY_SCREEN_HINT_SUBJECT",
-    PROCESSING_SCREEN_CLOSE_BUTTON: "CustomizationImage.PROCESSING_SCREEN_CLOSE_BUTTON",
-    SUCCESS_SCREEN_IMAGE: "CustomizationImage.SUCCESS_SCREEN_IMAGE",
+    ONBOARDING_SCREEN_CLOSE_BUTTON: 100,
+    ONBOARDING_SCREEN_ILLUMINATION: 101,
+    ONBOARDING_SCREEN_ACCESSORIES: 102,
+    ONBOARDING_SCREEN_CAMERA_LEVEL: 103,
+    CAMERA_SCREEN_CLOSE_BUTTON: 200,
+    CAMERA_SCREEN_LIGHT_ON_BUTTON: 201,
+    CAMERA_SCREEN_LIGHT_OFF_BUTTON: 202,
+    CAMERA_SCREEN_SWITCH_BUTTON: 203,
+    RETRY_SCREEN_CLOSE_BUTTON: 300,
+    RETRY_SCREEN_HINT_ENVIRONMENT: 301,
+    RETRY_SCREEN_HINT_SUBJECT: 302,
+    PROCESSING_SCREEN_CLOSE_BUTTON: 400,
+    SUCCESS_SCREEN_IMAGE: 500,
 }
 
 export const DetectFacesAttribute = {
@@ -1476,12 +1499,13 @@ export const Enum = {
 }
 
 export default class FaceSDK {
-    static getFaceSdkVersion(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static getVersion(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static getServiceUrl(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setServiceUrl(url: string | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setLocalizationDictionary(dictionary: Record<string, string>, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setRequestHeaders(headers: Record<string, string>, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setCustomization(config: Customization, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static isInitialized(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static initialize(config: InitConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static deinitialize(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static startFaceCapture(config: FaceCaptureConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
@@ -1489,7 +1513,7 @@ export default class FaceSDK {
     static startLiveness(config: LivenessConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static stopLiveness(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static matchFaces(request: MatchFacesRequest, config: MatchFacesConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static splitComparedFaces(faces: ComparedFacesPair[], similarity: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static splitComparedFaces(facesPairs: ComparedFacesPair[], similarityThreshold: number, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static detectFaces(request: DetectFacesRequest, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static createPerson(name: string, groupIds: string[] | null, metadata: Record<string, any> | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static updatePerson(person: Person, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void

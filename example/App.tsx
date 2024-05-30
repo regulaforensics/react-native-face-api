@@ -1,8 +1,8 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, TouchableOpacity, Platform } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, TouchableOpacity, Platform, NativeEventEmitter } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
 import * as RNFS from 'react-native-fs'
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, ComparedFacesSplit, InitConfig, InitResponse, LivenessSkipStep, SearchPerson } from '@regulaforensics/react-native-face-api'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, ComparedFacesSplit, InitConfig, InitResponse, LivenessSkipStep, SearchPerson, RNFaceApi, LivenessNotification } from '@regulaforensics/react-native-face-api'
 
 interface IProps {
 }
@@ -20,6 +20,12 @@ var image2 = new MatchFacesImage()
 export default class App extends React.Component<IProps, IState> {
   constructor(props: {} | Readonly<{}>) {
     super(props)
+
+    var eventManager = new NativeEventEmitter(RNFaceApi)
+    eventManager.addListener('livenessNotificationEvent', data => {
+      var notification = LivenessNotification.fromJson(JSON.parse(data))!
+      console.log("LivenessStatus: " + notification.status)
+    })
 
     var onInit = (json: string) => {
       var response = InitResponse.fromJson(JSON.parse(json))
@@ -116,7 +122,7 @@ export default class App extends React.Component<IProps, IState> {
       var response = LivenessResponse.fromJson(JSON.parse(json))!
       if (response.image != null) {
         this.setImage(true, response.image, Enum.ImageType.LIVE)
-        this.setState({ liveness: response["liveness"] == Enum.LivenessStatus.PASSED ? "passed" : "unknown" })
+        this.setState({ liveness: response.liveness == Enum.LivenessStatus.PASSED ? "passed" : "unknown" })
       }
     }, _e => { })
   }
