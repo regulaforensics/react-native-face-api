@@ -1,612 +1,381 @@
 #import "RNFaceApi.h"
 
-NSString* RFSWVideoEncoderCompletionEvent = @"videoEncoderCompletionEvent";
-NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
-NSString* RFSWLivenessNotificationEvent = @"livenessNotificationEvent";
-
 RNFaceApi* RFSWPlugin;
-
 @implementation RNFaceApi
 @synthesize bridge = _bridge;
 RCT_EXPORT_MODULE();
 
+// Prevents callback from executing twice.
+// Helps if a bug in api runs once-only completion twice.
+NSMutableArray<RCTResponseSenderBlock>* _firedCallbacks = nil;
+- (NSMutableArray<RCTResponseSenderBlock>*)firedCallbacks {
+    if (_firedCallbacks == nil) _firedCallbacks = @[].mutableCopy;
+    return _firedCallbacks;
+}
+
 - (NSArray<NSString*>*)supportedEvents {
-    return @[RFSWVideoEncoderCompletionEvent,
-             RFSWOnCustomButtonTappedEvent,
-             RFSWLivenessNotificationEvent];
+    return @[RFSWCameraSwitchEvent,
+             RFSWLivenessNotificationEvent,
+             RFSWVideoEncoderCompletionEvent,
+             RFSWOnCustomButtonTappedEvent];
 }
 
-- (void)result:(NSString*)message :(RFSWCallback)callback {
-    if(message == nil)
-        message = @"";
-    callback(message);
-}
+RFSWEventSender sendEvent = ^(NSString* _Nonnull event, id _Nullable data) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RFSWPlugin sendEventWithName:event body:[RFSWJSONConstructor toSendable:data]];
+    });
+};
 
-- (void)videoUploadingForTransactionId:(NSString * _Nonnull)transactionId didFinishedWithSuccess:(BOOL)success {
-    [RFSWPlugin sendEventWithName:RFSWVideoEncoderCompletionEvent body:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateVideoEncoderCompletion:transactionId :success]]];
-}
-
-- (void)onFaceCustomButtonTappedWithTag:(NSInteger)tag {
-    [RFSWPlugin sendEventWithName:RFSWOnCustomButtonTappedEvent body:[NSNumber numberWithInteger:tag]];
-}
-
-- (void)processStatusChanged:(RFSLivenessProcessStatus)status result:(RFSLivenessResponse*)result {
-    [RFSWPlugin sendEventWithName:RFSWLivenessNotificationEvent body:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateLivenessNotification:status result:result]]];
-}
-
-RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)action:(NSArray*)args:(RCTResponseSenderBlock)sCallback:(RCTResponseSenderBlock)eCallback) {
+RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)method:(NSArray*)args:(RCTResponseSenderBlock)sCallback:(RCTResponseSenderBlock)eCallback) {
     RFSWPlugin = self;
-    RFSWCallback successCallback = ^(NSString* response){
-        sCallback(@[response]);
+    RFSWCallback callback = ^(id _Nullable data){
+        if ([self.firedCallbacks containsObject:sCallback]) return;
+        [self.firedCallbacks addObject:sCallback];
+        if (data == nil) sCallback(@[[NSNull null]]);
+        else sCallback(@[[RFSWJSONConstructor toSendable:data]]);
     };
-    RFSWCallback errorCallback = ^(NSString* response){
-        eCallback(@[response]);
+    NSDictionary* Switch = @{
+        @"getVersion": ^{ [self getVersion :callback]; },
+        @"getServiceUrl": ^{ [self getServiceUrl :callback]; },
+        @"setServiceUrl": ^{ [self setServiceUrl :args[0] :callback]; },
+        @"setLocalizationDictionary": ^{ [self setLocalizationDictionary :args[0]]; },
+        @"setRequestHeaders": ^{ [self setRequestHeaders :args[0]]; },
+        @"setCustomization": ^{ [self setCustomization :args[0]]; },
+        @"isInitialized": ^{ [self isInitialized :callback]; },
+        @"initialize": ^{ [self initialize :args[0] :callback]; },
+        @"deinitialize": ^{ [self deinitialize]; },
+        @"startFaceCapture": ^{ [self startFaceCapture :args[0] :callback]; },
+        @"stopFaceCapture": ^{ [self stopFaceCapture]; },
+        @"startLiveness": ^{ [self startLiveness :args[0] :callback]; },
+        @"stopLiveness": ^{ [self stopLiveness]; },
+        @"matchFaces": ^{ [self matchFaces :args[0] :args[1] :callback]; },
+        @"splitComparedFaces": ^{ [self splitComparedFaces :args[0] :args[1] :callback]; },
+        @"detectFaces": ^{ [self detectFaces :args[0] :callback]; },
+        @"createPerson": ^{ [self createPerson :args[0] :args[1] :args[2] :callback]; },
+        @"updatePerson": ^{ [self updatePerson :args[0] :callback]; },
+        @"deletePerson": ^{ [self deletePerson :args[0] :callback]; },
+        @"getPerson": ^{ [self getPerson :args[0] :callback]; },
+        @"addPersonImage": ^{ [self addPersonImage :args[0] :args[1] :callback]; },
+        @"deletePersonImage": ^{ [self deletePersonImage :args[0] :args[1] :callback]; },
+        @"getPersonImage": ^{ [self getPersonImage :args[0] :args[1] :callback]; },
+        @"getPersonImages": ^{ [self getPersonImages :args[0] :callback]; },
+        @"getPersonImagesForPage": ^{ [self getPersonImagesForPage :args[0] :args[1] :args[2] :callback]; },
+        @"createGroup": ^{ [self createGroup :args[0] :args[1] :callback]; },
+        @"updateGroup": ^{ [self updateGroup :args[0] :callback]; },
+        @"editPersonsInGroup": ^{ [self editPersonsInGroup :args[0] :args[1] :callback]; },
+        @"deleteGroup": ^{ [self deleteGroup :args[0] :callback]; },
+        @"getGroup": ^{ [self getGroup :args[0] :callback]; },
+        @"getGroups": ^{ [self getGroups :callback]; },
+        @"getGroupsForPage": ^{ [self getGroupsForPage :args[0] :args[1] :callback]; },
+        @"getPersonGroups": ^{ [self getPersonGroups :args[0] :callback]; },
+        @"getPersonGroupsForPage": ^{ [self getPersonGroupsForPage :args[0] :args[1] :args[2] :callback]; },
+        @"getPersonsInGroup": ^{ [self getPersonsInGroup :args[0] :callback]; },
+        @"getPersonsInGroupForPage": ^{ [self getPersonsInGroupForPage :args[0] :args[1] :args[2] :callback]; },
+        @"searchPerson": ^{ [self searchPerson :args[0] :callback]; },
     };
-
-    if([action isEqualToString:@"getServiceUrl"])
-        [self getServiceUrl :successCallback :errorCallback];
-    else if([action isEqualToString:@"startLiveness"])
-        [self startLiveness :successCallback :errorCallback];
-    else if([action isEqualToString:@"getFaceSdkVersion"])
-        [self getFaceSdkVersion :successCallback :errorCallback];
-    else if([action isEqualToString:@"presentFaceCaptureActivity"])
-        [self presentFaceCaptureActivity :successCallback :errorCallback];
-    else if([action isEqualToString:@"stopFaceCaptureActivity"])
-        [self stopFaceCaptureActivity :successCallback :errorCallback];
-    else if([action isEqualToString:@"init"])
-        [self init :successCallback :errorCallback];
-    else if([action isEqualToString:@"initialize"])
-        [self initialize :successCallback :errorCallback];
-    else if([action isEqualToString:@"initializeWithConfig"])
-        [self initializeWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"deinit"])
-        [self deinit :successCallback :errorCallback];
-    else if([action isEqualToString:@"deinitialize"])
-        [self deinitialize :successCallback :errorCallback];
-    else if([action isEqualToString:@"isInitialized"])
-        [self isInitialized :successCallback :errorCallback];
-    else if([action isEqualToString:@"stopLivenessProcessing"])
-        [self stopLivenessProcessing :successCallback :errorCallback];
-    else if([action isEqualToString:@"setRequestHeaders"])
-        [self setRequestHeaders :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"presentFaceCaptureActivityWithConfig"])
-        [self presentFaceCaptureActivityWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"matchFacesWithConfig"])
-        [self matchFacesWithConfig :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"startLivenessWithConfig"])
-        [self startLivenessWithConfig :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setServiceUrl"])
-        [self setServiceUrl :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setLogs"])
-        [self setLogs :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setSaveLogs"])
-        [self setSaveLogs :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setLogsFolder"])
-        [self setLogsFolder :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"matchFaces"])
-        [self matchFaces :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"detectFaces"])
-        [self detectFaces :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setUiCustomizationLayer"])
-        [self setUiCustomizationLayer :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setUiConfiguration"])
-        [self setUiConfiguration :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"setLocalizationDictionary"])
-        [self setLocalizationDictionary :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"matchFacesSimilarityThresholdSplit"])
-        [self matchFacesSimilarityThresholdSplit :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPerson"])
-        [self getPerson :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"createPerson"])
-        [self createPerson :[args objectAtIndex:0] :[args objectAtIndex:1] :[args objectAtIndex:2] :successCallback :errorCallback];
-    else if([action isEqualToString:@"updatePerson"])
-        [self updatePerson :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"deletePerson"])
-        [self deletePerson :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonImages"])
-        [self getPersonImages :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonImagesForPage"])
-        [self getPersonImagesForPage :[args objectAtIndex:0] :[args objectAtIndex:1] :[args objectAtIndex:2] :successCallback :errorCallback];
-    else if([action isEqualToString:@"addPersonImage"])
-        [self addPersonImage :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonImage"])
-        [self getPersonImage :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"deletePersonImage"])
-        [self deletePersonImage :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getGroups"])
-        [self getGroups :successCallback :errorCallback];
-    else if([action isEqualToString:@"getGroupsForPage"])
-        [self getGroupsForPage :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonGroups"])
-        [self getPersonGroups :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonGroupsForPage"])
-        [self getPersonGroupsForPage :[args objectAtIndex:0] :[args objectAtIndex:1] :[args objectAtIndex:2] :successCallback :errorCallback];
-    else if([action isEqualToString:@"createGroup"])
-        [self createGroup :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getGroup"])
-        [self getGroup :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"updateGroup"])
-        [self updateGroup :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"editPersonsInGroup"])
-        [self editPersonsInGroup :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonsInGroup"])
-        [self getPersonsInGroup :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"getPersonsInGroupForPage"])
-        [self getPersonsInGroupForPage :[args objectAtIndex:0] :[args objectAtIndex:1] :[args objectAtIndex:2] :successCallback :errorCallback];
-    else if([action isEqualToString:@"deleteGroup"])
-        [self deleteGroup :[args objectAtIndex:0] :successCallback :errorCallback];
-    else if([action isEqualToString:@"searchPerson"])
-        [self searchPerson :[args objectAtIndex:0] :successCallback :errorCallback];
-    else
-        [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
-}
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-- (void) getServiceUrl:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [self result:[RFSFaceSDK.service serviceURL] :successCallback];
+    ((void(^)(void))Switch[method])();
 }
 
-- (void) setRequestHeaders:(NSDictionary*)headers :(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    self.headers = headers;
-    RFSFaceSDK.service.requestInterceptingDelegate = self;
-    [self result:@"" :successCallback];
+NSString* RFSWCameraSwitchEvent = @"cameraSwitchEvent";
+NSString* RFSWLivenessNotificationEvent = @"livenessNotificationEvent";
+NSString* RFSWVideoEncoderCompletionEvent = @"video_encoder_completion";
+NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
+
+- (void) getVersion:(RFSWCallback)callback {
+    callback([RFSWJSONConstructor generateFaceSDKVersion:RFSFaceSDK.service.version]);
 }
 
-- (void) startLiveness:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
-    });
+- (void) getServiceUrl:(RFSWCallback)callback {
+    callback([RFSFaceSDK.service serviceURL]);
 }
 
-- (void) getFaceSdkVersion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [self result:[RFSFaceSDK.service version] :successCallback];
-}
-
-- (void) init:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service initializeWithCompletion:[self getInitCompletion:successCallback :errorCallback]];
-}
-
-- (void) initialize:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service initializeWithCompletion:[self getInitCompletion:successCallback :errorCallback]];
-}
-
-- (void) initializeWithConfig:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service initializeWithConfiguration:[RFSWJSONConstructor RFSInitializationConfigurationFromJSON:config] completion:[self getInitCompletion:successCallback :errorCallback]];
-}
-
-- (void) deinit:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service deinitialize];
-    [self result:@"" :successCallback];
-}
-
-- (void) deinitialize:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service deinitialize];
-    [self result:@"" :successCallback];
-}
-
-- (void) isInitialized:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    [self result:@"isInitialized() is an android-only method" :errorCallback];
-}
-
-- (void) setUiCustomizationLayer:(NSDictionary*)json :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSFaceSDK.service.customization.customUILayerJSON = json;
-    [self result:@"" :successCallback];
-}
-
-- (void) setUiConfiguration:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSFaceSDK.service.customization.configuration = [RFSWJSONConstructor RFSUIConfigurationFromJSON:config];
-    [self result:@"" :successCallback];
-}
-
-- (void) presentFaceCaptureActivity:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
-    });
-}
-
-- (void) stopFaceCaptureActivity:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service stopFaceCaptureViewController];
-    [self result:@"" :successCallback];
-}
-
-- (void) stopLivenessProcessing:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service stopLivenessProcessing];
-    [self result:@"" :successCallback];
-}
-
-- (void) presentFaceCaptureActivityWithConfig:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSFaceCaptureConfiguration *configuration = [RFSFaceCaptureConfiguration configurationWithBuilder:^(RFSFaceCaptureConfigurationBuilder  * _Nonnull builder) {
-        if([config valueForKey:@"copyright"] != nil)
-            [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
-        if([config valueForKey:@"cameraSwitchEnabled"] != nil)
-            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
-        if([config valueForKey:@"torchButtonEnabled"] != nil)
-            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
-        if([config valueForKey:@"cameraPositionIOS"] != nil)
-            [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
-        if([config valueForKey:@"timeout"] != nil)
-            [builder setTimeoutInterval:[config valueForKey:@"timeout"]];
-        if([config valueForKey:@"holdStillDuration"] != nil)
-            [builder setHoldStillDuration:[config valueForKey:@"holdStillDuration"]];
-    }];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onCapture:[self getFaceCaptureCompletion:successCallback :errorCallback] completion:nil];
-    });
-}
-
-- (void) matchFacesWithConfig:(NSString*)requestString :(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSMatchFacesConfiguration *configuration = [RFSMatchFacesConfiguration configurationWithBuilder:^(RFSMatchFacesConfigurationBuilder  * _Nonnull builder) {
-        if([config valueForKey:@"processingMode"] != nil)
-            [builder setProcessingMode:[self RFSProcessingModeWithString:[config valueForKey:@"processingMode"]]];
-    }];
-    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] configuration:configuration completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
-}
-
-- (void) startLivenessWithConfig:(NSDictionary*)config :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSLivenessConfiguration *configuration = [RFSLivenessConfiguration configurationWithBuilder:^(RFSLivenessConfigurationBuilder  * _Nonnull builder) {
-        if([config valueForKey:@"copyright"] != nil)
-            [builder setCopyright:[[config valueForKey:@"copyright"] boolValue]];
-        if([config valueForKey:@"cameraSwitchEnabled"] != nil)
-            [builder setCameraSwitchButtonEnabled:[[config valueForKey:@"cameraSwitchEnabled"] boolValue]];
-        if([config valueForKey:@"closeButtonEnabled"] != nil)
-            [builder setCloseButtonEnabled:[[config valueForKey:@"closeButtonEnabled"] boolValue]];
-        if([config valueForKey:@"torchButtonEnabled"] != nil)
-            [builder setTorchButtonEnabled:[[config valueForKey:@"torchButtonEnabled"] boolValue]];
-        if([config valueForKey:@"cameraPositionIOS"] != nil)
-            [builder setCameraPosition:[self RFSCameraPositionWithNSInteger:[[config valueForKey:@"cameraPositionIOS"] integerValue]]];
-        if([config valueForKey:@"attemptsCount"] != nil)
-            [builder setAttemptsCount:[[config valueForKey:@"attemptsCount"] integerValue]];
-        if([config valueForKey:@"locationTrackingEnabled"] != nil)
-            [builder setLocationTrackingEnabled:[[config valueForKey:@"locationTrackingEnabled"] boolValue]];
-        if([config valueForKey:@"recordingProcess"] != nil)
-            [builder setRecordingProcess:[RFSWJSONConstructor RFSRecordingProcessWithString:[config valueForKey:@"recordingProcess"]]];
-        if([config valueForKey:@"livenessType"] != nil)
-            [builder setLivenessType:[RFSWJSONConstructor RFSLivenessTypeWithString:[config valueForKey:@"livenessType"]]];
-        if([config valueForKey:@"tag"] != nil)
-            [builder setTag:[config valueForKey:@"tag"]];
-        if([config valueForKey:@"skipStep"] != nil) {
-            [builder setStepSkippingMask:[self RFSLivenessStepSkipsWithIntegerArray:[config valueForKey:@"skipStep"]]];
-        }
-    }];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service startLivenessFrom:[[[UIApplication sharedApplication] keyWindow] rootViewController] animated:true configuration: configuration onLiveness:[self getLivenessCompletion:successCallback :errorCallback] completion:nil];
-    });
-}
-
-- (void) setServiceUrl:(NSString*)url :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+- (void) setServiceUrl:(NSString*)url :(RFSWCallback)callback {
     [RFSFaceSDK.service setServiceURL:url];
-    [self result:@"" :successCallback];
+    callback(@"");
 }
 
-- (void) setLogs:(BOOL)isEnable :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-//    [RFSFaceSDK.service setLogs:isEnable];
-    [self result:@"Currently unavailable on iOS" :errorCallback];
-}
-
-- (void) setSaveLogs:(BOOL)isSaveLogs :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-//    [RFSFaceSDK.service setSaveLogs: isSaveLogs];
-    [self result:@"Currently unavailable on iOS" :errorCallback];
-}
-
-- (void) setLogsFolder:(NSString*)path :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-//    [RFSFaceSDK.service setLogsFolder: path];
-    [self result:@"Currently unavailable on iOS" :errorCallback];
-}
-
-- (void) matchFaces:(NSString*)requestString :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor RFSMatchFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getMatchFacesCompletion:successCallback :errorCallback]];
-}
-
-- (void) detectFaces:(NSString*)requestString :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service detectFacesByRequest:[RFSWJSONConstructor RFSDetectFacesRequestFromJSON:[NSJSONSerialization JSONObjectWithData:[requestString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL]] completion:[self getDetectFacesCompletion:successCallback :errorCallback]];
-}
-
-- (void) matchFacesSimilarityThresholdSplit:(NSString*)str :(NSNumber*)similarity :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    NSArray *array = [NSJSONSerialization JSONObjectWithData:[str dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
-    NSArray<RFSMatchFacesComparedFacesPair *> *faces = [RFSWJSONConstructor NSArrayRFSMatchFacesComparedFacesPairFromJSON:array];
-    RFSMatchFacesSimilarityThresholdSplit *split = [RFSMatchFacesSimilarityThresholdSplit splitPairs:faces bySimilarityThreshold:similarity];
-    [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSMatchFacesSimilarityThresholdSplit:split]] :successCallback];
-}
-
-- (void) setLocalizationDictionary:(NSDictionary*)dictionary :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSFaceSDK.service.localizationHandler = ^NSString * _Nullable(NSString * _Nonnull localizationKey) {
-        if(dictionary != nil && ![dictionary isEqual:[NSNull null]] && [dictionary valueForKey:localizationKey] != nil)
-            return [dictionary valueForKey:localizationKey];
+- (void) setLocalizationDictionary:(NSDictionary*)dictionary {
+    RFSFaceSDK.service.localizationHandler = ^NSString* (NSString* localizationKey) {
+        if (dictionary[localizationKey]) return dictionary[localizationKey];
         return nil;
     };
-    [self result:@"" :successCallback];
 }
 
-- (void (^)(RFSLivenessResponse * _Nonnull)) getLivenessCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    return ^(RFSLivenessResponse* response) {
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSLivenessResponse:response]] :successCallback];
-    };
-}
-
-- (void (^)(RFSFaceCaptureResponse * _Nonnull)) getFaceCaptureCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    return ^(RFSFaceCaptureResponse* response) {
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSFaceCaptureResponse:response]] :successCallback];
-    };
-}
-
-- (void (^)(RFSMatchFacesResponse * _Nonnull)) getMatchFacesCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    return ^(RFSMatchFacesResponse* response) {
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSMatchFacesResponse:response]] :successCallback];
-    };
-}
-
-- (void (^)(RFSDetectFacesResponse* _Nonnull)) getDetectFacesCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    return ^(RFSDetectFacesResponse* response) {
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSDetectFacesResponse:response]] :successCallback];
-    };
-}
-
--(RFSCameraPosition)RFSCameraPositionWithNSInteger:(NSInteger)value {
-    switch(value){
-        case 0:
-            return RFSCameraPositionBack;
-        case 1:
-            return RFSCameraPositionFront;
-        default:
-            return RFSCameraPositionBack;
-    }
-}
-
--(RFSProcessingMode)RFSProcessingModeWithString:(NSString*)value {
-    if([value  isEqual: @"ONLINE"])
-        return RFSProcessingModeOnline;
-    else if([value  isEqual: @"OFFLINE"])
-        return RFSProcessingModeOffline;
-    else
-        return RFSProcessingModeOnline;
-}
-
--(RFSLivenessStepSkip)RFSLivenessStepSkipsWithIntegerArray:(NSArray<NSNumber*>*)input {
-    // same as input.contains(1)
-    bool start = CFArrayContainsValue((__bridge CFArrayRef)input, CFRangeMake(0, input.count), (CFNumberRef)@1);
-    bool done = CFArrayContainsValue((__bridge CFArrayRef)input, CFRangeMake(0, input.count), (CFNumberRef)@2);
-
-    if(start && !done){
-        return RFSLivenessStepSkipOnboarding;
-    }
-    if(done && !start){
-        return RFSLivenessStepSkipSuccess;
-    }
-    if(start && done){
-        return RFSLivenessStepSkipOnboarding | RFSLivenessStepSkipSuccess;
-    }
-    return RFSLivenessStepSkipNone;
+- (void) setRequestHeaders:(NSDictionary*)headers {
+    self.headers = headers;
+    RFSFaceSDK.service.requestInterceptingDelegate = self;
 }
 
 - (NSURLRequest*)interceptorPrepareRequest:(NSURLRequest*)request {
     NSMutableURLRequest *interceptedRequest = [request mutableCopy];
-    for(NSString* key in self.headers.allKeys)
-        [interceptedRequest addValue:key forHTTPHeaderField:[self.headers valueForKey:key]];
+    for (NSString* key in self.headers.allKeys)
+        [interceptedRequest addValue:[self.headers valueForKey:key] forHTTPHeaderField:key];
     return interceptedRequest;
 }
 
-- (void) getPerson:(NSString*)personId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getPersonByPersonId:personId completion:^(RFSItemResponse<RFSPerson *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPerson:response.item]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) setCustomization:(NSDictionary*)config {
+    [RFSWConfig setCustomization:config :RFSFaceSDK.service.customization];
 }
 
-- (void) createPerson:(NSString*)name :(NSDictionary*)metadata :(NSArray<NSString*>*)groupIds :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase createPersonWithName:name metadata:metadata groupIds:groupIds completion:^(RFSItemResponse<RFSPerson *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPerson:response.item]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) isInitialized:(RFSWCallback)callback {
+    callback(@([RFSFaceSDK.service isInitialized]));
 }
 
-- (void) updatePerson:(NSDictionary*)person :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+- (void) initialize:(NSDictionary*)config :(RFSWCallback)callback {
+    [RFSFaceSDK.service initializeWithConfiguration:[RFSWJSONConstructor initConfigFromJSON:config]
+                                         completion:[self initCompletion:callback]];
+}
+
+- (void) deinitialize {
+    [RFSFaceSDK.service deinitialize];
+}
+
+- (void) startFaceCapture:(NSDictionary*)config :(RFSWCallback)callback {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[UIApplication sharedApplication].windows.lastObject.rootViewController
+                                                            animated:true
+                                                       configuration:[RFSWConfig faceCaptureConfigFromJSON:config]
+                                                           onCapture:[self faceCaptureCompletion:callback]
+                                                          completion:nil];
+    });
+}
+
+- (void) stopFaceCapture {
+    [RFSFaceSDK.service stopFaceCaptureViewController];
+}
+
+- (void) startLiveness:(NSDictionary*)config :(RFSWCallback)callback {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RFSFaceSDK.service startLivenessFrom:[UIApplication sharedApplication].windows.lastObject.rootViewController
+                                                animated:true
+                                           configuration:[RFSWConfig livenessConfigFromJSON:config]
+                                              onLiveness:[self livenessCompletion:callback]
+                                              completion:nil];
+    });
+}
+
+- (void) stopLiveness {
+    [RFSFaceSDK.service stopLivenessProcessing];
+}
+
+- (void) matchFaces:(NSDictionary*)request :(NSDictionary*)config :(RFSWCallback)callback {
+    [RFSFaceSDK.service matchFaces:[RFSWJSONConstructor matchFacesRequestFromJSON:request]
+                     configuration:[RFSWConfig matchFacesConfigFromJSON:config]
+                        completion:[self matchFacesCompletion:callback]];
+}
+
+- (void) splitComparedFaces:(NSArray*)faces :(NSNumber*)similarity :(RFSWCallback)callback {
+    NSArray* array = [RFSWJSONConstructor arrayFromJSON:faces :@selector(comparedFacesPairFromJSON:)];
+    RFSMatchFacesSimilarityThresholdSplit *split = [RFSMatchFacesSimilarityThresholdSplit splitPairs:array bySimilarityThreshold:similarity];
+    callback([RFSWJSONConstructor generateComparedFacesSplit:split]);
+}
+
+- (void) detectFaces:(NSDictionary*)request :(RFSWCallback)callback {
+    [RFSFaceSDK.service detectFacesByRequest:[RFSWJSONConstructor detectFacesRequestFromJSON:request]
+                                  completion:[self detectFacesCompletion:callback]];
+}
+
+- (void) createPerson:(NSString*)name :(NSDictionary*)metadata :(NSArray<NSString*>*)groupIds :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase createPersonWithName:name
+                                                   metadata:metadata
+                                                   groupIds:groupIds
+                                                 completion:[self databaseItemCompletion :callback :@selector(generatePerson:)]];
+}
+
+- (void) updatePerson:(NSDictionary*)person :(RFSWCallback)callback {
     [RFSFaceSDK.service.personDatabase getPersonByPersonId:[RFSWJSONConstructor idFromJSON:person] completion:^(RFSItemResponse<RFSPerson *> * response) {
-        if(response.error == nil) {
-            if(response.item != nil) {
-                [RFSFaceSDK.service.personDatabase updatePerson:[RFSWJSONConstructor updatePersonFromJSON:response.item :person] completion:^(RFSComfirmResponse * success) {
-                    if(success)
-                        [self result:@"" :successCallback];
-                    else
-                        [self result:@"" :errorCallback];
-                }];
-            } else
-                [self result:@"id does not exist" :errorCallback];
-        } else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
+        if (response.error) callback([RFSWJSONConstructor generatePersonDBResponse:nil :response.error]);
+        else [RFSFaceSDK.service.personDatabase updatePerson:[RFSWJSONConstructor updatePersonFromJSON:response.item :person]
+                                                 completion:[self databaseCompletion:callback]];
     }];
 }
 
-- (void) deletePerson:(NSString*)personId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase deletePersonByPersonId:personId completion:^(RFSComfirmResponse * success) {
-        if(success)
-            [self result:@"" :successCallback];
-        else
-            [self result:@"" :errorCallback];
-    }];
+- (void) deletePerson:(NSString*)personId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase deletePersonByPersonId:personId
+                                                   completion:[self databaseCompletion:callback]];
 }
 
-- (void) getPersonImages:(NSString*)personId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getPersonImagesByPersonId:personId completion:^(RFSPageResponse<RFSPersonImage *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonImageResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) getPerson:(NSString*)personId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getPersonByPersonId:personId
+                                                completion:[self databaseItemCompletion :callback :@selector(generatePerson:)]];
 }
 
-- (void) getPersonImagesForPage:(NSString*)personId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getPersonImagesByPersonId:personId page:[page integerValue] size:[size integerValue] completion:^(RFSPageResponse<RFSPersonImage *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonImageResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) addPersonImage:(NSString*)personId :(NSDictionary*)image :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase addPersonImageByPersonId:personId
+                                                    imageUpload:[RFSWJSONConstructor imageUploadFromJSON:image]
+                                                     completion:[self databaseItemCompletion :callback :@selector(generatePersonImage:)]];
 }
 
-- (void) addPersonImage:(NSString*)personId :(NSDictionary*)image :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSImageUpload *imageUpload = [RFSWJSONConstructor RFSImageUploadFromJSON:image];
-    [RFSFaceSDK.service.personDatabase addPersonImageByPersonId:personId imageUpload:imageUpload completion:^(RFSItemResponse<RFSPersonImage *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPersonImage:response.item]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) deletePersonImage:(NSString*)personId :(NSString*)imageId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase deletePersonImageByPersonId:personId
+                                                           imageId: imageId
+                                                        completion:[self databaseCompletion:callback]];
 }
 
-- (void) getPersonImage:(NSString*)personId :(NSString*)imageId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+- (void) getPersonImage:(NSString*)personId :(NSString*)imageId :(RFSWCallback)callback {
     [RFSFaceSDK.service.personDatabase getPersonImageByPersonId:personId imageId:imageId completion:^(RFSDataResponse* response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateNSDataImage:response.data]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
+        callback([RFSWJSONConstructor generatePersonDBResponse:[RFSWJSONConstructor base64Encode:response.data] :response.error]);
     }];
 }
 
-- (void) deletePersonImage:(NSString*)personId :(NSString*)imageId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase deletePersonImageByPersonId:personId imageId: imageId completion:^(RFSComfirmResponse * success) {
-        if(success)
-            [self result:@"" :successCallback];
-        else
-            [self result:@"" :errorCallback];
-    }];
+- (void) getPersonImages:(NSString*)personId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getPersonImagesByPersonId:personId
+                                                      completion:[self databasePageCompletion :callback :@selector(generatePersonImage:)]];
 }
 
-- (void) getGroups:(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getGroups:^(RFSPageResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonGroupResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) getPersonImagesForPage:(NSString*)personId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getPersonImagesByPersonId:personId
+                                                            page:[page integerValue]
+                                                            size:[size integerValue]
+                                                      completion:[self databasePageCompletion :callback :@selector(generatePersonImage:)]];
 }
 
-- (void) getGroupsForPage:(NSNumber*)page :(NSNumber*)size :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getGroupsForPage:[page integerValue] size:[size integerValue] completion:^(RFSPageResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonGroupResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
+- (void) createGroup:(NSString*)name :(NSDictionary*)metadata :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase createGroupWithName:name
+                                                  metadata:metadata
+                                                completion:[self databaseItemCompletion :callback :@selector(generatePersonGroup:)]];
 }
 
-- (void) getPersonGroups:(NSString*)personId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getPersonGroupsByPersonId:personId completion:^(RFSPageResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonGroupResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) getPersonGroupsForPage:(NSString*)personId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getPersonGroupsByPersonId:personId page:[page integerValue] size:[size integerValue] completion:^(RFSPageResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonGroupResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) createGroup:(NSString*)name :(NSDictionary*)metadata :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase createGroupWithName:name metadata:metadata completion:^(RFSItemResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPersonGroup:response.item]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) getGroup:(NSString*)groupId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getGroupByGroupId:groupId completion:^(RFSItemResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPersonGroup:response.item]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) updateGroup:(NSDictionary*)group :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
+- (void) updateGroup:(NSDictionary*)group :(RFSWCallback)callback {
     [RFSFaceSDK.service.personDatabase getGroupByGroupId:[RFSWJSONConstructor idFromJSON:group] completion:^(RFSItemResponse<RFSPersonGroup *> * response) {
-        if(response.error == nil) {
-            if(response.item != nil) {
-                [RFSFaceSDK.service.personDatabase updateGroup:[RFSWJSONConstructor updatePersonGroupFromJSON:response.item :group] completion:^(RFSComfirmResponse * success) {
-                    if(success)
-                        [self result:@"" :successCallback];
-                    else
-                        [self result:@"" :errorCallback];
-                }];
-            } else
-                [self result:@"id does not exist" :errorCallback];
-        } else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
+        if (response.error) callback([RFSWJSONConstructor generatePersonDBResponse:nil :response.error]);
+        else [RFSFaceSDK.service.personDatabase updateGroup:[RFSWJSONConstructor updatePersonGroupFromJSON:response.item :group]
+                                                 completion:[self databaseCompletion:callback]];
     }];
 }
 
-- (void) editPersonsInGroup:(NSString*)groupId :(NSDictionary*)editGroupPersonsRequest :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSEditGroupPersonsRequest *request = [RFSWJSONConstructor RFSEditGroupPersonsRequestFromJSON:editGroupPersonsRequest];
-    [RFSFaceSDK.service.personDatabase editGroupPersonsByGroupId:groupId request:request completion:^(RFSComfirmResponse * success) {
-        if(success)
-            [self result:@"" :successCallback];
-        else
-            [self result:@"" :errorCallback];
+- (void) editPersonsInGroup:(NSString*)groupId :(NSDictionary*)editGroupPersonsRequest :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase editGroupPersonsByGroupId:groupId
+                                                         request:[RFSWJSONConstructor editGroupPersonsRequestFromJSON:editGroupPersonsRequest]
+                                                      completion:[self databaseCompletion:callback]];
+}
+
+- (void) deleteGroup:(NSString*)groupId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase deleteGroupByGroupId:groupId
+                                                 completion:[self databaseCompletion:callback]];
+}
+
+- (void) getGroup:(NSString*)groupId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getGroupByGroupId:groupId
+                                              completion:[self databaseItemCompletion :callback :@selector(generatePersonGroup:)]];
+}
+
+- (void) getGroups:(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getGroups:[self databasePageCompletion :callback :@selector(generatePersonGroup:)]];
+}
+
+- (void) getGroupsForPage:(NSNumber*)page :(NSNumber*)size :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getGroupsForPage:[page integerValue]
+                                                   size:[size integerValue]
+                                             completion:[self databasePageCompletion :callback :@selector(generatePersonGroup:)]];
+}
+
+- (void) getPersonGroups:(NSString*)personId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getPersonGroupsByPersonId:personId
+                                                      completion:[self databasePageCompletion :callback :@selector(generatePersonGroup:)]];
+}
+
+- (void) getPersonGroupsForPage:(NSString*)personId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getPersonGroupsByPersonId:personId
+                                                            page:[page integerValue]
+                                                            size:[size integerValue]
+                                                      completion:[self databasePageCompletion :callback :@selector(generatePersonGroup:)]];
+}
+
+- (void) getPersonsInGroup:(NSString*)groupId :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getGroupPersonsByGroupId:groupId
+                                                     completion:[self databasePageCompletion :callback :@selector(generatePerson:)]];
+}
+
+- (void) getPersonsInGroupForPage:(NSString*)groupId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase getGroupPersonsByGroupId:groupId
+                                                           page:[page integerValue]
+                                                           size:[size integerValue]
+                                                     completion:[self databasePageCompletion :callback :@selector(generatePerson:)]];
+}
+
+- (void) searchPerson:(NSDictionary*)searchPersonRequest :(RFSWCallback)callback {
+    [RFSFaceSDK.service.personDatabase searchPerson:[RFSWJSONConstructor searchPersonRequestFromJSON:searchPersonRequest]
+                                         completion:^(RFSSearchPersonResponse *response) {
+        callback([RFSWJSONConstructor generatePersonDBResponse:[RFSWJSONConstructor generateArray:response.results :@selector(generateSearchPerson:)] :response.error]);
     }];
 }
 
-- (void) getPersonsInGroup:(NSString*)groupId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getGroupPersonsByGroupId:groupId completion:^(RFSPageResponse<RFSPerson *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) getPersonsInGroupForPage:(NSString*)groupId :(NSNumber*)page :(NSNumber*)size :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase getGroupPersonsByGroupId:groupId page:[page integerValue] size:[size integerValue] completion:^(RFSPageResponse<RFSPerson *> * response) {
-        if(response.error == nil)
-            [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateRFSPagePersonResponse:response]] :successCallback];
-        else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
-- (void) deleteGroup:(NSString*)groupId :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    [RFSFaceSDK.service.personDatabase deleteGroupByGroupId:groupId completion:^(RFSComfirmResponse * success) {
-        if(success)
-            [self result:@"" :successCallback];
-        else
-            [self result:@"" :errorCallback];
-    }];
-}
-
-- (void) searchPerson:(NSDictionary*)searchPersonRequest :(RFSWCallback)successCallback :(RFSWCallback)errorCallback{
-    RFSSearchPersonRequest *request = [RFSWJSONConstructor RFSSearchPersonRequestFromJSON:searchPersonRequest];
-    [RFSFaceSDK.service.personDatabase searchPerson:request completion:^(RFSSearchPersonResponse *response) {
-        if(response.error == nil) {
-            NSMutableArray<NSDictionary*> *results = [NSMutableArray new];
-            for(RFSSearchPerson* searchPerson in response.results)
-                [results addObject:[RFSWJSONConstructor generateRFSSearchPerson:searchPerson]];
-            [self result:[RFSWJSONConstructor arrayToString:results] :successCallback];
-        } else
-            [self result:[RFSWJSONConstructor generateNSError:response.error] :errorCallback];
-    }];
-}
-
--(RFSFaceInitializationCompletion)getInitCompletion:(RFSWCallback)successCallback :(RFSWCallback)errorCallback {
-    return ^(BOOL success, NSError * _Nullable error) {
-        if(success){
-            [RFSFaceSDK.service setVideoUploadingDelegate:self];
-            [RFSFaceSDK.service setProcessStatusDelegate:self];
-            RFSFaceSDK.service.customization.actionDelegate = self;
-        }
-        [self result:[RFSWJSONConstructor dictToString:[RFSWJSONConstructor generateInitCompletion:success :error]] :successCallback];
+-(RFSInitializationCompletion)initCompletion:(RFSWCallback)callback {
+    return ^(BOOL success, NSError* error) {
+        RFSFaceSDK.service.customization.configuration = [RFSUIConfiguration defaultConfiguration];
+        [RFSFaceSDK.service setVideoUploadingDelegate:self];
+        [RFSFaceSDK.service setFaceCaptureDelegate:self];
+        [RFSFaceSDK.service setLivenessDelegate:self];
+        RFSFaceSDK.service.customization.actionDelegate = self;
+        callback([RFSWJSONConstructor generateInitCompletion:success :error]);
     };
+}
+
+- (void (^)(RFSFaceCaptureResponse*)) faceCaptureCompletion:(RFSWCallback)callback {
+    return ^(RFSFaceCaptureResponse* response) {
+        callback([RFSWJSONConstructor generateFaceCaptureResponse:response]);
+    };
+}
+
+- (void (^)(RFSLivenessResponse*)) livenessCompletion:(RFSWCallback)callback {
+    return ^(RFSLivenessResponse* response) {
+        callback([RFSWJSONConstructor generateLivenessResponse:response]);
+    };
+}
+
+- (void (^)(RFSMatchFacesResponse*)) matchFacesCompletion:(RFSWCallback)callback {
+    return ^(RFSMatchFacesResponse* response) {
+        callback([RFSWJSONConstructor generateMatchFacesResponse:response]);
+    };
+}
+
+- (void (^)(RFSDetectFacesResponse*)) detectFacesCompletion:(RFSWCallback)callback {
+    return ^(RFSDetectFacesResponse* response) {
+        callback([RFSWJSONConstructor generateDetectFacesResponse:response]);
+    };
+}
+
+- (void (^)(RFSComfirmResponse *response))databaseCompletion:(RFSWCallback)callback {
+    return ^(RFSComfirmResponse *response) {
+        callback([RFSWJSONConstructor generatePersonDBResponse:@YES :response.error]);
+    };
+}
+
+- (void (^)(RFSItemResponse<RFSDBBaseItem *> *response))databaseItemCompletion:(RFSWCallback)callback :(SEL)toJson {
+    return ^(RFSItemResponse<RFSDBBaseItem *> *response) {
+        callback([RFSWJSONConstructor generatePersonDBResponse:[RFSWJSONConstructor performSelector:toJson withObject:response.item] :response.error]);
+    };
+}
+
+- (void (^)(RFSPageResponse<RFSDBBaseItem *> *response))databasePageCompletion:(RFSWCallback)callback :(SEL)toJson {
+    return ^(RFSPageResponse<RFSDBBaseItem *> *response) {
+        callback([RFSWJSONConstructor generatePersonDBResponse:@{
+            @"items": [RFSWJSONConstructor generateArray:response.items :toJson],
+            @"page": @(response.page),
+            @"totalPages": @(response.totalPages),
+        } :response.error]);
+    };
+}
+
+// RFSFaceCaptureDelegate & RFSLivenessDelegate
+- (void)cameraPositionChanged:(RFSCameraPosition)cameraPosition {
+    sendEvent(RFSWCameraSwitchEvent, @(cameraPosition));
+}
+
+// RFSLivenessDelegate
+- (void)processStatusChanged:(RFSLivenessProcessStatus)status result:(RFSLivenessResponse*)result {
+    sendEvent(RFSWLivenessNotificationEvent, [RFSWJSONConstructor generateLivenessNotification:status result:result]);
+}
+
+// RFSVideoUploadingDelegate
+- (void)videoUploadingForTransactionId:(NSString*)transactionId didFinishedWithSuccess:(BOOL)success {
+    sendEvent(RFSWVideoEncoderCompletionEvent, [RFSWJSONConstructor generateVideoEncoderCompletion:transactionId :success]);
+}
+
+// RFSCustomizationActionDelegate
+- (void)onFaceCustomButtonTappedWithTag:(NSInteger)tag {
+    sendEvent(RFSWOnCustomButtonTappedEvent, @(tag));
 }
 
 @end
