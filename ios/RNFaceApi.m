@@ -20,7 +20,7 @@ NSMutableArray<RCTResponseSenderBlock>* _firedCallbacks = nil;
              RFSWOnCustomButtonTappedEvent];
 }
 
-RFSWEventSender sendEvent = ^(NSString* _Nonnull event, id _Nullable data) {
+static RFSWEventSender sendEvent = ^(NSString* event, id data) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSWPlugin sendEventWithName:event body:[RFSWJSONConstructor toSendable:data]];
     });
