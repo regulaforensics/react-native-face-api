@@ -10,8 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@regulaforensics/react-native-face-api": "6.3.380-beta",
-    "@regulaforensics/react-native-face-core-basic": "6.2.98-nightly",
+    "@regulaforensics/react-native-face-api": "6.3.381-beta",
+    "@regulaforensics/react-native-face-core-basic": "6.3.105-beta",
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-image-picker": "7.1.2",
