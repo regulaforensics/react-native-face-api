@@ -32,7 +32,7 @@ android {
 rootProject.allprojects {
     repositories {
         maven {
-            url "https://maven.regulaforensics.com/RegulaDocumentReader"
+            url "https://maven.regulaforensics.com/RegulaDocumentReader/Nightly"
         }
     }
 }
@@ -41,7 +41,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
     //noinspection GradleDependency
-    implementation('com.regula.face:api:6.2.3222'){
+    implementation('com.regula.face:api:6.2.3258'){
         transitive = true
     }
 }
