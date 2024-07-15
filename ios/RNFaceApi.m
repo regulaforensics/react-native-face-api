@@ -5,6 +5,14 @@ RNFaceApi* RFSWPlugin;
 @synthesize bridge = _bridge;
 RCT_EXPORT_MODULE();
 
+// Prevents callback from executing twice.
+// Helps if a bug in api runs once-only completion twice.
+NSMutableArray<RCTResponseSenderBlock>* _firedCallbacks = nil;
+- (NSMutableArray<RCTResponseSenderBlock>*)firedCallbacks {
+    if (_firedCallbacks == nil) _firedCallbacks = @[].mutableCopy;
+    return _firedCallbacks;
+}
+
 - (NSArray<NSString*>*)supportedEvents {
     return @[RFSWCameraSwitchEvent,
              RFSWLivenessNotificationEvent,
@@ -12,7 +20,7 @@ RCT_EXPORT_MODULE();
              RFSWOnCustomButtonTappedEvent];
 }
 
-RFSWEventSender sendEvent = ^(NSString* _Nonnull event, id _Nullable data) {
+static RFSWEventSender sendEvent = ^(NSString* event, id data) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [RFSWPlugin sendEventWithName:event body:[RFSWJSONConstructor toSendable:data]];
     });
@@ -21,7 +29,9 @@ RFSWEventSender sendEvent = ^(NSString* _Nonnull event, id _Nullable data) {
 RCT_EXPORT_METHOD(exec:(NSString*)moduleName:(NSString*)method:(NSArray*)args:(RCTResponseSenderBlock)sCallback:(RCTResponseSenderBlock)eCallback) {
     RFSWPlugin = self;
     RFSWCallback callback = ^(id _Nullable data){
-        if(data == nil) sCallback(@[[NSNull null]]);
+        if ([self.firedCallbacks containsObject:sCallback]) return;
+        [self.firedCallbacks addObject:sCallback];
+        if (data == nil) sCallback(@[[NSNull null]]);
         else sCallback(@[[RFSWJSONConstructor toSendable:data]]);
     };
     NSDictionary* Switch = @{
@@ -99,7 +109,7 @@ NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
 - (NSURLRequest*)interceptorPrepareRequest:(NSURLRequest*)request {
     NSMutableURLRequest *interceptedRequest = [request mutableCopy];
     for (NSString* key in self.headers.allKeys)
-        [interceptedRequest addValue:key forHTTPHeaderField:[self.headers valueForKey:key]];
+        [interceptedRequest addValue:[self.headers valueForKey:key] forHTTPHeaderField:key];
     return interceptedRequest;
 }
 
@@ -299,12 +309,6 @@ NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
         [RFSFaceSDK.service setLivenessDelegate:self];
         RFSFaceSDK.service.customization.actionDelegate = self;
         callback([RFSWJSONConstructor generateInitCompletion:success :error]);
-    };
-}
-
-- (void (^)(NSNumber*)) cameraSwitchCallback {
-    return ^(NSNumber* cameraId) {
-        sendEvent(RFSWCameraSwitchEvent, cameraId);
     };
 }
 

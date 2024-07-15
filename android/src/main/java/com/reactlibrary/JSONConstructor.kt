@@ -718,7 +718,7 @@ fun generateDetectFacesResponse(it: DetectFacesResponse) = mapOf(
 
 // PersonDatabase ------------------------------
 
-fun generatePersonDBResponse(data: Any?, error: String?) = listOf(
+fun generatePersonDBResponse(data: Any?, error: String?) = mapOf(
     "data" to data,
     "error" to error
 ).toJson()
