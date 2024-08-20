@@ -73,7 +73,7 @@ lateinit var reactContext: ReactContext
 
 fun exec(method: String?, arguments: ReadableArray, successCallback: com.facebook.react.bridge.Callback) {
     args = JSONArray(arguments.toArrayList())
-    activity = reactContext.currentActivity!!
+    reactContext.currentActivity?.let { activity = it }
     val callback = { data: Any? -> successCallback.invoke(data.toSendable()) }
     when (method) {
         "getVersion" -> getVersion(callback)
