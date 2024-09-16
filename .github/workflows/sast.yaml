@@ -1,0 +1,58 @@
+name: Semgrep SAST
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - staging
+      - production
+      - stable
+      - main
+      - master
+
+env:
+  # Fail workflow or not if vulnerabilities found
+  FAIL_ON_VULNERABILITIES: true
+  # List of paths (space separated) to ignore
+  # Supports PATTERNS
+  # EXCLUDE_PATHS: 'foo bar/baz file.txt dir/*.yml'
+  EXCLUDE_PATHS: ''
+  # List of rules (space separated) to ignore
+  # EXCLUDE_RULES: 'generic.secrets.security.detected-aws-account-id.detected-aws-account-id'
+  # See https://github.com/semgrep/semgrep-rules for rules registry
+  EXCLUDE_RULES: ''
+
+jobs:
+  semgrep:
+    name: semgrep-oss/scan
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan
+        shell: bash
+        run: |
+          EXCLUDED_PATHS=()
+          if [[ ! -z $EXCLUDE_PATHS ]]; then
+            for path in $EXCLUDE_PATHS; do
+              EXCLUDED_PATHS+=("--exclude $path")
+            done
+          fi
+
+          EXCLUDED_RULES=()
+          if [[ ! -z $EXCLUDE_RULES ]]; then
+            for rule in $EXCLUDE_RULES; do
+              EXCLUDED_RULES+=("--exclude-rule $rule")
+            done
+          fi
+
+          if [[ $FAIL_ON_VULNERABILITIES == "true" ]]; then
+            semgrep scan --config auto ${EXCLUDED_PATHS[@]} ${EXCLUDED_RULES[@]} --error --verbose
+          elif [[ $FAIL_ON_VULNERABILITIES == "false" ]]; then
+            semgrep scan --config auto ${EXCLUDED_PATHS[@]} ${EXCLUDED_RULES[@]} --error --verbose || true
+          else
+            echo "Bad FAIL_ON_VULNERABILITIES env var value"
+            exit 1
+          fi
+
