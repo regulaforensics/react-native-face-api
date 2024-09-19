@@ -20,13 +20,9 @@ NSMutableArray<RCTResponseSenderBlock>* _firedCallbacks = nil;
              RFSWOnCustomButtonTappedEvent];
 }
 
-static bool hasListeners;
--(void)startObserving { hasListeners = YES; }
--(void)stopObserving { hasListeners = NO; }
-
 static RFSWEventSender sendEvent = ^(NSString* event, id data) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (hasListeners) [RFSWPlugin sendEventWithName:event body:[RFSWJSONConstructor toSendable:data]];
+        [RFSWPlugin sendEventWithName:event body:[RFSWJSONConstructor toSendable:data]];
     });
 };
 
