@@ -1,8 +1,8 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, NativeEventEmitter, TouchableOpacity, Platform } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Button, Text, Image, Alert, TouchableOpacity, Platform, NativeEventEmitter } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
 import * as RNFS from 'react-native-fs'
-import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, MatchFacesSimilarityThresholdSplit, RNFaceApi, LivenessNotification, VideoEncoderCompletion, InitializationConfiguration } from '@regulaforensics/react-native-face-api-beta'
+import FaceSDK, { Enum, FaceCaptureResponse, LivenessResponse, MatchFacesResponse, MatchFacesRequest, MatchFacesImage, ComparedFacesSplit, InitConfig, InitResponse, LivenessSkipStep, SearchPerson, RNFaceApi, LivenessNotification } from '@regulaforensics/react-native-face-api'
 
 interface IProps {
 }
@@ -21,24 +21,17 @@ export default class App extends React.Component<IProps, IState> {
   constructor(props: {} | Readonly<{}>) {
     super(props)
 
-    const eventManager = new NativeEventEmitter(RNFaceApi)
-    eventManager.addListener('onCustomButtonTappedEvent', (event: string) => console.log(event))
-    eventManager.addListener('videoEncoderCompletionEvent', (json: string) => {
-      var completion = VideoEncoderCompletion.fromJson(JSON.parse(json))!
-      console.log("VideoEncoderCompletion:");
-      console.log("    success: " + completion.success);
-      console.log("    transactionId: " + completion.transactionId);
-    })
-    eventManager.addListener('livenessNotificationEvent', (json: string) => {
-      var notification = LivenessNotification.fromJson(JSON.parse(json))!
-      console.log("LivenessProcessStatus: " + notification.status);
+    var eventManager = new NativeEventEmitter(RNFaceApi)
+    eventManager.addListener('livenessNotificationEvent', data => {
+      var notification = LivenessNotification.fromJson(JSON.parse(data))!
+      console.log("LivenessStatus: " + notification.status)
     })
 
     var onInit = (json: string) => {
-      var response = JSON.parse(json)
-      if (!response["success"]) {
-        console.log("Init failed: ");
-        console.log(json);
+      var response = InitResponse.fromJson(JSON.parse(json))
+      if (!response!.success) {
+        console.log(response!.error!.code);
+        console.log(response!.error!.message);
       } else {
         console.log("Init complete")
       }
@@ -47,11 +40,11 @@ export default class App extends React.Component<IProps, IState> {
     var licPath = Platform.OS === 'ios' ? (RNFS.MainBundlePath + "/license/regula.license") : "regula.license"
     var readFile = Platform.OS === 'ios' ? RNFS.readFile : RNFS.readFileAssets
     readFile(licPath, 'base64').then((license) => {
-      var config = new InitializationConfiguration();
+      var config = new InitConfig();
       config.license = license
-      FaceSDK.initializeWithConfig(config, onInit, (_e: any) => { })
-    }).catch(e => {
-      FaceSDK.initialize(onInit, (_e: any) => { })
+      FaceSDK.initialize(config, onInit, (_e: any) => { })
+    }).catch(_ => {
+      FaceSDK.initialize(null, onInit, (_e: any) => { })
     })
 
     this.state = {
@@ -77,10 +70,10 @@ export default class App extends React.Component<IProps, IState> {
       },
       {
         text: "Use camera",
-        onPress: () => FaceSDK.presentFaceCaptureActivity((json: string) => {
+        onPress: () => FaceSDK.startFaceCapture(null, (json: string) => {
           var response = FaceCaptureResponse.fromJson(JSON.parse(json))!
-          if (response.image != null && response.image.bitmap != null)
-            this.setImage(first, response.image.bitmap, Enum.ImageType.LIVE)
+          if (response.image != null && response.image.image != null)
+            this.setImage(first, response.image.image, Enum.ImageType.LIVE)
         }, _e => { })
       }], { cancelable: true })
   }
@@ -89,12 +82,14 @@ export default class App extends React.Component<IProps, IState> {
     if (base64 == null) return
     this.setState({ similarity: "null" })
     if (first) {
-      image1.bitmap = base64
+      image1 = new MatchFacesImage()
+      image1.image = base64
       image1.imageType = type
       this.setState({ img1: { uri: "data:image/png;base64," + base64 } })
       this.setState({ liveness: "null" })
     } else {
-      image2.bitmap = base64
+      image2 = new MatchFacesImage()
+      image2.image = base64
       image2.imageType = type
       this.setState({ img2: { uri: "data:image/png;base64," + base64 } })
     }
@@ -110,26 +105,26 @@ export default class App extends React.Component<IProps, IState> {
   }
 
   matchFaces() {
-    if (image1 == null || image1.bitmap == null || image1.bitmap == "" || image2 == null || image2.bitmap == null || image2.bitmap == "")
+    if (image1 == null || image1.image == null || image1.image == "" || image2 == null || image2.image == null || image2.image == "")
       return
     this.setState({ similarity: "Processing..." })
     var request = new MatchFacesRequest()
     request.images = [image1, image2]
-    FaceSDK.matchFaces(JSON.stringify(request), (json: string) => {
+    FaceSDK.matchFaces(request, null, (json: string) => {
       var response = MatchFacesResponse.fromJson(JSON.parse(json))
-      FaceSDK.matchFacesSimilarityThresholdSplit(JSON.stringify(response!.results), 0.75, str => {
-        var split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(str))!
+      FaceSDK.splitComparedFaces(response!.results!, 0.75, str => {
+        var split = ComparedFacesSplit.fromJson(JSON.parse(str))!
         this.setState({ similarity: split.matchedFaces!.length > 0 ? ((split.matchedFaces![0].similarity! * 100).toFixed(2) + "%") : "error" })
       }, e => { this.setState({ similarity: e }) })
     }, e => { this.setState({ similarity: e }) })
   }
 
   liveness() {
-    FaceSDK.startLiveness((json: string) => {
+    FaceSDK.startLiveness({ skipStep: [LivenessSkipStep.ONBOARDING_STEP] }, (json: string) => {
       var response = LivenessResponse.fromJson(JSON.parse(json))!
-      if (response.bitmap != null) {
-        this.setImage(true, response.bitmap, Enum.ImageType.LIVE)
-        this.setState({ liveness: response["liveness"] == Enum.LivenessStatus.PASSED ? "passed" : "unknown" })
+      if (response.image != null) {
+        this.setImage(true, response.image, Enum.ImageType.LIVE)
+        this.setState({ liveness: response.liveness == Enum.LivenessStatus.PASSED ? "passed" : "unknown" })
       }
     }, _e => { })
   }
