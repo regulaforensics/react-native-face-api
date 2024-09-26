@@ -156,6 +156,7 @@ export class FaceCaptureConfig {
         result.closeButtonEnabled = jsonObject["closeButtonEnabled"]
         result.torchButtonEnabled = jsonObject["torchButtonEnabled"]
         result.vibrateOnSteps = jsonObject["vibrateOnSteps"]
+        result.detectOcclusion = jsonObject["detectOcclusion"]
         result.cameraPositionAndroid = jsonObject["cameraPositionAndroid"]
         result.cameraPositionIOS = jsonObject["cameraPositionIOS"]
         result.screenOrientation = []
@@ -474,6 +475,7 @@ export class MatchFacesConfig {
         const result = new MatchFacesConfig()
 
         result.processingMode = jsonObject["processingMode"]
+        result.locationTrackingEnabled = jsonObject["locationTrackingEnabled"]
 
         return result
     }
