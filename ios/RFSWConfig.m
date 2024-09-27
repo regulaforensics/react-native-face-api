@@ -13,6 +13,7 @@
                 @"closeButtonEnabled": ^{ [builder setCloseButtonEnabled:[value boolValue]]; },
                 @"torchButtonEnabled": ^{ [builder setTorchButtonEnabled:[value boolValue]]; },
                 @"vibrateOnSteps": ^{ [builder setVibrateOnSteps:[value boolValue]]; },
+                @"detectOcclusion": ^{ [builder setDetectOcclusion:[value boolValue]]; },
                 @"cameraPositionIOS": ^{ [builder setCameraPosition:[value integerValue]]; },
                 @"timeout": ^{ [builder setTimeoutInterval:value]; },
                 @"holdStillDuration": ^{ [builder setHoldStillDuration:value]; },
@@ -29,6 +30,7 @@
         @"closeButtonEnabled":@(input.closeButtonEnabled),
         @"torchButtonEnabled":@(input.torchButtonEnabled),
         @"vibrateOnSteps":@(input.vibrateOnSteps),
+        @"detectOcclusion":@(input.detectOcclusion),
         @"cameraPositionIOS":@(input.cameraPosition),
     }.mutableCopy;
     if (input.timeoutInterval) result[@"timeout"] = input.timeoutInterval;
@@ -87,6 +89,7 @@
             id value = input[key];
             NSDictionary* Switch = @{
                 @"processingMode": ^{ [builder setProcessingMode:[value integerValue]]; },
+                @"locationTrackingEnabled": ^{ [builder setLocationTrackingEnabled:[value boolValue]]; },
             };
             if(Switch[key]) ((void(^)(void))Switch[key])();
         }
@@ -96,6 +99,7 @@
 +(id)generateMatchFacesConfig:(RFSMatchFacesConfiguration*)input {
     return @{
         @"processingMode":@(input.processingMode),
+        @"locationTrackingEnabled":@(input.locationTrackingEnabled),
     };
 }
 
