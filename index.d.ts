@@ -216,6 +216,7 @@ export class FaceCaptureConfig {
     closeButtonEnabled?: boolean
     torchButtonEnabled?: boolean
     vibrateOnSteps?: boolean
+    detectOcclusion?: boolean
     cameraPositionAndroid?: number
     cameraPositionIOS?: number
     screenOrientation?: number[]
@@ -231,6 +232,7 @@ export class FaceCaptureConfig {
         result.closeButtonEnabled = jsonObject["closeButtonEnabled"]
         result.torchButtonEnabled = jsonObject["torchButtonEnabled"]
         result.vibrateOnSteps = jsonObject["vibrateOnSteps"]
+        result.detectOcclusion = jsonObject["detectOcclusion"]
         result.cameraPositionAndroid = jsonObject["cameraPositionAndroid"]
         result.cameraPositionIOS = jsonObject["cameraPositionIOS"]
         result.screenOrientation = []
@@ -657,12 +659,14 @@ export class ComparedFacesSplit {
 
 export class MatchFacesConfig {
     processingMode?: number
+    locationTrackingEnabled?: boolean
 
     static fromJson(jsonObject?: any): MatchFacesConfig | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
         const result = new MatchFacesConfig
 
         result.processingMode = jsonObject["processingMode"]
+        result.locationTrackingEnabled = jsonObject["locationTrackingEnabled"]
 
         return result
     }

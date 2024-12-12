@@ -3,6 +3,7 @@ Face API is a framework that is used for face matching, recognition and liveness
 
 # Contents
 * [How to build the demo application](#how-to-build-the-demo-application)
+* [How to use offine match](#how-to-use-offine-match)
 * [Documentation](#documentation)
 * [Additional information](#additional-information)
 
@@ -25,6 +26,20 @@ $ pod install
 
 4. iOS:
   * Run `npx react-native run-ios` inside `example` folder - this is just one way to run the app. You can also run it directly from within Xcode.
+
+## How to use offine match
+1. Place a license that supports offline match at `android/app/src/main/assets/regula.license` and `ios/license/regula.license`.
+2. Change android and iOS bundle id if required by your license with the following commands(replace `ANDROID_ID` and `IOS_ID` with actual ids):
+```bash
+git init
+npx react-native-rename@latest "FaceApi" --androidBundleID "ANDROID_ID" --iosBundleID "IOS_ID" --skipGitStatusCheck
+```
+3. Change core with the following commands:
+```bash
+npm uninstall @regulaforensics/react-native-face-core-basic
+npm install @regulaforensics/react-native-face-core-match
+```
+4. Turn off the internet and run the app.
 
 ## Documentation
 You can find documentation on API [here](https://docs.regulaforensics.com/develop/face-sdk/mobile).
