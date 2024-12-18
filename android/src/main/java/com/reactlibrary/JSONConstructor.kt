@@ -193,13 +193,15 @@ fun generateLivenessException(input: LivenessErrorException?) = input?.let {
 }
 
 fun livenessBackendExceptionFromJSON(input: JSONObject?) = input?.let {
-    LivenessBackendException(LivenessBackendErrorCode.createValue(it.getInt("code")))
+    LivenessBackendException(LivenessBackendErrorCode.createValue(it.getInt("code")), "")
 }
 
 fun generateLivenessBackendException(input: LivenessBackendException?) = input?.let {
+    var message = it.message!!
+    if (message.startsWith(": ")) message = message.substring(2)
     mapOf(
         "code" to it.errorCode.value,
-        "message" to it.message
+        "message" to message
     ).toJson()
 }
 
