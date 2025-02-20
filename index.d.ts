@@ -1509,7 +1509,7 @@ export default class FaceSDK {
     static setLocalizationDictionary(dictionary: Record<string, string>, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setRequestHeaders(headers: Record<string, string>, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static setCustomization(config: Customization, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
-    static isInitialized(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
+    static isInitialized(successCallback: (response: boolean) => void, errorCallback?: (error: string) => void): void
     static initialize(config: InitConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static deinitialize(successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
     static startFaceCapture(config: FaceCaptureConfig | null, successCallback: (response: string) => void, errorCallback?: (error: string) => void): void
