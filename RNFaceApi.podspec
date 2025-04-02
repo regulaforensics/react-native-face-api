@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://regulaforensics.com'
 
   s.source       = { http: "file:#{source}" }
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '13.0'
   s.source_files = 'ios/**/*.{h,m}'
-  s.dependency 'FaceSDKStage', '6.4.2317'
+  s.dependency 'FaceSDKStage', '6.4.2461'
   s.dependency 'React'
 end
