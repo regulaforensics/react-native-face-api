@@ -1,6 +1,6 @@
 {
   "name": "@regulaforensics/react-native-face-api",
-  "version": "7.1.524-rc",
+  "version": "7.1.525-rc",
   "description": "React Native module for compairing faces using phone`s camera",
   "main": "index.js",
   "scripts": {
