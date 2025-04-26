@@ -41,7 +41,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
     //noinspection GradleDependency
-    implementation('com.regula.face:api:7.1.3682'){
+    implementation('com.regula.face:api:7.1.3684'){
         transitive = true
     }
 }
