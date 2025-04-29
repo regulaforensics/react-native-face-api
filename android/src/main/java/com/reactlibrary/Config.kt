@@ -21,6 +21,7 @@ fun setFaceCaptureConfig(builder: FaceCaptureConfiguration.Builder, config: JSON
         "torchButtonEnabled" -> builder.setTorchButtonEnabled(v as Boolean)
         "vibrateOnSteps" -> builder.setVibrateOnStep(v as Boolean)
         "detectOcclusion" -> builder.setDetectOcclusion(v as Boolean)
+        "showFaceAnimation" -> builder.setShowFaceAnimation(v as Boolean)
         "cameraPositionAndroid" -> builder.setCameraId(v.toInt())
         "screenOrientation" -> builder.setScreenOrientation(*screenOrientationArrayFromJSON(v as JSONArray))
         "timeout" -> builder.setTimeout(v.toFloat())
@@ -35,6 +36,7 @@ fun getFaceCaptureConfig(input: FaceCaptureConfiguration) = mapOf(
     "torchButtonEnabled" to input.isTorchButtonEnabled,
     "vibrateOnSteps" to input.isVibrateOnSteps,
     "detectOcclusion" to input.isDetectOcclusion,
+    "showFaceAnimation" to input.isShowFaceAnimation,
     "cameraPositionAndroid" to input.cameraId,
     "screenOrientation" to generateScreenOrientationArray(input.screenOrientation),
     "timeout" to input.timeout,
