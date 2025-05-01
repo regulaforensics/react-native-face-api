@@ -217,6 +217,7 @@ export class FaceCaptureConfig {
     torchButtonEnabled?: boolean
     vibrateOnSteps?: boolean
     detectOcclusion?: boolean
+    showFaceAnimation?: boolean
     cameraPositionAndroid?: number
     cameraPositionIOS?: number
     screenOrientation?: number[]
@@ -233,6 +234,7 @@ export class FaceCaptureConfig {
         result.torchButtonEnabled = jsonObject["torchButtonEnabled"]
         result.vibrateOnSteps = jsonObject["vibrateOnSteps"]
         result.detectOcclusion = jsonObject["detectOcclusion"]
+        result.showFaceAnimation = jsonObject["showFaceAnimation"]
         result.cameraPositionAndroid = jsonObject["cameraPositionAndroid"]
         result.cameraPositionIOS = jsonObject["cameraPositionIOS"]
         result.screenOrientation = []
@@ -453,6 +455,7 @@ export class FaceSDKVersion {
 export class InitConfig {
     license?: string
     licenseUpdate?: boolean
+    useBleDevice?: boolean
 
     static fromJson(jsonObject?: any): InitConfig | undefined {
         if (jsonObject == null || jsonObject == undefined) return undefined
@@ -460,6 +463,7 @@ export class InitConfig {
 
         result.license = jsonObject["license"]
         result.licenseUpdate = jsonObject["licenseUpdate"]
+        result.useBleDevice = jsonObject["useBleDevice"]
 
         return result
     }
@@ -1414,6 +1418,9 @@ export const FaceCaptureErrorCode = {
 export const LivenessBackendErrorCode = {
     UNDEFINED: -1,
     NO_LICENSE: 200,
+    NOT_INITIALIZED: 201,
+    COMMAND_IS_NOT_SUPPORTED: 202,
+    PARAMS_READ_ERROR: 203,
     LOW_QUALITY: 231,
     TRACK_BREAK: 246,
     CLOSED_EYES_DETECTED: 230,
@@ -1433,6 +1440,14 @@ export const LivenessBackendErrorCode = {
     WRONG_GEO: 247,
     WRONG_OF: 248,
     WRONG_VIEW: 249,
+    TIMEOUT_LIVENESS_TRANSACTION: 250,
+    FAILED_LIVENESS_TRANSACTION: 251,
+    ABORTED_LIVENESS_TRANSACTION: 252,
+    GENERAL_CHECK_FAIL: 253,
+    PASSIVE_LIVENESS_FAIL: 254,
+    PRINTED_FACE_DETECTED: 255,
+    BLOCKED_REQUEST: 256,
+    CORRUPTED_REQUEST: 257,
 }
 
 export const ProcessingMode = {

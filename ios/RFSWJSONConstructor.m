@@ -35,6 +35,7 @@
 
 +(id)base64Decode:(NSString*)input {
     if (!input || [input isEqual:[NSNull null]])  return nil;
+    if ([input hasPrefix:@"data"]) input = [input substringFromIndex:[input rangeOfString:@","].location + 1];
     return [[NSData alloc] initWithBase64EncodedString:input options:0];
 }
 
@@ -77,6 +78,25 @@
     if(input == RFSLivenessStepSkipSuccess) return @[@1];
     if(input == (RFSLivenessStepSkipOnboarding | RFSLivenessStepSkipSuccess)) return @[@0, @1];
     return @[];
+}
+
++(RFSScreenOrientation)screenOrienrationFromJSON:(NSArray<NSNumber*>*)input {
+    // same as input.contains(1)
+    bool portrait = CFArrayContainsValue((__bridge CFArrayRef)input, CFRangeMake(0, input.count), (CFNumberRef)@0);
+    bool landscape = CFArrayContainsValue((__bridge CFArrayRef)input, CFRangeMake(0, input.count), (CFNumberRef)@1);
+    
+    if (portrait && !landscape) return RFSScreenOrientationPortrait;
+    if (landscape && !portrait) return RFSScreenOrientationLandscape;
+    if (portrait && landscape) return RFSScreenOrientationPortrait | RFSScreenOrientationLandscape;
+    
+    return RFSScreenOrientationPortrait;
+}
+
++(NSArray<NSNumber*>*)generateScreenOrienration:(RFSScreenOrientation)input {
+    if(input == RFSScreenOrientationPortrait) return @[@0];
+    if(input == RFSScreenOrientationLandscape) return @[@1];
+    if(input == (RFSScreenOrientationPortrait | RFSScreenOrientationLandscape)) return @[@0, @1];
+    return @[@0];
 }
 
 +(id)colorWithInt:(NSNumber*)input {
@@ -310,7 +330,7 @@
 
 +(id)matchFacesImageFromJSON:(NSDictionary*)input {
     bool detectAll = false;
-    if (input[@"detectAll"]) detectAll = input[@"detectAll"];
+    if (input[@"detectAll"]) detectAll = [input[@"detectAll"] boolValue];
     RFSMatchFacesImage* result = [[RFSMatchFacesImage alloc] initWithImage:[self imageWithBase64:input[@"image"]]
                                                                  imageType:[input[@"imageType"] integerValue]
                                                                  detectAll:detectAll];
@@ -761,10 +781,9 @@
 
 +(id)generatePerson:(RFSPerson*)input {
     if (!input) return [NSNull null];
-    NSMutableDictionary* result = @{
-        @"updatedAt":[self generateDate:input.updatedAt],
-        @"createdAt":[self generateDate:input.createdAt]
-    }.mutableCopy;
+    NSMutableDictionary* result = @{}.mutableCopy;
+    if (input.updatedAt) result[@"updatedAt"] = [self generateDate:input.updatedAt];
+    if (input.createdAt) result[@"createdAt"] = [self generateDate:input.createdAt];
     if (input.name) result[@"name"] = input.name;
     if (input.groups) result[@"groups"] = input.groups;
     if (input.itemId) result[@"id"] = input.itemId;
@@ -806,9 +825,9 @@
 +(id)generatePersonImage:(RFSPersonImage*)input {
     if (!input) return [NSNull null];
     NSMutableDictionary* result = @{
-        @"url":[self generateUrl:input.url],
-        @"createdAt":[self generateDate:input.createdAt]
+        @"url":[self generateUrl:input.url]
     }.mutableCopy;
+    if (input.createdAt) result[@"createdAt"] = [self generateDate:input.createdAt];
     if (input.path) result[@"path"] = input.path;
     if (input.contentType) result[@"contentType"] = input.contentType;
     if (input.itemId) result[@"id"] = input.itemId;
@@ -842,9 +861,8 @@
 
 +(id)generatePersonGroup:(RFSPersonGroup*)input {
     if (!input) return [NSNull null];
-    NSMutableDictionary* result = @{
-        @"createdAt":[self generateDate:input.createdAt]
-    }.mutableCopy;
+    NSMutableDictionary* result = @{}.mutableCopy;
+    if (input.createdAt) result[@"createdAt"] = [self generateDate:input.createdAt];
     if (input.name) result[@"name"] = input.name;
     if (input.itemId) result[@"id"] = input.itemId;
     if (input.metadata) result[@"metadata"] = input.metadata;
@@ -875,7 +893,7 @@
                                                                           imageUpload:[self imageUploadFromJSON:input[@"imageUpload"]]];
     result.threshold = input[@"threshold"];
     result.limit = input[@"limit"];
-    if (input[@"detectAll"] && ![input[@"detectAll"] isEqual:[NSNull null]]) result.detectAll = input[@"detectAll"];
+    if (input[@"detectAll"] && ![input[@"detectAll"] isEqual:[NSNull null]]) result.detectAll = [input[@"detectAll"] boolValue];
     result.outputImageParams = [self outputImageParamsFromJSON:input[@"outputImageParams"]];
     return result;
 }
@@ -933,9 +951,9 @@
 
 +(id)generateSearchPersonImage:(RFSSearchPersonImage*)input {
     NSMutableDictionary* result = @{
-        @"url":[self generateUrl:input.url],
-        @"createdAt":[self generateDate:input.createdAt]
+        @"url":[self generateUrl:input.url]
     }.mutableCopy;
+    if (input.createdAt) result[@"createdAt"] = [self generateDate:input.createdAt];
     if (input.path) result[@"similarity"] = input.similarity;
     if (input.path) result[@"distance"] = input.distance;
     if (input.path) result[@"path"] = input.path;
@@ -963,9 +981,9 @@
     NSMutableDictionary* result = @{
         @"detection":[self generateSearchPersonDetection:input.detection],
         @"images":[self generateArray:input.images :@selector(generateSearchPersonImage:)],
-        @"updatedAt":[self generateDate:input.updatedAt],
-        @"createdAt":[self generateDate:input.createdAt]
     }.mutableCopy;
+    if (input.createdAt) result[@"createdAt"] = [self generateDate:input.createdAt];
+    if (input.updatedAt) result[@"updatedAt"] = [self generateDate:input.updatedAt];
     if (input.name) result[@"name"] = input.name;
     if (input.groups) result[@"groups"] = input.groups;
     if (input.itemId) result[@"id"] = input.itemId;
