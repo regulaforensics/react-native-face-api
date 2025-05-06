@@ -58,7 +58,7 @@
                 @"locationTrackingEnabled": ^{ [builder setLocationTrackingEnabled:[value boolValue]]; },
                 @"recordingProcess": ^{ [builder setRecordingProcess:[value integerValue]]; },
                 @"livenessType": ^{ [builder setLivenessType:[value integerValue]]; },
-                @"screenOrientation": ^{ [builder setScreenOrientation:[value integerValue]]; },
+                @"screenOrientation": ^{ [builder setScreenOrientation:[RFSWJSONConstructor screenOrienrationFromJSON:value]]; },
                 @"tag": ^{ [builder setTag:value]; },
                 @"skipStep": ^{ [builder setStepSkippingMask:[RFSWJSONConstructor livenessStepSkipFromJSON:value]]; },
                 @"metadata": ^{ [builder setMetadata:value]; },
@@ -80,7 +80,7 @@
         @"locationTrackingEnabled":@(input.locationTrackingEnabled),
         @"recordingProcess":@(input.recordingProcess),
         @"livenessType":@(input.livenessType),
-        @"screenOrientation":@(input.screenOrientation),
+        @"screenOrientation":[RFSWJSONConstructor generateScreenOrienration:input.screenOrientation],
         @"skipStep":[RFSWJSONConstructor generateLivenessStepSkip:input.stepSkippingMask],
         @"metadata":input.metadata,
     }.mutableCopy;
