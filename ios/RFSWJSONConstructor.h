@@ -15,6 +15,8 @@
 +(UIFont* _Nonnull)fontFromJSON:(NSDictionary* _Nonnull)input;
 +(RFSLivenessStepSkip)livenessStepSkipFromJSON:(NSArray<NSNumber*>* _Nonnull)input;
 +(NSArray<NSNumber*>* _Nonnull)generateLivenessStepSkip:(RFSLivenessStepSkip)input;
++(RFSScreenOrientation)screenOrienrationFromJSON:(NSArray<NSNumber*>* _Nonnull)input;
++(NSArray<NSNumber*>* _Nonnull)generateScreenOrienration:(RFSScreenOrientation)input;
 +(UIColor* _Nonnull)colorWithInt:(NSNumber* _Nonnull)input;
 
 +(id _Nonnull)generateInitCompletion:(BOOL)success :(NSError* _Nullable)error;

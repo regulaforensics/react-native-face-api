@@ -14,7 +14,9 @@
                 @"torchButtonEnabled": ^{ [builder setTorchButtonEnabled:[value boolValue]]; },
                 @"vibrateOnSteps": ^{ [builder setVibrateOnSteps:[value boolValue]]; },
                 @"detectOcclusion": ^{ [builder setDetectOcclusion:[value boolValue]]; },
+                @"showFaceAnimation": ^{ [builder setShowFaceAnimation:[value boolValue]]; },
                 @"cameraPositionIOS": ^{ [builder setCameraPosition:[value integerValue]]; },
+                @"screenOrientation": ^{ [builder setScreenOrientation:[RFSWJSONConstructor screenOrienrationFromJSON:value]]; },
                 @"timeout": ^{ [builder setTimeoutInterval:value]; },
                 @"holdStillDuration": ^{ [builder setHoldStillDuration:value]; },
             };
@@ -31,7 +33,9 @@
         @"torchButtonEnabled":@(input.torchButtonEnabled),
         @"vibrateOnSteps":@(input.vibrateOnSteps),
         @"detectOcclusion":@(input.detectOcclusion),
+        @"showFaceAnimation":@(input.showFaceAnimation),
         @"cameraPositionIOS":@(input.cameraPosition),
+        @"screenOrientation":[RFSWJSONConstructor generateScreenOrienration:input.screenOrientation],
     }.mutableCopy;
     if (input.timeoutInterval) result[@"timeout"] = input.timeoutInterval;
     if (input.holdStillDuration) result[@"holdStillDuration"] = input.holdStillDuration;
@@ -54,6 +58,7 @@
                 @"locationTrackingEnabled": ^{ [builder setLocationTrackingEnabled:[value boolValue]]; },
                 @"recordingProcess": ^{ [builder setRecordingProcess:[value integerValue]]; },
                 @"livenessType": ^{ [builder setLivenessType:[value integerValue]]; },
+                @"screenOrientation": ^{ [builder setScreenOrientation:[RFSWJSONConstructor screenOrienrationFromJSON:value]]; },
                 @"tag": ^{ [builder setTag:value]; },
                 @"skipStep": ^{ [builder setStepSkippingMask:[RFSWJSONConstructor livenessStepSkipFromJSON:value]]; },
                 @"metadata": ^{ [builder setMetadata:value]; },
@@ -75,6 +80,7 @@
         @"locationTrackingEnabled":@(input.locationTrackingEnabled),
         @"recordingProcess":@(input.recordingProcess),
         @"livenessType":@(input.livenessType),
+        @"screenOrientation":[RFSWJSONConstructor generateScreenOrienration:input.screenOrientation],
         @"skipStep":[RFSWJSONConstructor generateLivenessStepSkip:input.stepSkippingMask],
         @"metadata":input.metadata,
     }.mutableCopy;
@@ -123,7 +129,7 @@
     }
 }
 
-+(id)imageQualityCharacteristicWithName:(NSString*)name recommendedRange:(NSArray*)recommendedRange customRange:(NSArray*)customRange color:(UIColor*)color {    
++(id)imageQualityCharacteristicWithName:(NSString*)name recommendedRange:(NSArray*)recommendedRange customRange:(NSArray*)customRange color:(UIColor*)color {
     __block RFSImageQualityCharacteristic* result = nil;
     NSDictionary* Switch = @{
         @"ImageWidth": ^{ result = [RFSImageCharacteristics imageWidthWithRange:recommendedRange]; },

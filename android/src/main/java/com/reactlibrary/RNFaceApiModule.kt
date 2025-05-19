@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.reactlibrary.Convert.toBase64
 import com.regula.common.LocalizationCallbacks
+import com.regula.common.ble.BLEWrapper
 import com.regula.facesdk.FaceSDK.Instance
 import com.regula.facesdk.callback.DetectFacesCompletion
 import com.regula.facesdk.callback.FaceCaptureCallback
@@ -21,6 +22,7 @@ import com.regula.facesdk.callback.LivenessNotificationCallback
 import com.regula.facesdk.callback.MatchFaceCallback
 import com.regula.facesdk.callback.NotificationCallback
 import com.regula.facesdk.callback.PersonDBCallback
+import com.regula.facesdk.configuration.InitializationBleDeviceConfiguration
 import com.regula.facesdk.listener.NetworkInterceptorListener
 import com.regula.facesdk.model.LivenessNotification
 import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit
@@ -149,9 +151,16 @@ fun setCustomization(config: JSONObject) = setCustomization(Instance().customiza
 
 fun isInitialized(callback: Callback) = callback(Instance().isInitialized)
 
-fun initialize(callback: Callback, config: JSONObject?) = config?.let {
-    Instance().initialize(context, initConfigFromJSON(it), initCompletion(callback))
-} ?: Instance().initialize(context, initCompletion(callback))
+fun initialize(callback: Callback, config: JSONObject?) =
+    if (config == null)
+        Instance().initialize(context, initCompletion(callback))
+    else if (config.getBooleanOrNull("useBleDevice") != true)
+        Instance().initialize(context, initConfigFromJSON(config), initCompletion(callback))
+    else
+        getBleWrapper()?.let {
+            Instance().initialize(context, InitializationBleDeviceConfiguration(it), initCompletion(callback))
+        } ?: callback(false)
+// TODO return an exception telling that btDevice is not connected
 
 fun deinitialize() = Instance().deinitialize()
 
