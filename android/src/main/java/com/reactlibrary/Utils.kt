@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST", "EnumValuesSoftDeprecate", "UseKtx")
 
-package com.regula.plugin.facesdk
+package com.reactlibrary
 
 import android.annotation.SuppressLint
 import android.content.Context
