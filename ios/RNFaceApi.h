@@ -1,5 +1,6 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTUtils.h>
 #import "RFSWJSONConstructor.h"
 #import "RFSWConfig.h"
 @import UIKit;

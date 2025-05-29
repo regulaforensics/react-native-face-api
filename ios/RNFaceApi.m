@@ -136,7 +136,7 @@ NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
 
 - (void) startFaceCapture:(NSDictionary*)config :(RFSWCallback)callback {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:[UIApplication sharedApplication].windows.lastObject.rootViewController
+        [RFSFaceSDK.service presentFaceCaptureViewControllerFrom:RCTPresentedViewController()
                                                             animated:true
                                                        configuration:[RFSWConfig faceCaptureConfigFromJSON:config]
                                                            onCapture:[self faceCaptureCompletion:callback]
@@ -150,7 +150,7 @@ NSString* RFSWOnCustomButtonTappedEvent = @"onCustomButtonTappedEvent";
 
 - (void) startLiveness:(NSDictionary*)config :(RFSWCallback)callback {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [RFSFaceSDK.service startLivenessFrom:[UIApplication sharedApplication].windows.lastObject.rootViewController
+        [RFSFaceSDK.service startLivenessFrom:RCTPresentedViewController()
                                                 animated:true
                                            configuration:[RFSWConfig livenessConfigFromJSON:config]
                                               onLiveness:[self livenessCompletion:callback]

@@ -10,19 +10,18 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.reactlibrary.Convert.toBase64
 import com.regula.common.LocalizationCallbacks
-import com.regula.common.ble.BLEWrapper
 import com.regula.facesdk.FaceSDK.Instance
 import com.regula.facesdk.callback.DetectFacesCompletion
 import com.regula.facesdk.callback.FaceCaptureCallback
 import com.regula.facesdk.callback.FaceCaptureNotificationCallback
 import com.regula.facesdk.callback.FaceInitializationCompletion
-import com.regula.facesdk.callback.ICameraSwitchCallback
 import com.regula.facesdk.callback.LivenessCallback
 import com.regula.facesdk.callback.LivenessNotificationCallback
 import com.regula.facesdk.callback.MatchFaceCallback
-import com.regula.facesdk.callback.NotificationCallback
 import com.regula.facesdk.callback.PersonDBCallback
 import com.regula.facesdk.configuration.InitializationBleDeviceConfiguration
+import com.regula.facesdk.enums.InitErrorCode
+import com.regula.facesdk.exception.InitException
 import com.regula.facesdk.listener.NetworkInterceptorListener
 import com.regula.facesdk.model.LivenessNotification
 import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit
@@ -151,6 +150,7 @@ fun setCustomization(config: JSONObject) = setCustomization(Instance().customiza
 
 fun isInitialized(callback: Callback) = callback(Instance().isInitialized)
 
+@SuppressLint("MissingPermission")
 fun initialize(callback: Callback, config: JSONObject?) =
     if (config == null)
         Instance().initialize(context, initCompletion(callback))
@@ -159,8 +159,7 @@ fun initialize(callback: Callback, config: JSONObject?) =
     else
         getBleWrapper()?.let {
             Instance().initialize(context, InitializationBleDeviceConfiguration(it), initCompletion(callback))
-        } ?: callback(false)
-// TODO return an exception telling that btDevice is not connected
+        } ?: callback(generateInitCompletion(false, InitException(InitErrorCode.LICENSE_IS_NULL)))
 
 fun deinitialize() = Instance().deinitialize()
 
@@ -196,11 +195,13 @@ fun stopLiveness() = Instance().stopLivenessProcessing(context)
 
 fun matchFaces(callback: Callback, request: JSONObject, config: JSONObject?) = config?.let {
     Instance().matchFaces(
+        context,
         matchFacesRequestFromJSON(request),
         matchFacesConfigFromJSON(it),
         matchFacesCompletion(callback)
     )
 } ?: Instance().matchFaces(
+    context,
     matchFacesRequestFromJSON(request),
     matchFacesCompletion(callback)
 )
@@ -212,16 +213,19 @@ fun splitComparedFaces(callback: Callback, faces: JSONArray, similarity: Double)
 }
 
 fun detectFaces(callback: Callback, request: JSONObject) = Instance().detectFaces(
+    context,
     detectFacesRequestFromJSON(request),
     detectFacesCompletion(callback)
 )
+
+val db get() = Instance().personDatabase(context)
 
 fun createPerson(
     callback: Callback,
     name: String,
     groupIds: JSONArray?,
     metadata: JSONObject?
-) = Instance().personDatabase().createPerson(
+) = db.createPerson(
     name,
     metadata,
     groupIds.toArray(),
@@ -229,8 +233,8 @@ fun createPerson(
 )
 
 fun updatePerson(callback: Callback, personJson: JSONObject) =
-    Instance().personDatabase().getPerson(idFromJSON(personJson), object : PersonDBCallback<Person?> {
-        override fun onSuccess(person: Person?) = Instance().personDatabase().updatePerson(
+    db.getPerson(idFromJSON(personJson), object : PersonDBCallback<Person?> {
+        override fun onSuccess(person: Person?) = db.updatePerson(
             updatePersonFromJSON(person!!, personJson),
             databaseItemCompletion(callback, null)
         )
@@ -238,29 +242,29 @@ fun updatePerson(callback: Callback, personJson: JSONObject) =
         override fun onFailure(error: String) = callback(generatePersonDBResponse(null, error))
     })
 
-fun deletePerson(callback: Callback, personId: String) = Instance().personDatabase().deletePerson(
+fun deletePerson(callback: Callback, personId: String) = db.deletePerson(
     personId,
     databaseItemCompletion(callback, null)
 )
 
-fun getPerson(callback: Callback, personId: String) = Instance().personDatabase().getPerson(
+fun getPerson(callback: Callback, personId: String) = db.getPerson(
     personId,
     databaseItemCompletion(callback, ::generatePerson)
 )
 
-fun addPersonImage(callback: Callback, personId: String, image: JSONObject) = Instance().personDatabase().addPersonImage(
+fun addPersonImage(callback: Callback, personId: String, image: JSONObject) = db.addPersonImage(
     personId,
     imageUploadFromJSON(image),
     databaseItemCompletion(callback, ::generatePersonImage)
 )
 
-fun deletePersonImage(callback: Callback, personId: String, imageId: String) = Instance().personDatabase().deletePersonImage(
+fun deletePersonImage(callback: Callback, personId: String, imageId: String) = db.deletePersonImage(
     personId,
     imageId,
     databaseItemCompletion(callback, null)
 )
 
-fun getPersonImage(callback: Callback, personId: String, imageId: String) = Instance().personDatabase().getPersonImageById(
+fun getPersonImage(callback: Callback, personId: String, imageId: String) = db.getPersonImageById(
     personId,
     imageId,
     object : PersonDBCallback<ByteArray> {
@@ -269,7 +273,7 @@ fun getPersonImage(callback: Callback, personId: String, imageId: String) = Inst
     }
 )
 
-fun getPersonImages(callback: Callback, personId: String) = Instance().personDatabase().getPersonImages(
+fun getPersonImages(callback: Callback, personId: String) = db.getPersonImages(
     personId,
     databasePageCompletion(callback, ::generatePersonImage)
 )
@@ -279,22 +283,22 @@ fun getPersonImagesForPage(
     personId: String,
     page: Int,
     size: Int
-) = Instance().personDatabase().getPersonImagesForPage(
+) = db.getPersonImagesForPage(
     personId,
     page,
     size,
     databasePageCompletion(callback, ::generatePersonImage)
 )
 
-fun createGroup(callback: Callback, name: String, metadata: JSONObject?) = Instance().personDatabase().createGroup(
+fun createGroup(callback: Callback, name: String, metadata: JSONObject?) = db.createGroup(
     name,
     metadata,
     databaseItemCompletion(callback, ::generatePersonGroup)
 )
 
 fun updateGroup(callback: Callback, groupJson: JSONObject) =
-    Instance().personDatabase().getGroup(idFromJSON(groupJson), object : PersonDBCallback<PersonGroup?> {
-        override fun onSuccess(group: PersonGroup?) = Instance().personDatabase().updateGroup(
+    db.getGroup(idFromJSON(groupJson), object : PersonDBCallback<PersonGroup?> {
+        override fun onSuccess(group: PersonGroup?) = db.updateGroup(
             updatePersonGroupFromJSON(group!!, groupJson),
             databaseItemCompletion(callback, null)
         )
@@ -303,32 +307,31 @@ fun updateGroup(callback: Callback, groupJson: JSONObject) =
     })
 
 fun editPersonsInGroup(callback: Callback, groupId: String, editGroupPersonsRequest: JSONObject) =
-    Instance().personDatabase().editPersonsInGroup(
+    db.editPersonsInGroup(
         groupId,
         editGroupPersonsRequestFromJSON(editGroupPersonsRequest),
         databaseItemCompletion(callback, null)
     )
 
-fun deleteGroup(callback: Callback, groupId: String) = Instance().personDatabase().deleteGroup(
+fun deleteGroup(callback: Callback, groupId: String) = db.deleteGroup(
     groupId,
     databaseItemCompletion(callback, null)
 )
 
-fun getGroup(callback: Callback, groupId: String) = Instance().personDatabase().getGroup(
+fun getGroup(callback: Callback, groupId: String) = db.getGroup(
     groupId,
     databaseItemCompletion(callback, ::generatePersonGroup)
 )
 
-fun getGroups(callback: Callback) =
-    Instance().personDatabase().getGroups(databasePageCompletion(callback, ::generatePersonGroup))
+fun getGroups(callback: Callback) = db.getGroups(databasePageCompletion(callback, ::generatePersonGroup))
 
-fun getGroupsForPage(callback: Callback, page: Int, size: Int) = Instance().personDatabase().getGroupsForPage(
+fun getGroupsForPage(callback: Callback, page: Int, size: Int) = db.getGroupsForPage(
     page,
     size,
     databasePageCompletion(callback, ::generatePersonGroup)
 )
 
-fun getPersonGroups(callback: Callback, personId: String) = Instance().personDatabase().getPersonGroups(
+fun getPersonGroups(callback: Callback, personId: String) = db.getPersonGroups(
     personId,
     databasePageCompletion(callback, ::generatePersonGroup)
 )
@@ -338,14 +341,14 @@ fun getPersonGroupsForPage(
     personId: String,
     page: Int,
     size: Int
-) = Instance().personDatabase().getPersonGroupsForPage(
+) = db.getPersonGroupsForPage(
     personId,
     page,
     size,
     databasePageCompletion(callback, ::generatePersonGroup)
 )
 
-fun getPersonsInGroup(callback: Callback, groupId: String) = Instance().personDatabase().getPersonsInGroup(
+fun getPersonsInGroup(callback: Callback, groupId: String) = db.getPersonsInGroup(
     groupId,
     databasePageCompletion(callback, ::generatePerson)
 )
@@ -355,14 +358,14 @@ fun getPersonsInGroupForPage(
     groupId: String,
     page: Int,
     size: Int
-) = Instance().personDatabase().getPersonsInGroupForPage(
+) = db.getPersonsInGroupForPage(
     groupId,
     page,
     size,
     databasePageCompletion(callback, ::generatePerson)
 )
 
-fun searchPerson(callback: Callback, searchPersonRequest: JSONObject) = Instance().personDatabase().searchPerson(
+fun searchPerson(callback: Callback, searchPersonRequest: JSONObject) = db.searchPerson(
     searchPersonRequestFromJSON(searchPersonRequest),
     object : PersonDBCallback<List<SearchPerson>> {
         override fun onSuccess(data: List<SearchPerson>?) = callback(generatePersonDBResponse(data.toJsonNullable(::generateSearchPerson)!!, null))
