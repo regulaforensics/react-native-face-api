@@ -312,7 +312,7 @@ fun faceCaptureImageFromJSON(input: JSONObject?) = input?.let {
     Image(
         it.getInt("imageType").toImageType(),
         it.getStringOrNull("tag"),
-        it.getString("image").toBitmap(),
+        it.getString("image").toBitmap()!!,
     )
 }
 
@@ -376,7 +376,7 @@ fun generateLivenessNotification(it: LivenessNotification) = mapOf(
 
 fun matchFacesImageFromJSON(input: JSONObject?) = input?.let {
     val result = MatchFacesImage(
-        it.getString("image").toBitmap(),
+        it.getString("image").toBitmap()!!,
         it.getInt("imageType").toImageType(),
         it.optBoolean("detectAll", false)
     )
@@ -635,7 +635,7 @@ fun generateDetectFacesConfig(input: DetectFacesConfiguration?) = input?.let {
 fun detectFacesRequestFromJSON(input: JSONObject) = input.let {
     val image = it.getString("image").toBitmap()!!
     it.getStringOrNull("scenario")?.let { scenario ->
-        DetectFacesRequest::class.constructor(Bitmap::class, String::class).instantiate(image, scenario)
+        DetectFacesRequest::class.java.getDeclaredConstructor(Bitmap::class.java, String::class.java).instantiate(image, scenario)
     } ?: DetectFacesRequest(
         image,
         detectFacesConfigFromJSON(it.getJSONObjectOrNull("configuration")),
@@ -674,7 +674,7 @@ fun detectFacesAttributeResultFromJSON(it: JSONObject) = DetectFacesAttributeRes
 )
 
 fun generateDetectFacesAttributeResult(it: DetectFacesAttributeResult) = mapOf(
-    "attribute" to it.attribute.value,
+    "attribute" to it.attribute?.value,
     "value" to it.value,
     "confidence" to it.confidence,
     "range" to generateImageQualityRange(it.range)
