@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "EnumValuesSoftDeprecate", "UseKtx")
 
 package com.reactlibrary
 
@@ -10,6 +10,8 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
+import android.util.Log
+import com.regula.common.ble.BLEWrapper
 import com.regula.facesdk.configuration.Customization
 import com.regula.facesdk.enums.CustomizationColor
 import com.regula.facesdk.enums.CustomizationFont
@@ -248,7 +250,12 @@ fun <T : Any> T.setPrivateProperty(clazz: Class<T>, varName: String, data: Any?)
 //}
 
 internal object Convert {
-    fun String?.toByteArray() = this?.let { Base64.decode(it, Base64.NO_WRAP) }
+    fun String?.toByteArray(): ByteArray? {
+        var str = this ?: return null
+        if (str.startsWith("data")) str = str.substring(str.indexOf(",") + 1)
+        return Base64.decode(str, Base64.NO_WRAP)
+    }
+
     fun ByteArray?.toBase64() = this?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
 
     fun String?.toBitmap() = this?.let {
@@ -278,5 +285,33 @@ internal object Convert {
         val width = (bitmap.width * density).toInt()
         val height = (bitmap.height * density).toInt()
         BitmapDrawable(context.resources, Bitmap.createScaledBitmap(bitmap, width, height, false))
+    }
+}
+
+fun getBleWrapper(): BLEWrapper? {
+    listOf(
+        "io.flutter.plugins.regula.documentreader.flutter_document_reader_api",
+        "cordova.plugin.documentreader",
+        "com.regula.documentreader"
+    ).forEach { packageName ->
+        getVarFromClass<BLEWrapper>(
+            packageName,
+            "BluetoothUtilKt",
+            "bluetooth"
+        )?.let { return it }
+    }
+    Log.e("REGULA", "Failed to get BLEWrapper from DocumentReader plugin")
+    return null
+}
+
+fun <T> getVarFromClass(packageName: String, className: String, varName: String): T? {
+    try {
+        val targetClass = Class.forName("$packageName.$className")
+        val field = targetClass.getDeclaredField(varName)
+        field.isAccessible = true
+        val result = field.get(null) as BLEWrapper?
+        return result as T?
+    } catch (_: Exception) {
+        return null
     }
 }

@@ -1,7 +1,12 @@
-# Regula Face API (React Native version)
+# Deprecated
+This plugin is deprecated and `7.1` is the last release. We kindly recommend migrating to our new plugin `@regulaforensics/face-sdk`:
+* [github](https://github.com/regulaforensics/npm-face-sdk)
+* [npmjs](https://www.npmjs.com/package/@regulaforensics/face-sdk)
+
+## Regula Face API (React Native version)
 Face API is a framework that is used for face matching, recognition and liveness detection.
 
-# Contents
+## Contents
 * [How to build the demo application](#how-to-build-the-demo-application)
 * [How to use offine match](#how-to-use-offine-match)
 * [Documentation](#documentation)
@@ -27,7 +32,7 @@ $ pod install
 4. iOS:
   * Run `npx react-native run-ios` inside `example` folder - this is just one way to run the app. You can also run it directly from within Xcode.
 
-## How to use offine match
+## How to use offline match
 1. Place a license that supports offline match at `android/app/src/main/assets/regula.license` and `ios/license/regula.license`.
 2. Change android and iOS bundle id if required by your license with the following commands(replace `ANDROID_ID` and `IOS_ID` with actual ids):
 ```bash
